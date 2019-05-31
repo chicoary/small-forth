@@ -1,2 +1,2 @@
 # small-forth
-Forth interpreter in Pharo Smalltalk
+Forth interpreter in Pharo Smalltalk.
