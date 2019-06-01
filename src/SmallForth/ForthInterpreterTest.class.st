@@ -763,11 +763,7 @@ ForthInterpreterTest >> testNestedIfElseThen4 [
 { #category : #tests }
 ForthInterpreterTest >> testNestedIfThen [ 
 	
-	self assert: (forth eval: 'false if false if 2 then 3 then 4'; stackCopy) equals: #(4).
-	self assert: (forth eval: 'false if true if 2 then 3 then 4'; stackCopy) equals: #(4).
-	self assert: (forth eval: 'true if false if 2 then 3 then 4'; stackCopy) equals: #(4 3).
-	self assert: (forth eval: 'true if true if 2 then 3 then 4'; stackCopy) equals: #(4 3 2).
-		
+	self assert: (forth eval: 'false if false if 1 2 3 then 4 5 6 then 7 8 9'; stackCopy) equals: #(9 8 7).
 	
 ]
 
