@@ -90,7 +90,7 @@ ForthInterpreter >> _2swap [
 { #category : #'forth-primitives' }
 ForthInterpreter >> __marker [
 	| marker |
-	marker := self getNextWord: self stream.
+	marker := self getNextWord: stream.
 	self removeWordsAfterMarker: marker
 ]
 
@@ -100,23 +100,24 @@ ForthInterpreter >> _abortQuote [
 	abort := stack pop ~= 0.
 	abort
 		ifTrue: [ stack removeAll.
-			self _dotQuote. self signalAbort ]
-		ifFalse: [ self getStringBeforeQuoteAndDiscardQuote: self stream ]
+			self _dotQuote.
+			self signalAbort ]
+		ifFalse: [ self getStringBeforeQuoteAndDiscardQuote: stream ]
 ]
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> _backSlash [
-	self skipBackSlashComment: self stream
+	self skipBackSlashComment: stream
 ]
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> _colon [
-	self compile: self stream
+	self compile: stream
 ]
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> _comment [
-	self skipComment: self stream
+	self skipComment: stream
 ]
 
 { #category : #'forth-primitives' }
@@ -135,7 +136,7 @@ ForthInterpreter >> _dot [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> _dotQuote [
-	self showString: self stream
+	self showString: stream
 ]
 
 { #category : #'forth-primitives' }
@@ -265,8 +266,8 @@ ForthInterpreter >> and [
 { #category : #'forth-primitives' }
 ForthInterpreter >> char [
 	| word |
-	word := self getNextWord: self stream.
-	stack push: word first charCode 
+	word := self getNextWord: stream.
+	stack push: word first charCode
 ]
 
 { #category : #'forth-primitives' }
@@ -275,6 +276,11 @@ ForthInterpreter >> checkDuplicatedMarker: word [
 	index := self indexOfWord: word.
 	index = 0
 		ifFalse: [ self signalMarkerDuplicateSomeWord: word ]
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreter >> checkNestLevel [
+	nestLevel = 0 ifFalse: [ self signalIfWithoutThen  ]
 ]
 
 { #category : #compiling }
@@ -293,21 +299,21 @@ ForthInterpreter >> compile: aReadStream [
 { #category : #'forth-primitives' }
 ForthInterpreter >> continueAfterElseOrThen [
 	| word |
-	word := self getNextWord: self stream.
+	word := self getNextWord: stream.
 	[ word isEmpty or: [ self isElseOrThenAtFalseLevel: word ] ]
 		whileFalse: [ self updateNestLevel: word.
 			self handleSkipWord: word.
-			word := self getNextWord: self stream ]
+			word := self getNextWord: stream ]
 ]
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> continueAfterThen [
 	| word |
-	word := self getNextWord: self stream.
+	word := self getNextWord: stream.
 	[ self isThen: word ]
 		whileFalse: [ self updateNestLevel: word.
 			self handleSkipWord: word.
-			word := self getNextWord: self stream ]
+			word := self getNextWord: stream ]
 ]
 
 { #category : #'forth-primitives' }
@@ -351,13 +357,13 @@ ForthInterpreter >> emit [
 { #category : #evaluating }
 ForthInterpreter >> eval [
 	| word |
-	word := self getNextWord: self stream.
+	word := self getNextWord: stream.
 	[ word isEmpty ]
 		whileFalse: [ (self isNumber: word)
 				ifTrue: [ self pushNumberToStack: word ]
 				ifFalse: [ self forthPerform: word ].
-			word := self getNextWord: self stream ]
-	
+			word := self getNextWord: stream ].
+	self checkNestLevel
 ]
 
 { #category : #evaluating }
@@ -389,7 +395,7 @@ ForthInterpreter >> false [
 { #category : #'forth-primitives' }
 ForthInterpreter >> forget [
 	| word |
-	word := self getNextWord: self stream.
+	word := self getNextWord: stream.
 	self forgetWord: word
 ]
 
@@ -484,12 +490,12 @@ ForthInterpreter >> invert [
 	stack push: (top = 0 ifTrue: [ -1 ] ifFalse: [ 0 ])
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #testing }
 ForthInterpreter >> isComment: word [
 	^ word = '('
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #testing }
 ForthInterpreter >> isDotQuote: word [ 
 	^ word = '."'
 ]
@@ -518,7 +524,7 @@ ForthInterpreter >> isElseOrThenAtFalseLevel: word [
 	^ (self isElseOrThen: word) and: [ self isFalseLevelMatchesNestLevel ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #testing }
 ForthInterpreter >> isFalseLevelMatchesNestLevel [
 	^ falseLevel = nestLevel
 ]
@@ -528,7 +534,7 @@ ForthInterpreter >> isIf: word [
 	^ word = 'if'
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #testing }
 ForthInterpreter >> isLineComment: word [ 
 	^ word = '\'
 ]
@@ -588,7 +594,7 @@ ForthInterpreter >> lastVersionAtWord: word [
 { #category : #'forth-primitives' }
 ForthInterpreter >> marker [
 	| marker |
-	marker := self getNextWord: self stream.
+	marker := self getNextWord: stream.
 	self markerWord: marker
 ]
 
@@ -735,17 +741,17 @@ ForthInterpreter >> skipComment: aReadStream [
 	self skipStringBeforeRightParenthesisAndDiscardRightParenthesis: aReadStream
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'forth-primitives' }
 ForthInterpreter >> skipCommentString [
 	self skipStringUntilChar: $)
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'forth-primitives' }
 ForthInterpreter >> skipDotQuoteString [
 	self skipStringUntilChar: $"
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'forth-primitives' }
 ForthInterpreter >> skipLineCommentString [
 	self skipStringUntilChar: Character cr
 ]
@@ -766,12 +772,12 @@ ForthInterpreter >> skipStringBeforeRightParenthesisAndDiscardRightParenthesis: 
 		whileTrue: [ car := aReadStream next ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'forth-primitives' }
 ForthInterpreter >> skipStringUntilChar: char [
 	| car |
-	car := self stream next.
+	car := stream next.
 	[ car isNotNil and: [ car ~= char ] ]
-		whileTrue: [ car := self stream next ]
+		whileTrue: [ car := stream next ]
 ]
 
 { #category : #'forth-primitives' }
@@ -799,11 +805,6 @@ ForthInterpreter >> stack: aCollection [
 { #category : #accessing }
 ForthInterpreter >> stackCopy [
 	^ stack copy
-]
-
-{ #category : #accessing }
-ForthInterpreter >> stream [
-	^ stream
 ]
 
 { #category : #accessing }
