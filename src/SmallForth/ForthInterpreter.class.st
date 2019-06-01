@@ -25,7 +25,9 @@ Class {
 	#instVars : [
 		'stack',
 		'stream',
-		'acceptUppercase'
+		'acceptUppercase',
+		'falseLevel',
+		'nestLevel'
 	],
 	#classVars : [
 		'WordDictionary'
@@ -290,13 +292,12 @@ ForthInterpreter >> compile: aReadStream [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> continueAfterElseOrThen [
-	| word | "self halt."
+	| word |
+	"self halt."
 	word := self getNextWord: self stream.
-	[ word isEmpty or: [ self isElseOrThen: word ] ]
-		whileFalse: [ 
-			(self isDotQuote: word) ifTrue: [ self skipDotQuoteString ].
-			(self isComment: word) ifTrue: [ self skipCommentString ].
-			(self isLineComment: word) ifTrue: [ self skipLineCommentString ].
+	[ word isEmpty or: [ self isElseOrThenAtFalseLevel: word ] ]
+		whileFalse: [ self updateNestLevel: word.
+			self handleSkipWord: word.
 			word := self getNextWord: self stream ]
 ]
 
@@ -305,13 +306,8 @@ ForthInterpreter >> continueAfterThen [
 	| word |
 	word := self getNextWord: self stream.
 	[ self isThen: word ]
-		whileFalse: [ "[ word := self getNextWord: self stream ]"
-			(self isDotQuote: word)
-				ifTrue: [ self skipDotQuoteString ].
-			(self isComment: word)
-				ifTrue: [ self skipCommentString ].
-			(self isLineComment: word)
-				ifTrue: [ self skipLineCommentString ].
+		whileFalse: [ self updateNestLevel: word.
+			self handleSkipWord: word.
 			word := self getNextWord: self stream ]
 ]
 
@@ -447,11 +443,22 @@ ForthInterpreter >> getStringBeforeQuoteAndDiscardQuote: aReadStream [
 ]
 
 { #category : #'forth-primitives' }
+ForthInterpreter >> handleSkipWord: word [
+	(self isDotQuote: word)
+		ifTrue: [ self skipDotQuoteString ].
+	(self isComment: word)
+		ifTrue: [ self skipCommentString ].
+	(self isLineComment: word)
+		ifTrue: [ self skipLineCommentString ]
+]
+
+{ #category : #'forth-primitives' }
 ForthInterpreter >> if [
 	| bool |
+	nestLevel := nestLevel + 1.
 	bool := stack pop ~= 0.
 	bool
-		ifFalse: [ self continueAfterElseOrThen ]
+		ifFalse: [ falseLevel := nestLevel. self continueAfterElseOrThen ]
 ]
 
 { #category : #'forth-primitives' }
@@ -467,6 +474,7 @@ ForthInterpreter >> indexOfWord: word [
 { #category : #initialization }
 ForthInterpreter >> initialize [
 	acceptUppercase := false.
+	nestLevel := 0
 	
 ]
 
@@ -504,6 +512,16 @@ ForthInterpreter >> isEligibleForLoweringCase: word [
 { #category : #'forth-primitives' }
 ForthInterpreter >> isElseOrThen: word [
 	^ #(else then) includes: word
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> isElseOrThenAtFalseLevel: word [
+	^ (self isElseOrThen: word) and: [ self isFalseLevelMatchesNestLevel ]
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreter >> isFalseLevelMatchesNestLevel [
+	^ falseLevel = nestLevel
 ]
 
 { #category : #testing }
@@ -849,7 +867,7 @@ ForthInterpreter >> synonyms [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> then [
-	"Do nothing"
+	nestLevel := nestLevel - 1
 ]
 
 { #category : #accessing }
@@ -860,4 +878,12 @@ ForthInterpreter >> top [
 { #category : #'forth-primitives' }
 ForthInterpreter >> true [
 	stack push: -1
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> updateNestLevel: word [
+	(self isIf: word)
+		ifTrue: [ nestLevel := nestLevel + 1 ].
+	(self isThen: word)
+		ifTrue: [ nestLevel := nestLevel - 1 ]
 ]
