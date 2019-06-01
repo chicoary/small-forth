@@ -695,68 +695,36 @@ ForthInterpreterTest >> testMult [
 { #category : #tests }
 ForthInterpreterTest >> testNestedIfElseThen [ 
 	
-	self assert: (forth eval: '
-		false 
-			if 
-				false 
-					if 2
-					else 3 ( <<<)
-					then
-			else 4
-			then 5 ( <<<)
-	'; 
-	stackCopy) equals: #(5 3).
+	self assert: (forth eval: 'false if false if 1 2 3 else 4 5 6 then 7 8 9 else 10 11 12 then'; 
+	stackCopy) equals: #(12 11 10).
 	
 ]
 
 { #category : #tests }
 ForthInterpreterTest >> testNestedIfElseThen2 [ 
 	
-	self assert: (forth eval: '
-		false 
-			if 
-				true 
-					if 2
-					else 3 ( <<<)
-					then
-			else 4
-			then 5 ( <<<)
-	'; 
-	stackCopy) equals: #(5 3).
+	self assert: (forth eval: 'false if true if 1 2 3 else 4 5 6 then 7 8 9 else 10 11 12 then'; 
+	stackCopy) equals: #(12 11 10).
+	
 	
 ]
 
 { #category : #tests }
 ForthInterpreterTest >> testNestedIfElseThen3 [
 	
-	self assert: (forth eval: '
-		true 
-			if 
-				false 
-					if 2
-					else 3 ( <<<)
-					then
-			else 4
-			then 5 ( <<<)
-	'; 
-	stackCopy) equals: #(5 3).
+	self assert: (forth eval: 'true if false if 1 2 3 else 4 5 6 then 7 8 9 else 10 11 12 then'; 
+	stackCopy) equals: #(4 5 6 7 8 9) reverse.
+	
 	
 ]
 
 { #category : #tests }
 ForthInterpreterTest >> testNestedIfElseThen4 [
 	
-	self assert: (forth eval: '
-		true 
-			if 
-				true 
-					if 2 ( <<<)
-					else 3 
-					then
-			else 4
-			then 5 ( <<<)
-	'; 
-	stackCopy) equals: #(5 2).
+	self assert: (forth eval: 'true if true if 1 2 3 else 4 5 6 then 7 8 9 else 10 11 12 then'; 
+	stackCopy) equals: #(1 2 3 7 8 9) reverse.
+	
+	
 	
 ]
 
