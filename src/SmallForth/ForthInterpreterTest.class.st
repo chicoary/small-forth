@@ -768,6 +768,27 @@ ForthInterpreterTest >> testNestedIfThen [
 ]
 
 { #category : #tests }
+ForthInterpreterTest >> testNestedIfThen2 [ 
+	
+	self assert: (forth eval: 'false if true if 1 2 3 then 4 5 6 then 7 8 9'; stackCopy) equals: #(9 8 7).
+	
+]
+
+{ #category : #tests }
+ForthInterpreterTest >> testNestedIfThen3 [
+	
+	self assert: (forth eval: 'true if false if 1 2 3 then 4 5 6 then 7 8 9'; stackCopy) equals: #(9 8 7 6 5 4).
+	
+]
+
+{ #category : #tests }
+ForthInterpreterTest >> testNestedIfThen4 [
+	
+	self assert: (forth eval: 'true if true if 1 2 3 then 4 5 6 then 7 8 9'; stackCopy) equals: #(9 8 7 6 5 4 3 2 1).
+	
+]
+
+{ #category : #tests }
 ForthInterpreterTest >> testNotEqual [
 	
 	self assert: (forth eval: '7 dup <>'; top) equals: 0.

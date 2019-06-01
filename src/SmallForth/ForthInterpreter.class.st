@@ -293,7 +293,6 @@ ForthInterpreter >> compile: aReadStream [
 { #category : #'forth-primitives' }
 ForthInterpreter >> continueAfterElseOrThen [
 	| word |
-	"self halt."
 	word := self getNextWord: self stream.
 	[ word isEmpty or: [ self isElseOrThenAtFalseLevel: word ] ]
 		whileFalse: [ self updateNestLevel: word.
