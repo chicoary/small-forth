@@ -3,7 +3,18 @@
 
 For more see https://chicoary.wordpress.com/smallforth/.
 
-SmallForth was developed based on the commands shown in the [Starting Forth book](https://www.forth.com/starting-forth/1-forth-stacks-dictionary/). Strings are displayed in Pharo Smalltalk Transcript.
+SmallForth was developed based on the commands shown in the [Starting Forth book](https://www.forth.com/starting-forth/1-forth-stacks-dictionary/). 
+
+Forth words in upper case are accepted. 
+For example:
+
+```Forth
+7 dup DUP SWAP drop
+
+
+its valid.
+
+Strings are displayed in Pharo Smalltalk Transcript.
 
 There is still no REPL available.
 
