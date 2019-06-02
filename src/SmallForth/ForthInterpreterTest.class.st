@@ -729,6 +729,22 @@ ForthInterpreterTest >> testNestedIfElseThen4 [
 ]
 
 { #category : #tests }
+ForthInterpreterTest >> testNestedIfElseThen5 [
+	
+	self assert: (forth eval: '
+	
+	true  if 1 else 
+	false if 2 else
+	         3
+	then then';
+	
+	stackCopy) equals: #(1)
+	
+	
+	
+]
+
+{ #category : #tests }
 ForthInterpreterTest >> testNestedIfThen [ 
 	
 	self assert: (forth eval: 'false if false if 1 2 3 then 4 5 6 then 7 8 9'; stackCopy) equals: #(9 8 7).
@@ -917,7 +933,7 @@ ForthInterpreterTest >> testTranscript [
 		
 		forth eval: '42 emit'.
 		
-		self assert: (UIManager default confirm: 'Do you see weird contents on Transcript?') not.
+		self assert: (UIManager default confirm: 'Do not you see weird contents on Transcript?').
 		self closeTranscriptWindow 
 	
 	

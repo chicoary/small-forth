@@ -43,14 +43,14 @@ ForthInterpreter class >> example [
    dup 21 < if  ." small "       else
    dup 24 < if  ." medium "      else
    dup 27 < if  ." large "       else
-   dup 30 < if  ." extra large " else
-      ." error "
-   then ( then then then then) drop ;
+   dup 30  < if  ." extra large " else
+      ."  error "
+   then then then then then drop ;
 
 	{1} dup . egg-size'.
 
 	Transcript openIfNone.
-	Transcript clear.
+	Transcript clear. self halt.
 	ForthInterpreter new eval: (expr format: {  
 		UIManager default request: 'Egg size?'
 	})
@@ -90,7 +90,7 @@ ForthInterpreter >> _2swap [
 { #category : #'forth-primitives' }
 ForthInterpreter >> __marker [
 	| marker |
-	marker := self getNextWord: stream.
+	marker := self getNextWord.
 	self removeWordsAfterMarker: marker
 ]
 
@@ -266,7 +266,7 @@ ForthInterpreter >> and [
 { #category : #'forth-primitives' }
 ForthInterpreter >> char [
 	| word |
-	word := self getNextWord: stream.
+	word := self getNextWord.
 	stack push: word first charCode
 ]
 
@@ -278,42 +278,42 @@ ForthInterpreter >> checkDuplicatedMarker: word [
 		ifFalse: [ self signalMarkerDuplicateSomeWord: word ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #evaluating }
 ForthInterpreter >> checkNestLevel [
-	nestLevel = 0 ifFalse: [ self signalIfWithoutThen  ]
+	nestLevel = 0  ifFalse: [ self signalIfWithoutThen  ]
 ]
 
 { #category : #compiling }
 ForthInterpreter >> compile: aReadStream [
 	| word car writeStream |
 	writeStream := WriteStream on: String empty.
-	word := self getNextWord: aReadStream.
+	word := self getNextWord.
 	car := self discardWhiteSpacesOn: aReadStream.
 	[ car = $; ]
 		whileFalse: [ writeStream nextPut: car.
 			car := aReadStream next ].
-	WordDictionary
-		addFirst: word -> writeStream contents
+	WordDictionary addFirst: word -> writeStream contents
 ]
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> continueAfterElseOrThen [
 	| word |
-	word := self getNextWord: stream.
+	word := self getNextWord. 
 	[ word isEmpty or: [ self isElseOrThenAtFalseLevel: word ] ]
 		whileFalse: [ self updateNestLevel: word.
 			self handleSkipWord: word.
-			word := self getNextWord: stream ]
+			word := self getNextWord ]
 ]
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> continueAfterThen [
 	| word |
-	word := self getNextWord: stream.
+	word := self getNextWord.
 	[ self isThen: word ]
 		whileFalse: [ self updateNestLevel: word.
 			self handleSkipWord: word.
-			word := self getNextWord: stream ]
+			word := self getNextWord ]. 
+	self updateNestLevel: word.
 ]
 
 { #category : #'forth-primitives' }
@@ -356,13 +356,13 @@ ForthInterpreter >> emit [
 
 { #category : #evaluating }
 ForthInterpreter >> eval [
-	| word |
-	word := self getNextWord: stream.
+	| word | 
+	word := self getNextWord. 
 	[ word isEmpty ]
 		whileFalse: [ (self isNumber: word)
 				ifTrue: [ self pushNumberToStack: word ]
 				ifFalse: [ self forthPerform: word ].
-			word := self getNextWord: stream ].
+			word := self getNextWord ].
 	self checkNestLevel
 ]
 
@@ -395,7 +395,7 @@ ForthInterpreter >> false [
 { #category : #'forth-primitives' }
 ForthInterpreter >> forget [
 	| word |
-	word := self getNextWord: stream.
+	word := self getNextWord.
 	self forgetWord: word
 ]
 
@@ -421,14 +421,14 @@ ForthInterpreter >> forthRespondsTo: word [
 ]
 
 { #category : #evaluating }
-ForthInterpreter >> getNextWord: aReadStream [ 
-	| car writeStream |
+ForthInterpreter >> getNextWord [ 
+	| car writeStream | 
 	writeStream := WriteStream on: String empty.
-	car := self discardWhiteSpacesOn: aReadStream.
+	car := self discardWhiteSpacesOn: stream.
 	[ car isNotNil and: [(self isWhiteSpace: car) not ]] whileTrue: [  
 	
 		writeStream nextPut: car. 
-		car := aReadStream next 
+		car := stream next 
 	
 	].
 	^ writeStream contents 
@@ -463,7 +463,8 @@ ForthInterpreter >> if [
 	nestLevel := nestLevel + 1.
 	bool := stack pop ~= 0.
 	bool
-		ifFalse: [ falseLevel := nestLevel. self continueAfterElseOrThen ]
+		ifFalse: [  falseLevel := nestLevel.
+			self continueAfterElseOrThen ]
 ]
 
 { #category : #'forth-primitives' }
@@ -521,7 +522,11 @@ ForthInterpreter >> isElseOrThen: word [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> isElseOrThenAtFalseLevel: word [
-	^ (self isElseOrThen: word) and: [ self isFalseLevelMatchesNestLevel ]
+	| bool |
+	bool := (self isElseOrThen: word)
+		and: [ self isFalseLevelMatchesNestLevel ].
+	self updateNestLevel: word.
+	^ bool
 ]
 
 { #category : #testing }
@@ -594,7 +599,7 @@ ForthInterpreter >> lastVersionAtWord: word [
 { #category : #'forth-primitives' }
 ForthInterpreter >> marker [
 	| marker |
-	marker := self getNextWord: stream.
+	marker := self getNextWord.
 	self markerWord: marker
 ]
 
