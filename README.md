@@ -25,3 +25,27 @@ To obtain the contents of the stack use:
 (ForthInterpreter new eval: '1 2 dup';stackCopy) asArray >>> #(2 2 1)
 ```
 
+Here is a more complex example:
+
+
+```Smalltalk
+example
+	| expr | 
+	expr := ': egg-size
+   dup 18 < if  ." reject "      else
+   dup 21 < if  ." small "       else
+   dup 24 < if  ." medium "      else
+   dup 27 < if  ." large "       else
+   dup 30  < if  ." extra large " else
+      ."  error "
+   then then then then then drop ;
+
+	{1} dup . egg-size'.
+
+	Transcript openIfNone.
+	Transcript clear. 
+	ForthInterpreter new eval: (expr format: {  
+		UIManager default request: 'Egg size?'
+	})
+```
+
