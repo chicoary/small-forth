@@ -9,7 +9,7 @@ There is still no REPL available.
 
 The following example shows how to run a program written in Forth in the Pharo environment:
 
-```
+```Smalltalk
 ForthInterpreter new eval: '1 2 dup'
 ```
 
