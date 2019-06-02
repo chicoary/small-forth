@@ -10,7 +10,7 @@ For example:
 
 ```Forth
 7 dup DUP SWAP drop
-
+```
 
 its valid.
 
