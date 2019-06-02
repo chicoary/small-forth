@@ -30,8 +30,8 @@ Here is a more complex example:
 
 ```Smalltalk
 example
-	| expr | 
-	expr := ': egg-size
+   | expr | 
+   expr := ': egg-size
    dup 18 < if  ." reject "      else
    dup 21 < if  ." small "       else
    dup 24 < if  ." medium "      else
