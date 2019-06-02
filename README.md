@@ -16,12 +16,12 @@ ForthInterpreter new eval: '1 2 dup'
 To get the top of the stack use:
 
 ```
-ForthInterpreter new eval: '1 2 dup';top >>> 2
+(ForthInterpreter new eval: '1 2 dup';top) >>> 2
 ```
 
 To obtain the contents of the stack use:
 
 ```
-ForthInterpreter new eval: '1 2 dup';stackCopy asArray >>> #(2 2 1)
+(ForthInterpreter new eval: '1 2 dup';stackCopy) asArray >>> #(2 2 1)
 ```
 
