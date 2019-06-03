@@ -14,7 +14,7 @@ For example:
 
 its valid. 
 
-`SWAP` is the same as `swap` but `Swap is not.
+`SWAP` is the same as `swap` but `Swap` is not.
 
 Strings are displayed in Pharo Smalltalk Transcript.
 
