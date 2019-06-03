@@ -12,7 +12,9 @@ For example:
 7 dup DUP SWAP drop
 ```
 
-its valid.
+its valid. 
+
+`SWAP` is the same as `swap` but `Swap is not.
 
 Strings are displayed in Pharo Smalltalk Transcript.
 
