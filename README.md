@@ -26,13 +26,13 @@ The following example shows how to run a program written in Forth in the Pharo e
 ForthInterpreter new eval: '1 2 dup'
 ```
 
-To get the top of the stack use:
+To get the top of the stack use `top`:
 
 ```Smalltalk
 (ForthInterpreter new eval: '1 2 dup';top) >>> 2
 ```
 
-To obtain the contents of the stack use:
+To obtain the contents of the stack use `stackCopy`:
 
 ```Smalltalk
 (ForthInterpreter new eval: '1 2 dup';stackCopy) asArray >>> #(2 2 1)
