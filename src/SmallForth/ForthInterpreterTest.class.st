@@ -496,6 +496,12 @@ ForthInterpreterTest >> testIfThen [
 ]
 
 { #category : #tests }
+ForthInterpreterTest >> testIfThenElse [ 
+	self should: [forth eval: 'false if 1 then 2 else'] raise: ForthTooManyElses.
+	
+]
+
+{ #category : #tests }
 ForthInterpreterTest >> testIfThenWithComment [
 	
 	Transcript openIfNone. 
@@ -545,10 +551,18 @@ ForthInterpreterTest >> testIfThenWithLineComment [
 ]
 
 { #category : #tests }
-ForthInterpreterTest >> testIfWithouThen [ 
+ForthInterpreterTest >> testIfTwoElseThen [ 
+	self shouldnt: [forth eval: 'false if 1 else 2 then'] raise: ForthTooManyElses.
+	self should: [forth eval: 'false if 1 else 2 else 3 then'] raise: ForthTooManyElses.
+	self should: [forth eval: 'false if 1 else false if 2 else 3 then'] raise: ForthIfWithoutThen  
 	
-	self should: [forth eval: 'true if 1 2 3 swap']  raise: ForthIfWithouThen.
-	self should: [forth eval: 'false if 1 2 3 swap'] raise: ForthIfWithouThen
+]
+
+{ #category : #tests }
+ForthInterpreterTest >> testIfWithoutThen [ 
+	
+	self should: [forth eval: 'true if 1 2 3 swap']  raise: ForthIfWithoutThen.
+	self should: [forth eval: 'false if 1 2 3 swap'] raise: ForthIfWithoutThen
 ]
 
 { #category : #tests }

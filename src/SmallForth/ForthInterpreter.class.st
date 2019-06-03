@@ -27,7 +27,8 @@ Class {
 		'stream',
 		'acceptUppercase',
 		'falseLevel',
-		'nestLevel'
+		'nestLevel',
+		'pairingStack'
 	],
 	#classVars : [
 		'WordDictionary'
@@ -50,7 +51,7 @@ ForthInterpreter class >> example [
 	{1} dup . egg-size'.
 
 	Transcript openIfNone.
-	Transcript clear. self halt.
+	Transcript clear. 
 	ForthInterpreter new eval: (expr format: {  
 		UIManager default request: 'Egg size?'
 	})
@@ -283,6 +284,11 @@ ForthInterpreter >> checkNestLevel [
 	nestLevel = 0  ifFalse: [ self signalIfWithoutThen  ]
 ]
 
+{ #category : #evaluating }
+ForthInterpreter >> checkPairingStack [
+	pairingStack ifNotEmpty: [ self signalTooManyElses ] 
+]
+
 { #category : #compiling }
 ForthInterpreter >> compile: aReadStream [
 	| word car writeStream |
@@ -307,10 +313,10 @@ ForthInterpreter >> continueAfterElseOrThen [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> continueAfterThen [
-	| word |
+	| word | 
 	word := self getNextWord.
-	[ self isThen: word ]
-		whileFalse: [ self updateNestLevel: word.
+	[ word isEmpty not and: [(self isThen: word) not] ]
+		whileTrue: [ self updateNestLevel: word.
 			self handleSkipWord: word.
 			word := self getNextWord ]. 
 	self updateNestLevel: word.
@@ -346,6 +352,7 @@ ForthInterpreter >> dup [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> else [
+	pairingStack push: #else.
 	self continueAfterThen
 ]
 
@@ -363,7 +370,8 @@ ForthInterpreter >> eval [
 				ifTrue: [ self pushNumberToStack: word ]
 				ifFalse: [ self forthPerform: word ].
 			word := self getNextWord ].
-	self checkNestLevel
+	self checkNestLevel.
+	self checkPairingStack
 ]
 
 { #category : #evaluating }
@@ -461,6 +469,7 @@ ForthInterpreter >> handleSkipWord: word [
 ForthInterpreter >> if [
 	| bool |
 	nestLevel := nestLevel + 1.
+	pairingStack push: #if.
 	bool := stack pop ~= 0.
 	bool
 		ifFalse: [  falseLevel := nestLevel.
@@ -480,7 +489,8 @@ ForthInterpreter >> indexOfWord: word [
 { #category : #initialization }
 ForthInterpreter >> initialize [
 	acceptUppercase := false.
-	nestLevel := 0
+	nestLevel := 0.
+	pairingStack := Stack new
 	
 ]
 
@@ -517,12 +527,15 @@ ForthInterpreter >> isEligibleForLoweringCase: word [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> isElseOrThen: word [
-	^ #(else then) includes: word
+	| bool |
+	bool := #(else then) includes: word.
+	^ bool
 ]
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> isElseOrThenAtFalseLevel: word [
 	| bool |
+	word = 'else' ifTrue: [ pairingStack push: #else ].
 	bool := (self isElseOrThen: word)
 		and: [ self isFalseLevelMatchesNestLevel ].
 	self updateNestLevel: word.
@@ -578,7 +591,10 @@ ForthInterpreter >> isSignal: aCharacter [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> isThen: word [
-	^ word = 'then'
+	| bool |
+	bool := word = 'then'.
+	bool ifTrue: [ self updatePairingStack ].
+	^ bool
 ]
 
 { #category : #testing }
@@ -723,7 +739,7 @@ ForthInterpreter >> signalAbort [
 
 { #category : #signalling }
 ForthInterpreter >> signalIfWithoutThen [
-	ForthIfWithouThen new signal
+	ForthIfWithoutThen new signal
 ]
 
 { #category : #'forth-primitives' }
@@ -734,6 +750,11 @@ ForthInterpreter >> signalMarkerDuplicateSomeWord: word [
 { #category : #'forth-primitives' }
 ForthInterpreter >> signalMissingWord: word [ 
 	(ForthMissingWord messageText: word) signal
+]
+
+{ #category : #signalling }
+ForthInterpreter >> signalTooManyElses [
+	ForthTooManyElses new signal
 ]
 
 { #category : #'forth-primitives' }
@@ -872,6 +893,7 @@ ForthInterpreter >> synonyms [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> then [
+	self updatePairingStack.
 	nestLevel := nestLevel - 1
 ]
 
@@ -891,4 +913,14 @@ ForthInterpreter >> updateNestLevel: word [
 		ifTrue: [ nestLevel := nestLevel + 1 ].
 	(self isThen: word)
 		ifTrue: [ nestLevel := nestLevel - 1 ]
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> updatePairingStack [
+	pairingStack top = #else
+		ifTrue: [ pairingStack pop.
+			pairingStack pop = #if
+				ifFalse: [ self signalTooManyElses ] ]
+		ifFalse: [ pairingStack pop = #if
+				ifFalse: [ self signalTooManyElses ] ]
 ]

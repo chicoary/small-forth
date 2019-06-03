@@ -1,5 +1,5 @@
 Class {
-	#name : #ForthIfWithouThen,
+	#name : #ForthTooManyElses,
 	#superclass : #Error,
 	#category : #'SmallForth-Exceptions'
 }
