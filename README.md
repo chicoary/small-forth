@@ -1,6 +1,8 @@
 # small-forth
 # Forth interpreter in Pharo Smalltalk.
 
+## Introduction
+
 For more see https://chicoary.wordpress.com/smallforth/.
 
 SmallForth was developed based on the commands shown in the [Starting Forth book](https://www.forth.com/starting-forth/1-forth-stacks-dictionary/). 
