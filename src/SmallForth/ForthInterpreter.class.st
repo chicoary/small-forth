@@ -313,13 +313,13 @@ ForthInterpreter >> continueAfterElseOrThen [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> continueAfterThen [
-	| word | 
+	| word |
 	word := self getNextWord.
-	[ word isEmpty not and: [(self isThen: word) not] ]
+	[ word isNotEmpty and: [ (self isThen: word) not ] ]
 		whileTrue: [ self updateNestLevel: word.
 			self handleSkipWord: word.
-			word := self getNextWord ]. 
-	self updateNestLevel: word.
+			word := self getNextWord ].
+	self updateNestLevel: word
 ]
 
 { #category : #'forth-primitives' }
@@ -467,13 +467,11 @@ ForthInterpreter >> handleSkipWord: word [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> if [
-	| bool |
 	nestLevel := nestLevel + 1.
 	pairingStack push: #if.
-	bool := stack pop ~= 0.
-	bool
-		ifFalse: [  falseLevel := nestLevel.
-			self continueAfterElseOrThen ]
+	stack pop ~= 0 ifTrue: [ ^ self ].
+	falseLevel := nestLevel.
+	self continueAfterElseOrThen
 ]
 
 { #category : #'forth-primitives' }
@@ -918,9 +916,7 @@ ForthInterpreter >> updateNestLevel: word [
 { #category : #'forth-primitives' }
 ForthInterpreter >> updatePairingStack [
 	pairingStack top = #else
-		ifTrue: [ pairingStack pop.
-			pairingStack pop = #if
-				ifFalse: [ self signalTooManyElses ] ]
-		ifFalse: [ pairingStack pop = #if
-				ifFalse: [ self signalTooManyElses ] ]
+		ifTrue: [ pairingStack pop ].
+	pairingStack pop = #if
+		ifFalse: [ self signalTooManyElses ]
 ]
