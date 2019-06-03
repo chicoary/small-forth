@@ -20,6 +20,8 @@ Strings are displayed in Pharo Smalltalk Transcript.
 
 There is still no REPL available.
 
+## Examples
+
 The following example shows how to run a program written in Forth in the Pharo environment:
 
 ```Smalltalk
