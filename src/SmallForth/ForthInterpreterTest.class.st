@@ -5,7 +5,8 @@ Class {
 	#name : #ForthInterpreterTest,
 	#superclass : #TestCase,
 	#instVars : [
-		'forth'
+		'forth',
+		'skipTests'
 	],
 	#classVars : [
 		'ForthWordAlreadyExists'
@@ -26,6 +27,7 @@ ForthInterpreterTest >> setUp [
 	super setUp.
 	forth := ForthInterpreter new.
 	forth resetDictionary.
+	skipTests := false
 ]
 
 { #category : #tests }
@@ -65,49 +67,10 @@ ForthInterpreterTest >> test2swap [
 ]
 
 { #category : #tests }
-ForthInterpreterTest >> testAbort [
-	
-	Transcript openIfNone. 
-	Transcript clear.
-	forth eval: 'false abort ." Must see me"'.
-	self assert: forth stackCopy isEmpty.
-	self assert: (UIManager default confirm: 'Do you see an ''Must see me'' on Transcript?').
-	self closeTranscriptWindow 
-	
-		
-]
-
-{ #category : #tests }
 ForthInterpreterTest >> testAbort2 [
 	
 	self should: [forth eval: '1 2 3 true abort'] raise: ForthAbort.
 	self assert: forth stackCopy isEmpty.
-	
-		
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testAbortWithMessage [
-	
-	Transcript openIfNone. 
-	Transcript clear.
-	forth eval: 'false abort" Message" ." No message"'.
-	self assert: forth stackCopy isEmpty.
-	self assert: (UIManager default confirm: 'Do you see an ''No message'' on Transcript?').
-	self closeTranscriptWindow 
-	
-		
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testAbortWithMessage2 [
-	
-	Transcript openIfNone. 
-	Transcript clear.
-	self should: [ forth eval: 'true abort" Message" ." Must not see me"' ] raise: ForthAbort.
-	self assert: forth stackCopy isEmpty.
-	self assert: (UIManager default confirm: 'Do you see an ''Message'' only on Transcript?').
-	self closeTranscriptWindow 
 	
 		
 ]
@@ -131,67 +94,9 @@ ForthInterpreterTest >> testAnd [
 ]
 
 { #category : #tests }
-ForthInterpreterTest >> testBackSlash [
-		
-		Transcript openIfNone. 
-		Transcript clear.
-		forth eval: '
-		
-		42 emit 
-		\ I am a comment
-		." Comment"
-		
-		'.
-		self assert: forth stackCopy isEmpty.
-		self assert: (UIManager default confirm: 'Do you see an ''*Comment'' on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testChar [
-		
-		Transcript openIfNone. 
-		Transcript clear.
-		forth eval: 'char * emit'.
-		self assert: forth stackCopy isEmpty.
-		self assert: (UIManager default confirm: 'Do you see an * on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-]
-
-{ #category : #tests }
 ForthInterpreterTest >> testClass [
 	
 		self should: [ forth eval: '42 class' ] raise: ForthMissingWord  
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testComment [
-		
-		Transcript openIfNone. 
-		Transcript clear.
-		forth eval: '42 emit ( I am a comment) ." Comment"'.
-		self assert: forth stackCopy isEmpty.
-		self assert: (UIManager default confirm: 'Do you see an ''*Comment'' on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testCr [
-		
-		Transcript openIfNone. 
-		Transcript clear.
-		forth eval: '." abcd" cr ." efg"'.
-		self assert: forth stackCopy isEmpty.
-		self assert: (UIManager default confirm: 'Do you see an ''abcd'' and ''efg'' in two lines on Transcript?').
-		self closeTranscriptWindow 
-	
 	
 ]
 
@@ -200,69 +105,6 @@ ForthInterpreterTest >> testDivide [
 	
 	self assert: (forth eval: '20 7 /'; top) equals: 2.
 	self assert: forth stackCopy size equals: 1.
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testDot [
-	
-	Transcript openIfNone. 
-	Transcript clear.
-	forth eval: '7 dup * .'.
-	self assert: [ forth stackCopy isEmpty ].
-	self assert: (UIManager default confirm: 'Do you see an 49 on Transcript?').
-	self closeTranscriptWindow  
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testDot2 [
-	
-	Transcript openIfNone. 
-	Transcript clear.
-	forth eval: '77 42 . .'.
-	self assert: [ forth stackCopy isEmpty ].
-	self assert: (UIManager default confirm: 'Do you see an 42 77 on Transcript?').
-	self closeTranscriptWindow  
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testDotQuote [
-		
-		Transcript openIfNone. 
-		Transcript clear.
-		forth eval: '42 emit ." Hello    World!"'.
-		self assert: forth stackCopy isEmpty.
-		self assert: (UIManager default confirm: 'Do you see an ''*Hello    World!'' on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testDotQuoteWithEmptyString [
-		
-		Transcript openIfNone. 
-		Transcript clear.
-		forth eval: '." "'.
-		self assert: forth stackCopy isEmpty.
-		self assert: (UIManager default confirm: 'Do you ''see'' an ''empty string'' on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testDotS [
-	
-	Transcript openIfNone. 
-	Transcript clear.
-	forth eval: '1 2 3 .s'.
-	self assert: forth stackCopy size equals: 3.
-	self assert: forth stackCopy equals: #(3 2 1).
-	self assert: (UIManager default confirm: 'Do you see an ''<3> 1 2 3'' on Transcript?').
-	self closeTranscriptWindow  
 	
 ]
 
@@ -280,19 +122,6 @@ ForthInterpreterTest >> testDup [
 	
 	self assert: (forth eval: '7 dup'; stackCopy) equals: #(7 7).
 	self assert: forth stackCopy size equals: 2.
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testEmit [
-		
-		Transcript openIfNone. 
-		Transcript clear.
-		forth eval: '42 emit'.
-		self assert: forth stackCopy isEmpty.
-		self assert: (UIManager default confirm: 'Do you see an * on Transcript?').
-		self closeTranscriptWindow 
 	
 	
 ]
@@ -325,28 +154,6 @@ ForthInterpreterTest >> testFalse [
 	
 	
 	
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testForget [
-		
-		Transcript openIfNone. 
-		Transcript clear.
-		forth eval: '
-		
-			: greet ." Dummy." ;
-			: greet ." Dummy2." ;
-			: greet ." Hello, I speak Forth." ;
-			: greet ." Hi there!" ;
-			forget greet
-			greet
-		
-		'.
-		self assert: forth stackCopy isEmpty.
-		self assert: (UIManager default confirm: 'Do you see an ''Hello, I speak Forth.'' in on Transcript?').
-		self closeTranscriptWindow 
 	
 	
 ]
@@ -392,99 +199,6 @@ ForthInterpreterTest >> testIfElseThen [
 ]
 
 { #category : #tests }
-ForthInterpreterTest >> testIfElseThenWithComment [
-	
-	Transcript openIfNone. 
-		Transcript clear.
-		forth eval: 'false if 1 ( I have an else and a then in the middle) else ." Must (with else or then) see me" then'.
-		self assert: (UIManager default confirm: 'Do you see an ''Must (with else or then) see me'' on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-	
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testIfElseThenWithComment2 [
-	
-	Transcript openIfNone. 
-		Transcript clear.
-		forth eval: 'true if ." Must see me" else 2 ( I have an else and a then in the middle) then'.
-		self assert: (UIManager default confirm: 'Do you see an ''Must see me'' on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-	
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testIfElseThenWithDotQuote [
-	
-	Transcript openIfNone. 
-		Transcript clear.
-		forth eval: 'false if ." I have an else and a then in the middle" else ." Must see me" then'.
-		self assert: (UIManager default confirm: 'Do you see an ''Must see me'' on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-	
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testIfElseThenWithDotQuote2 [
-	
-	Transcript openIfNone. 
-		Transcript clear.
-		forth eval: 'true if ." Must see me" else ." I have an else and a then in the middle" then'.
-		self assert: (UIManager default confirm: 'Do you see an ''Must see me'' on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-	
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testIfElseThenWithLineComment [
-	
-	Transcript openIfNone. 
-		Transcript clear.
-		forth eval: 'false if 1 \ I have an else and a then in the middle
-				else ." Must see me" then'.
-		self assert: (UIManager default confirm: 'Do you see an ''Must see me'' on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-	
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testIfElseThenWithLineComment2 [
-	
-	Transcript openIfNone. 
-		Transcript clear.
-		forth eval: 'true if ." Must see me" 
-				else \ I have an else and a then in the middle
-				then'.
-		self assert: (UIManager default confirm: 'Do you see an ''Must see me'' on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-	
-	
-	
-]
-
-{ #category : #tests }
 ForthInterpreterTest >> testIfThen [ 
 	
 	self assert: (forth eval: 'false if 1 2 3 swap then 4 5 6'; stackCopy) equals: #(6 5 4).
@@ -498,55 +212,6 @@ ForthInterpreterTest >> testIfThen [
 { #category : #tests }
 ForthInterpreterTest >> testIfThenElse [ 
 	self should: [forth eval: 'false if 1 then 2 else'] raise: ForthTooManyElses.
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testIfThenWithComment [
-	
-	Transcript openIfNone. 
-		Transcript clear.
-		forth eval: 'false if 1 ( I have an else and a then in the middle) then ." Must see me"'.
-		self assert: (UIManager default confirm: 'Do you see an ''Must see me'' on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-	
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testIfThenWithDotQuote [
-	
-	Transcript openIfNone. 
-		Transcript clear.
-		forth eval: 'false if ." I have an else and a then in the middle" then ." Must see me"'.
-		self assert: (UIManager default confirm: 'Do you see an ''Must see me'' on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-	
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testIfThenWithLineComment [
-	
-	Transcript openIfNone. 
-		Transcript clear.
-		forth eval: 'false if 1 
-				
-				\ I have an else and a then in the middle
-				
-				then ." Must see me"'.
-		self assert: (UIManager default confirm: 'Do you see an ''Must see me'' on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-	
-	
 	
 ]
 
@@ -611,28 +276,6 @@ ForthInterpreterTest >> testLessThanZero [
 	self assert: forth stackCopy size equals: 1.
 	self assert: (forth eval: '9 0<'; top) equals: 0.
 	self assert: forth stackCopy size equals: 1.
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testMarker [
-		
-		Transcript openIfNone. 
-		Transcript clear.
-		forth eval: '
-		
-			: greet ." Dummy." ;
-			: greet ." Hello, I speak Forth." ;
-			marker -work
-			: greet ." Hi there!" ;
-			-work
-			greet
-		
-		'.
-		self assert: forth stackCopy isEmpty.
-		self assert: (UIManager default confirm: 'Do you see an ''Hello, I speak Forth.'' in on Transcript?').
-		self closeTranscriptWindow 
-	
 	
 ]
 
@@ -889,32 +532,6 @@ ForthInterpreterTest >> testSlashMod [
 ]
 
 { #category : #tests }
-ForthInterpreterTest >> testSpace [
-		
-		Transcript openIfNone. 
-		Transcript clear.
-		forth eval: '." abcd" space space space ." efg"'.
-		self assert: forth stackCopy isEmpty.
-		self assert: (UIManager default confirm: 'Do you see an ''abcd   efg'' on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testSpaces [
-		
-		Transcript openIfNone. 
-		Transcript clear.
-		forth eval: '." abcd" 3 spaces ." efg"'.
-		self assert: forth stackCopy isEmpty.
-		self assert: (UIManager default confirm: 'Do you see an ''abcd   efg'' on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-]
-
-{ #category : #tests }
 ForthInterpreterTest >> testSquare [
 		self assert: (forth eval: '
 		
@@ -946,20 +563,6 @@ ForthInterpreterTest >> testSynonymous [
 ]
 
 { #category : #tests }
-ForthInterpreterTest >> testTranscript [
-		
-		Transcript openIfNone. 
-		Transcript clear.
-		
-		forth eval: '42 emit'.
-		
-		self assert: (UIManager default confirm: 'Do not you see weird contents on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-]
-
-{ #category : #tests }
 ForthInterpreterTest >> testTrue [
 	
 	self assert: (forth eval: 'true'; top) equals: -1.
@@ -967,52 +570,6 @@ ForthInterpreterTest >> testTrue [
 	
 	
 	
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testTwoMarker [
-		
-		Transcript openIfNone. 
-		Transcript clear.
-		forth eval: '
-		
-			: greet ." Dummy." ;
-			marker -work2
-			: greet ." Hello, I speak Forth." ;
-			marker -work
-			: greet ." Hi there!" ;
-			-work2
-			greet
-		
-		'.
-		self assert: forth stackCopy isEmpty.
-		self assert: (UIManager default confirm: 'Do you see an ''Dummy.'' in on Transcript?').
-		self closeTranscriptWindow 
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testTwoMarker2 [
-		
-		Transcript openIfNone. 
-		Transcript clear.
-		forth eval: '
-		
-			: greet ." Dummy." ;
-			marker -work2
-			: greet ." Hello, I speak Forth." ;
-			marker -work
-			: greet ." Hi there!" ;
-			-work
-			greet
-		
-		'.
-		self assert: forth stackCopy isEmpty.
-		self assert: (UIManager default confirm: 'Do you see an ''Hello, I speak Forth.'' in on Transcript?').
-		self closeTranscriptWindow 
 	
 	
 ]
