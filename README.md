@@ -20,7 +20,7 @@ its valid.
 
 Strings are displayed in Pharo Smalltalk Transcript.
 
-!(https://chicoary.files.wordpress.com/2019/06/smallforth-hello-world.png)
+![](https://chicoary.files.wordpress.com/2019/06/smallforth-hello-world.png)
 ![Image of Yaktocat](https://octodex.github.com/images/yaktocat.png)
 
 There is still no REPL available.
