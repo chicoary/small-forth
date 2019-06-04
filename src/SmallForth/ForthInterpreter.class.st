@@ -316,10 +316,13 @@ ForthInterpreter >> continueAfterThen [
 	| word |
 	word := self getNextWord.
 	[ word isNotEmpty and: [ (self isThen: word) not ] ]
-		whileTrue: [ self updateNestLevel: word.
+		whileTrue: [ 
+			(self isIf: word) ifTrue: [ self pushIfToPairingStack ].
+			self updateNestLevel: word.
 			self handleSkipWord: word.
 			word := self getNextWord ].
-	self updateNestLevel: word
+	self updateNestLevel: word.
+	(self isThen: word) ifTrue: [ self updatePairingStack ] 
 ]
 
 { #category : #'forth-primitives' }
@@ -352,7 +355,7 @@ ForthInterpreter >> dup [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> else [
-	pairingStack push: #else.
+	self pushElseToPairingStack.
 	self continueAfterThen
 ]
 
@@ -429,17 +432,16 @@ ForthInterpreter >> forthRespondsTo: word [
 ]
 
 { #category : #evaluating }
-ForthInterpreter >> getNextWord [ 
-	| car writeStream | 
+ForthInterpreter >> getNextWord [
+	| car writeStream word |
 	writeStream := WriteStream on: String empty.
 	car := self discardWhiteSpacesOn: stream.
-	[ car isNotNil and: [(self isWhiteSpace: car) not ]] whileTrue: [  
-	
-		writeStream nextPut: car. 
-		car := stream next 
-	
-	].
-	^ writeStream contents 
+	[ car isNotNil and: [ (self isWhiteSpace: car) not ] ]
+		whileTrue: [ writeStream nextPut: car.
+			car := stream next ].
+	word := writeStream contents.
+	"self haltIf: [ #(if else then) includes: word ]."
+	^ word
 ]
 
 { #category : #evaluating }
@@ -468,8 +470,9 @@ ForthInterpreter >> handleSkipWord: word [
 { #category : #'forth-primitives' }
 ForthInterpreter >> if [
 	nestLevel := nestLevel + 1.
-	pairingStack push: #if.
-	stack pop ~= 0 ifTrue: [ ^ self ].
+	self pushIfToPairingStack.
+	stack pop ~= 0
+		ifTrue: [ ^ self ].
 	falseLevel := nestLevel.
 	self continueAfterElseOrThen
 ]
@@ -524,16 +527,25 @@ ForthInterpreter >> isEligibleForLoweringCase: word [
 ]
 
 { #category : #'forth-primitives' }
+ForthInterpreter >> isElse: word [
+	^ word = 'else'
+]
+
+{ #category : #'forth-primitives' }
 ForthInterpreter >> isElseOrThen: word [
 	| bool |
 	bool := #(else then) includes: word.
+	(self isThen: word) ifTrue: [ self updatePairingStack ].
 	^ bool
 ]
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> isElseOrThenAtFalseLevel: word [
 	| bool |
-	word = 'else' ifTrue: [ pairingStack push: #else ].
+	(self isIf: word)
+		ifTrue: [ self pushIfToPairingStack ].
+	(self isElse: word)
+		ifTrue: [ self pushElseToPairingStack ].
 	bool := (self isElseOrThen: word)
 		and: [ self isFalseLevelMatchesNestLevel ].
 	self updateNestLevel: word.
@@ -591,7 +603,7 @@ ForthInterpreter >> isSignal: aCharacter [
 ForthInterpreter >> isThen: word [
 	| bool |
 	bool := word = 'then'.
-	bool ifTrue: [ self updatePairingStack ].
+	"bool ifTrue: [ self updatePairingStack ]".
 	^ bool
 ]
 
@@ -671,6 +683,16 @@ ForthInterpreter >> primitiveWords [
 	abort and char cr drop dup else emit #false forget if invert marker mod or over rot space spaces swap then #true)
 	
 
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> pushElseToPairingStack [
+	pairingStack push: #else
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> pushIfToPairingStack [
+	pairingStack push: #if
 ]
 
 { #category : #evaluating }

@@ -300,9 +300,9 @@ ForthInterpreterTest >> testEmit [
 { #category : #tests }
 ForthInterpreterTest >> testEmptyExpression [
 	
-	"self should: [" forth eval: '' "] raise: Error
+	self shouldnt: [ forth eval: '' ] raise: Error
 	
-	"
+	
 	
 ]
 
@@ -743,17 +743,23 @@ ForthInterpreterTest >> testNestedIfElseThen4 [
 ]
 
 { #category : #tests }
-ForthInterpreterTest >> testNestedIfElseThen5 [
+ForthInterpreterTest >> testNestedIfElseThen5 [ 
+	| expr | 
 	
-	self assert: (forth eval: '
+	expr :=  '
 	
-	true  if 1 else 
-	false if 2 else
-	         3
-	then then';
+		{1} if 1 else
+		{2} if 2 else
+		{3} if 3 else
+		       4
+		then then then
 	
-	stackCopy) equals: #(1)
+	'.
 	
+	self assert: (forth eval: (expr format: #(true false false)); top) equals: 1.
+	self assert: (forth eval: (expr format: #(false true false)); top) equals: 2.
+	self assert: (forth eval: (expr format: #(false false true)); top) equals: 3.
+	self assert: (forth eval: (expr format: #(false false false)); top) equals: 4.
 	
 	
 ]
@@ -761,7 +767,7 @@ ForthInterpreterTest >> testNestedIfElseThen5 [
 { #category : #tests }
 ForthInterpreterTest >> testNestedIfThen [ 
 	
-	self assert: (forth eval: 'false if false if 1 2 3 then 4 5 6 then 7 8 9'; stackCopy) equals: #(9 8 7).
+	self assert: (forth eval: 'false if false if 1 then 2 then 3'; stackCopy) equals: #(3).
 	
 ]
 
