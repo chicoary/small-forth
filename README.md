@@ -1,6 +1,8 @@
 # small-forth
 # Forth interpreter in Pharo Smalltalk.
 
+## Introduction
+
 For more see https://chicoary.wordpress.com/smallforth/.
 
 SmallForth was developed based on the commands shown in the [Starting Forth book](https://www.forth.com/starting-forth/1-forth-stacks-dictionary/). 
@@ -12,11 +14,17 @@ For example:
 7 dup DUP SWAP drop
 ```
 
-its valid.
+its valid. 
+
+`SWAP` is the same as `swap` but `Swap` is not.
 
 Strings are displayed in Pharo Smalltalk Transcript.
 
+![SmallForth Hello World](https://chicoary.files.wordpress.com/2019/06/smallforth-hello-world.png)
+
 There is still no REPL available.
+
+## Examples
 
 The following example shows how to run a program written in Forth in the Pharo environment:
 
@@ -24,13 +32,13 @@ The following example shows how to run a program written in Forth in the Pharo e
 ForthInterpreter new eval: '1 2 dup'
 ```
 
-To get the top of the stack use:
+To get the top of the stack use `top`:
 
 ```Smalltalk
 (ForthInterpreter new eval: '1 2 dup';top) >>> 2
 ```
 
-To obtain the contents of the stack use:
+To obtain the contents of the stack use `stackCopy`:
 
 ```Smalltalk
 (ForthInterpreter new eval: '1 2 dup';stackCopy) asArray >>> #(2 2 1)
