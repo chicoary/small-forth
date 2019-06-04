@@ -20,6 +20,8 @@ its valid.
 
 Strings are displayed in Pharo Smalltalk Transcript.
 
+https://chicoary.files.wordpress.com/2019/06/smallforth-hello-world.png
+
 There is still no REPL available.
 
 ## Examples
