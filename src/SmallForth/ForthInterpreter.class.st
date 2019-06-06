@@ -281,12 +281,12 @@ ForthInterpreter >> checkDuplicatedMarker: word [
 
 { #category : #evaluating }
 ForthInterpreter >> checkNestLevel [
-	nestLevel = 0  ifFalse: [ self signalIfWithoutThen  ]
+	nestLevel = 0  ifFalse: [ self signalIfElseThenUnpairing  ]
 ]
 
 { #category : #evaluating }
 ForthInterpreter >> checkPairingStack [
-	pairingStack ifNotEmpty: [ self signalTooManyElses ] 
+	pairingStack ifNotEmpty: [ self signalIfElseThenUnpairing ] 
 ]
 
 { #category : #compiling }
@@ -313,7 +313,7 @@ ForthInterpreter >> continueAfterElseOrThen [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> continueAfterThen [
-	| word |
+	| word | 
 	word := self getNextWord.
 	[ word isNotEmpty and: [ (self isThen: word) not ] ]
 		whileTrue: [ 
@@ -328,6 +328,11 @@ ForthInterpreter >> continueAfterThen [
 { #category : #'forth-primitives' }
 ForthInterpreter >> cr [
 	Transcript show: Character cr
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> decrementNestLevel [
+	nestLevel := nestLevel - 1
 ]
 
 { #category : #evaluating }
@@ -356,7 +361,9 @@ ForthInterpreter >> dup [
 { #category : #'forth-primitives' }
 ForthInterpreter >> else [
 	self pushElseToPairingStack.
-	self continueAfterThen
+	self flag: #testing.
+	"self skipUntilThenWithNestLevel: nestLevel."
+	self skipUntilElseOrThenWithNestLevel: nestLevel 
 ]
 
 { #category : #'forth-primitives' }
@@ -373,7 +380,6 @@ ForthInterpreter >> eval [
 				ifTrue: [ self pushNumberToStack: word ]
 				ifFalse: [ self forthPerform: word ].
 			word := self getNextWord ].
-	self checkNestLevel.
 	self checkPairingStack
 ]
 
@@ -440,7 +446,8 @@ ForthInterpreter >> getNextWord [
 		whileTrue: [ writeStream nextPut: car.
 			car := stream next ].
 	word := writeStream contents.
-	"self haltIf: [ #(if else then) includes: word ]."
+	"self haltIf: [#(if else then) includes: word]. "
+	self flag: #debugging.
 	^ word
 ]
 
@@ -469,12 +476,16 @@ ForthInterpreter >> handleSkipWord: word [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> if [
-	nestLevel := nestLevel + 1.
+	self incrementNestLevel.
 	self pushIfToPairingStack.
-	stack pop ~= 0
-		ifTrue: [ ^ self ].
+	stack pop ~= 0 ifTrue: [ ^ self ].
 	falseLevel := nestLevel.
-	self continueAfterElseOrThen
+	self skipUntilElseOrThenWithNestLevel: nestLevel
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> incrementNestLevel [
+	nestLevel := nestLevel + 1
 ]
 
 { #category : #'forth-primitives' }
@@ -603,7 +614,19 @@ ForthInterpreter >> isSignal: aCharacter [
 ForthInterpreter >> isThen: word [
 	| bool |
 	bool := word = 'then'.
-	"bool ifTrue: [ self updatePairingStack ]".
+	^ bool
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> isThenAtFalseLevel: word [
+	
+   | bool |
+	(self isIf: word)
+		ifTrue: [ self pushIfToPairingStack ].
+	(self isElse: word)
+		ifTrue: [ self pushElseToPairingStack ].
+	bool := self isThen: word.
+	self updateNestLevel: word.
 	^ bool
 ]
 
@@ -700,6 +723,14 @@ ForthInterpreter >> pushNumberToStack: word [
 	stack push: word asNumber
 ]
 
+{ #category : #removing }
+ForthInterpreter >> removeElseAndIfFromPairingStack [
+	pairingStack top = #else
+		ifTrue: [ pairingStack pop ].
+	pairingStack pop = #if
+		ifFalse: [ self signalIfElseThenUnpairing ]
+]
+
 { #category : #'forth-primitives' }
 ForthInterpreter >> removeLastVersionOfWord: word [
 	| index |
@@ -758,8 +789,8 @@ ForthInterpreter >> signalAbort [
 ]
 
 { #category : #signalling }
-ForthInterpreter >> signalIfWithoutThen [
-	ForthIfWithoutThen new signal
+ForthInterpreter >> signalIfElseThenUnpairing [
+	ForthUnpairingIfElseThen new signal
 ]
 
 { #category : #'forth-primitives' }
@@ -770,11 +801,6 @@ ForthInterpreter >> signalMarkerDuplicateSomeWord: word [
 { #category : #'forth-primitives' }
 ForthInterpreter >> signalMissingWord: word [ 
 	(ForthMissingWord messageText: word) signal
-]
-
-{ #category : #signalling }
-ForthInterpreter >> signalTooManyElses [
-	ForthTooManyElses new signal
 ]
 
 { #category : #'forth-primitives' }
@@ -824,6 +850,36 @@ ForthInterpreter >> skipStringUntilChar: char [
 	car := stream next.
 	[ car isNotNil and: [ car ~= char ] ]
 		whileTrue: [ car := stream next ]
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> skipUntilElseOrThenWithNestLevel: aTargetNestLevel [ 
+		| word |
+		self flag: #testing.
+		word := self getNextWord. 
+		word ifEmpty: [ ^ nil ].
+		word = 'if' ifTrue: [ self pushIfToPairingStack. self incrementNestLevel ].
+		word = 'else' ifTrue: [ self pushElseToPairingStack. nestLevel = aTargetNestLevel ifTrue: [ ^ nil ] ].
+		word = 'then' ifTrue: [ 
+			self removeElseAndIfFromPairingStack. 
+			nestLevel = aTargetNestLevel ifTrue: [ ^ nil ]. 
+			self decrementNestLevel ].
+		self skipUntilElseOrThenWithNestLevel: aTargetNestLevel
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> skipUntilThenWithNestLevel: aTargetNestLevel [ 
+	| word |
+	self flag: #maybeDelete.
+	word := self getNextWord. 
+	word ifEmpty: [ ^ nil ].
+	word = 'if' ifTrue: [ self pushIfToPairingStack. self incrementNestLevel ].
+	word = 'else' ifTrue: [ self pushElseToPairingStack. nestLevel = aTargetNestLevel ifTrue: [ ^ nil ] ].
+	word = 'then' ifTrue: [ 
+			self removeElseAndIfFromPairingStack. 
+			nestLevel = aTargetNestLevel ifTrue: [ ^ nil ]. 
+			self decrementNestLevel ].
+	self skipUntilThenWithNestLevel: aTargetNestLevel	
 ]
 
 { #category : #'forth-primitives' }
@@ -940,5 +996,10 @@ ForthInterpreter >> updatePairingStack [
 	pairingStack top = #else
 		ifTrue: [ pairingStack pop ].
 	pairingStack pop = #if
-		ifFalse: [ self signalTooManyElses ]
+		ifFalse: [ self signalIfElseThenUnpairing ]
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> updatePairingStackForElse [
+	pairingStack push: #else
 ]

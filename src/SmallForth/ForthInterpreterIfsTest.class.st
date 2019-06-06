@@ -1,0 +1,1342 @@
+Class {
+	#name : #ForthInterpreterIfsTest,
+	#superclass : #ForthInterpreterTest,
+	#classInstVars : [
+		'generateAll'
+	],
+	#category : #'SmallForth-Tests-Core'
+}
+
+{ #category : #accessing }
+ForthInterpreterIfsTest class >> generateAll [
+	generateAll := true.
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreterIfsTest class >> generateExprFor: n withTemplate: template andSize: size [
+	| count array expr binary |
+	binary := self lead: n withZerosToSize: size.
+	array := OrderedCollection empty.
+	count := 0.
+	binary
+		do: [ :char | 
+			count := count + 1.
+			count <= (size / 2)
+				ifTrue: [ array
+						add:
+							(char = $1
+								ifTrue: [ #true ]
+								ifFalse: [ #false ]) ]
+				ifFalse: [ array
+						add:
+							(char = $1
+								ifTrue: [ #else ]
+								ifFalse: [ String empty ]) ] ].
+	expr := template format: array.
+	^ expr
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreterIfsTest class >> generateIfsTests [
+	<script> 
+	"self generateAll."
+	self generateMissingTestsOnly.
+	[ :job | job title: 'Generating...' translated.
+	self generateTestsWithOneIf.
+	job progress: 0.25.
+	self generateTestsWithTwoIfs.
+	job progress: 0.50.
+	self generateTestsWithTwoIfs2.
+	job progress: 0.75.
+	self generateTestsWithThreeIfs.
+	job progress: 1.00. ] asJob run
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreterIfsTest class >> generateMissingTestsOnly [
+	generateAll := false
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest class >> generateNestedIfsWith2Ifs [
+	<script>
+	| expr2 |
+	Transcript
+		clear;
+		openIfNone.
+	0 to: 15 do: [ :n | 
+		| expr |
+		expr := self generateNestedIfsWith2IfsFor: n.
+		expr2 := self generateNestedIfsWith2IfsFor_2: n.
+		
+		Transcript cr; show: $#; show: n; show: $:; space; show: expr.
+		Transcript cr; show: $#; show: n; show: $:; space; show: expr2
+	]
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreterIfsTest class >> generateNestedIfsWith2IfsFor: n [
+	| exprTemplate |
+	exprTemplate := '{1} if {2} if {3} then {4} then'.
+	^ self generateNestedIfsWith2IfsFor: n with: exprTemplate
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreterIfsTest class >> generateNestedIfsWith2IfsFor: n with: exprTemplate [
+	| count array expr binary |
+	binary := self lead: n withZerosToSize: 4.
+	array := OrderedCollection empty.
+	count := 0.
+	binary
+		do: [ :char | 
+			count := count + 1.
+			count <= 3
+				ifTrue: [ array
+						add:
+							(char = $1
+								ifTrue: [ #true ]
+								ifFalse: [ #false ]) ]
+				ifFalse: [ array
+						add:
+							(char = $1
+								ifTrue: [ #else ]
+								ifFalse: [ String empty ]) ] ].
+	expr := exprTemplate format: array.
+	^ expr
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreterIfsTest class >> generateNestedIfsWith2IfsFor_2: n [ 
+	| exprTemplate |
+	exprTemplate := '{1} if  {3} {2} if {4} then then'.
+	^ self generateNestedIfsWith2IfsFor: n with: exprTemplate
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest class >> generateNestedIfsWith3Ifs [
+	<script>
+	Transcript
+		clear;
+		openIfNone.
+	0 to: 63 do: [ :n | 
+		| expr |
+		expr := self generateNestedIfsWith3IfsFor: n.
+		Transcript cr; show: $#; show: n; show: $:; space; show: expr ]
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest class >> generateNestedIfsWith3IfsFor: n [
+	| count array expr binary exprTemplate |
+	exprTemplate := '{1} if 1 {2} if 2 {4} 3 then 4 {5} 5 {3} if 6 {6} 7 then 8 then 9'.
+	binary := self lead: n withZerosToSize: 6.
+	array := OrderedCollection empty.
+	count := 0.
+	binary
+		do: [ :char | 
+			count := count + 1.
+			count <= 3
+				ifTrue: [ array
+						add:
+							(char = $1
+								ifTrue: [ #true ]
+								ifFalse: [ #false ]) ]
+				ifFalse: [ array
+						add:
+							(char = $1
+								ifTrue: [ #else ]
+								ifFalse: [ String empty ]) ] ].
+	expr := exprTemplate format: array.
+	^ expr
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreterIfsTest class >> generateSourceFor2: anInteger withTemplate: aString andSize: anInteger3 [
+	| expr |
+	expr := self
+		generateExprFor: anInteger
+		withTemplate: aString
+		andSize: anInteger3.
+	^ self sourceFromExpr2: expr with: anInteger size: anInteger3
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreterIfsTest class >> generateSourceFor: n withTemplate: template andSize: size [
+	| expr |
+	expr := self generateExprFor: n withTemplate: template andSize: size.
+	^ self sourceFromExpr: expr with: n size: size
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreterIfsTest class >> generateTestMethodFromSource: source [
+	(generateAll
+		or: [ (self canUnderstand: source asInstanceSideBehaviorName asSymbol) not ])
+		ifTrue: [ 
+			self compile: source classified: 'generated-test' ]
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreterIfsTest class >> generateTestsWithOneIf [
+	<script>
+	| template numberOfIfs size |
+	numberOfIfs := 1.
+	size := 2 * numberOfIfs.
+	template := '{1} if 1 {2} 2 then 3'.
+	[ :job | 
+	| max |
+	job title: 'Generating tests with one if...' translated.
+	max := (2 raisedTo: size) - 1.
+	0 to: max do: [ :n | 
+		| source |
+		job progress: n / max asFloat.
+		source := self
+			generateSourceFor: n
+			withTemplate: template
+			andSize: size.
+		self generateTestMethodFromSource: source ] ] asJob run
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreterIfsTest class >> generateTestsWithThreeIfs [
+	<script>
+	| template numberOfIfs size |
+	numberOfIfs := 3.
+	size := 2 * numberOfIfs.
+	template := '{1} if 1 {2} if 2 {4} 3 then 4 {5} 5 {3} if 6 {6} 7 then 8 then 9'.
+	[ :job | 
+	| max | job title: 'Generating tests with three if...' translated.
+	max := (2 raisedTo: size) - 1.
+	0 to: max do: [ :n | 
+		| source | job progress: n/max asFloat.
+		source := self
+			generateSourceFor: n
+			withTemplate: template
+			andSize: size.
+		self generateTestMethodFromSource: source ]] asJob run
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreterIfsTest class >> generateTestsWithTwoIfs [
+	<script>
+	| template numberOfIfs size |
+	numberOfIfs := 2.
+	size := 2 * numberOfIfs.
+	template := '{1} if 1 {2} if 2 {3} 3 then 4 {4} 5 then 6'.
+	[ :job | 
+	| max | job title: 'Generating tests with two if...' translated.
+	max := (2 raisedTo: size) - 1.
+	0 to: max do: [ :n | 
+		| source | job progress: n/max asFloat.
+		source := self
+			generateSourceFor: n
+			withTemplate: template
+			andSize: size.
+		self generateTestMethodFromSource: source ]] asJob run
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreterIfsTest class >> generateTestsWithTwoIfs2 [
+	| template numberOfIfs size |
+	numberOfIfs := 2.
+	size := 2 * numberOfIfs.
+	template := '{1} if 1 {3} 2 {2} if 3 {4} 4 then 5 then 6'.
+	0 to: (2 raisedTo: size) - 1 do: [ :n | 
+		| source |
+		source := self
+			generateSourceFor2: n
+			withTemplate: template
+			andSize: size.
+		self generateTestMethodFromSource: source ]
+]
+
+{ #category : #initialization }
+ForthInterpreterIfsTest class >> initialize [ 
+	generateAll := false
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreterIfsTest class >> lead: number withZerosToSize: size [ 
+	| binary mask |
+	binary := number radix: 2.
+	mask := ''. size timesRepeat: [ mask := mask, '0' ].
+	^ (mask, binary) copyFrom: 1 + binary size to: size + binary size
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreterIfsTest class >> sourceFromExpr2:  expr with: n size: size [
+	^ 'testIfElseThenX{1}{2} 
+		"
+		SwiftForth
+		: test drop {3} .s ;
+		"
+		self assert: (forth eval: ''{3}''; stackCopy) 
+		equals: #() reversed' format: { size/2. n. expr }
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreterIfsTest class >> sourceFromExpr: expr with: n size: size [
+
+	^ 'testIfElseThen{1}{2} 
+		"
+		SwiftForth
+		: test drop {3} .s ;
+		"
+		self assert: (forth eval: ''{3}''; stackCopy) 
+		equals: #() reversed' format: { size/2. n. expr }
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testFalseIfElseThen [ 
+	
+	self assert: (forth eval: 'false if 1 else 2 then 3'; stackCopy) equals: #(2 3) reversed.
+	
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen [ 
+	
+	self assert: (forth eval: 'false if 1 2 3 swap else 4 5 6 dup then'; stackCopy) equals: #(6 6 5 4).
+	self assert: forth stackCopy size equals: 4.
+	self assert: (forth eval: 'true if 1 2 3 swap else 4 5 6 dup then'; stackCopy) equals: #(2 3 1).
+	self assert: forth stackCopy size equals: 3.
+	
+	
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen10 [ 
+		"
+		SwiftForth
+		: test drop false if 1  2 then 3 .s ;
+		"
+		self assert: (forth eval: 'false if 1  2 then 3'; stackCopy) 
+		equals: #(3) reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen11 [ 
+		"
+		SwiftForth
+		: test drop false if 1 else 2 then 3 .s ;
+		"
+		self assert: (forth eval: 'false if 1 else 2 then 3'; stackCopy) 
+		equals: #(2 3) reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen12 [ 
+		"
+		SwiftForth
+		: test drop true if 1  2 then 3 .s ;
+		"
+		self assert: (forth eval: 'true if 1  2 then 3'; stackCopy) 
+		equals: #(1 2 3) reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen13 [ 
+		"
+		SwiftForth
+		: test drop true if 1 else 2 then 3 .s ;
+		"
+		self assert: (forth eval: 'true if 1 else 2 then 3'; stackCopy) 
+		equals: #(1 3) reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen20 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2  3 then 4  5 then 6 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4  5 then 6'; stackCopy) 
+		equals: #(6) reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen21 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2  3 then 4 else 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4 else 5 then 6'; stackCopy) 
+		equals: #(5 6) reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen210 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2 else 3 then 4  5 then 6 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4  5 then 6'; stackCopy) 
+		equals: #(1 3 4 5 6) reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen211 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2 else 3 then 4 else 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4 else 5 then 6'; stackCopy) 
+		equals: #(1 3 4 6) reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen212 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2  3 then 4  5 then 6 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4  5 then 6'; stackCopy) 
+		equals: #(1 2 3 4 5 6) reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen213 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2  3 then 4 else 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4 else 5 then 6'; stackCopy) 
+		equals: #(1 2 3 4 6) reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen214 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2 else 3 then 4  5 then 6 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4  5 then 6'; stackCopy) 
+		equals: #(1 2 4 5 6) reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen215 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2 else 3 then 4 else 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4 else 5 then 6'; stackCopy) 
+		equals: #(1 2 4 6) reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen22 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2 else 3 then 4  5 then 6 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4  5 then 6'; stackCopy) 
+		equals: #(6) reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen23 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2 else 3 then 4 else 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4 else 5 then 6'; stackCopy) 
+		equals: #(5 6) reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen24 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2  3 then 4  5 then 6 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4  5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen25 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2  3 then 4 else 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4 else 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen26 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2 else 3 then 4  5 then 6 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4  5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen27 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2 else 3 then 4 else 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4 else 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen28 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2  3 then 4  5 then 6 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4  5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen29 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2  3 then 4 else 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4 else 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen30 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2  3 then 4  5 false if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4  5 false if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen31 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2  3 then 4  5 false if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4  5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen310 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2  3 then 4 else 5 true if 6  7 then 8 then 9 .s ;
+		"
+		self flag: #testing.
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4 else 5 true if 6  7 then 8 then 9'; stackCopy) 
+		equals: #(5 6 7 8 9) reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen311 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen312 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2 else 3 then 4  5 true if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4  5 true if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen313 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen314 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen315 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen316 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2  3 then 4  5 false if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4  5 false if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen317 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2  3 then 4  5 false if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4  5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen318 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2  3 then 4 else 5 false if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4 else 5 false if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen319 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen32 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2  3 then 4 else 5 false if 6  7 then 8 then 9 .s ;
+		"
+		self flag: #testing.
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4 else 5 false if 6  7 then 8 then 9'; stackCopy) 
+		equals: #(5 8 9) reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen320 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2 else 3 then 4  5 false if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4  5 false if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen321 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen322 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen323 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen324 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2  3 then 4  5 true if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4  5 true if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen325 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2  3 then 4  5 true if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4  5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen326 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2  3 then 4 else 5 true if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4 else 5 true if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen327 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen328 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2 else 3 then 4  5 true if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4  5 true if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen329 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #(9) reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen33 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen330 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen331 [ 
+		"
+		SwiftForth
+		: test drop false if 1 true if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen332 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2  3 then 4  5 false if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4  5 false if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen333 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2  3 then 4  5 false if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4  5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen334 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2  3 then 4 else 5 false if 6  7 then 8 then 9 .s ;
+		"
+						
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4 else 5 false if 6  7 then 8 then 9'; stackCopy) 
+		equals: #(1 4 9) reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen335 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen336 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2 else 3 then 4  5 false if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4  5 false if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen337 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen338 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen339 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen34 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2 else 3 then 4  5 false if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4  5 false if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen340 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2  3 then 4  5 true if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4  5 true if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen341 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2  3 then 4  5 true if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4  5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen342 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2  3 then 4 else 5 true if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4 else 5 true if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen343 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen344 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2 else 3 then 4  5 true if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4  5 true if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen345 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen346 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen347 [ 
+		"
+		SwiftForth
+		: test drop true if 1 false if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen348 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2  3 then 4  5 false if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4  5 false if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen349 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2  3 then 4  5 false if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4  5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen35 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen350 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2  3 then 4 else 5 false if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4 else 5 false if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen351 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen352 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2 else 3 then 4  5 false if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4  5 false if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen353 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen354 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen355 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen356 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2  3 then 4  5 true if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4  5 true if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen357 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2  3 then 4  5 true if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4  5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen358 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2  3 then 4 else 5 true if 6  7 then 8 then 9 .s ;
+		"
+		self flag: #testing.
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4 else 5 true if 6  7 then 8 then 9'; stackCopy) 
+		equals: #(1 2 3 4 9) reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen359 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #(1 2 3 4 9) reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen36 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen360 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2 else 3 then 4  5 true if 6  7 then 8 then 9 .s ;
+		"
+		self flag: #testing.
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4  5 true if 6  7 then 8 then 9'; stackCopy) 
+		equals: #(1 2 4 5 6 7 8 9) reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen361 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen362 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9 .s ;
+		"
+		self flag: #testing.
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9'; stackCopy) 
+		equals: #(1 2 4 9) reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen363 [ 
+		"
+		SwiftForth
+		: test drop true if 1 true if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #(1 2 4 9) reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen37 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThen38 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2  3 then 4  5 true if 6  7 then 8 then 9 .s ;
+		"
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4  5 true if 6  7 then 8 then 9'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfElseThen39 [ 
+		"
+		SwiftForth
+		: test drop false if 1 false if 2  3 then 4  5 true if 6 else 7 then 8 then 9 .s ;
+		"
+
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4  5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		equals: #(9) reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThenX20 [ 
+		"
+		SwiftForth
+		: test drop false if 1  2 false if 3  4 then 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'false if 1  2 false if 3  4 then 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThenX21 [ 
+		"
+		SwiftForth
+		: test drop false if 1  2 false if 3 else 4 then 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'false if 1  2 false if 3 else 4 then 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThenX210 [ 
+		"
+		SwiftForth
+		: test drop true if 1 else 2 false if 3  4 then 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'true if 1 else 2 false if 3  4 then 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThenX211 [ 
+		"
+		SwiftForth
+		: test drop true if 1 else 2 false if 3 else 4 then 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'true if 1 else 2 false if 3 else 4 then 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThenX212 [ 
+		"
+		SwiftForth
+		: test drop true if 1  2 true if 3  4 then 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'true if 1  2 true if 3  4 then 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThenX213 [ 
+		"
+		SwiftForth
+		: test drop true if 1  2 true if 3 else 4 then 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'true if 1  2 true if 3 else 4 then 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThenX214 [ 
+		"
+		SwiftForth
+		: test drop true if 1 else 2 true if 3  4 then 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'true if 1 else 2 true if 3  4 then 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThenX215 [ 
+		"
+		SwiftForth
+		: test drop true if 1 else 2 true if 3 else 4 then 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'true if 1 else 2 true if 3 else 4 then 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThenX22 [ 
+		"
+		SwiftForth
+		: test drop false if 1 else 2 false if 3  4 then 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'false if 1 else 2 false if 3  4 then 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThenX23 [ 
+		"
+		SwiftForth
+		: test drop false if 1 else 2 false if 3 else 4 then 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'false if 1 else 2 false if 3 else 4 then 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThenX24 [ 
+		"
+		SwiftForth
+		: test drop false if 1  2 true if 3  4 then 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'false if 1  2 true if 3  4 then 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThenX25 [ 
+		"
+		SwiftForth
+		: test drop false if 1  2 true if 3 else 4 then 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'false if 1  2 true if 3 else 4 then 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThenX26 [ 
+		"
+		SwiftForth
+		: test drop false if 1 else 2 true if 3  4 then 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'false if 1 else 2 true if 3  4 then 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThenX27 [ 
+		"
+		SwiftForth
+		: test drop false if 1 else 2 true if 3 else 4 then 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'false if 1 else 2 true if 3 else 4 then 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThenX28 [ 
+		"
+		SwiftForth
+		: test drop true if 1  2 false if 3  4 then 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'true if 1  2 false if 3  4 then 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #'generated-test' }
+ForthInterpreterIfsTest >> testIfElseThenX29 [ 
+		"
+		SwiftForth
+		: test drop true if 1  2 false if 3 else 4 then 5 then 6 .s ;
+		"
+		self assert: (forth eval: 'true if 1  2 false if 3 else 4 then 5 then 6'; stackCopy) 
+		equals: #() reversed
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfThen [ 
+	
+	self assert: (forth eval: 'false if 1 2 3 swap then 4 5 6'; stackCopy) equals: #(6 5 4).
+	self assert: forth stackCopy size equals: 3.
+	self assert: (forth eval: 'true if 1 2 3 swap then 4 5 6'; stackCopy) equals: #(6 5 4 2 3 1).
+	self assert: forth stackCopy size equals: 6.
+	
+	
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfThenElse [ 
+	self should: [forth eval: 'false if 1 then 2 else'] raise: ForthUnpairingIfElseThen
+	
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfTwoElseThen [ 
+	self shouldnt: [forth eval: 'false if 1 else 2 then'] raise: ForthUnpairingIfElseThen.
+	self should: [forth eval: 'false if 1 else 2 else 3 then'] raise: ForthUnpairingIfElseThen.
+	self should: [forth eval: 'false if 1 else false if 2 else 3 then'] raise: ForthUnpairingIfElseThen  
+	
+]
+
+{ #category : #tests }
+ForthInterpreterIfsTest >> testIfWithoutThen [ 
+	
+	self should: [forth eval: 'true if 1 2 3 swap']  raise: ForthUnpairingIfElseThen.
+	self should: [forth eval: 'false if 1 2 3 swap'] raise: ForthUnpairingIfElseThen
+]
