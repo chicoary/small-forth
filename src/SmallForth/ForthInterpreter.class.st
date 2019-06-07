@@ -62,40 +62,40 @@ ForthInterpreter class >> initialize [
 	WordDictionary := OrderedCollection new
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _2drop [
 	stack
 		pop;
 		pop
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _2dup [
 	stack push: stack second.
 	stack push: stack second
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _2over [
 	stack push: stack fourth.
 	stack push: stack fourth
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _2swap [
 	stack swap: 1 with: 3.
 	stack swap: 2 with: 4
 	
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> __marker [
 	| marker |
 	marker := self getNextWord.
 	self removeWordsAfterMarker: marker
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _abortQuote [
 	| abort |
 	abort := stack pop ~= 0.
@@ -106,22 +106,22 @@ ForthInterpreter >> _abortQuote [
 		ifFalse: [ self getStringBeforeQuoteAndDiscardQuote: stream ]
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _backSlash [
 	self skipBackSlashComment: stream
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _colon [
 	self compile: stream
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _comment [
 	self skipComment: stream
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _divide [
 	| top second |
 	top := stack pop.
@@ -130,17 +130,17 @@ ForthInterpreter >> _divide [
 	
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _dot [
 	Transcript show: stack pop; space
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _dotQuote [
 	self showString: stream
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _dotS [
 	Transcript 
 		show: ('<{1}>' format: { stack size });
@@ -149,7 +149,7 @@ ForthInterpreter >> _dotS [
 		space
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _equal [
 	| top second |
 	top := stack pop.
@@ -157,7 +157,7 @@ ForthInterpreter >> _equal [
 	second = top ifTrue: [ stack push: -1 ] ifFalse: [ stack push: 0 ]
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _greaterThan [
 	| top second |
 	top := stack pop.
@@ -165,14 +165,14 @@ ForthInterpreter >> _greaterThan [
 	second > top ifTrue: [ stack push: -1 ] ifFalse: [ stack push: 0 ]
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _greaterThanZero [
 	| top |
 	top := stack pop.
 	0 < top ifTrue: [ stack push: -1 ] ifFalse: [ stack push: 0 ]
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _lessThan [
 	| top second |
 	top := stack pop.
@@ -180,14 +180,14 @@ ForthInterpreter >> _lessThan [
 	second < top ifTrue: [ stack push: -1 ] ifFalse: [ stack push: 0 ]
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _lessThanZero [
 	| top |
 	top := stack pop.
 	0 > top ifTrue: [ stack push: -1 ] ifFalse: [ stack push: 0 ]
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _minus [
 	| top second |
 	top := stack pop.
@@ -196,7 +196,7 @@ ForthInterpreter >> _minus [
 	
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _mult [
 	| top second |
 	top := stack pop.
@@ -204,7 +204,7 @@ ForthInterpreter >> _mult [
 	stack push: second * top
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _notEqual [
 	| top second |
 	top := stack pop.
@@ -212,7 +212,7 @@ ForthInterpreter >> _notEqual [
 	second = top ifTrue: [ stack push: 0 ] ifFalse: [ stack push: -1 ]
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _plus [
 	| top second |
 	top := stack pop.
@@ -220,13 +220,13 @@ ForthInterpreter >> _plus [
 	stack push: second + top
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _questionMarkDup [
 	stack top = 0
 		ifFalse: [ stack push: stack top ]
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _slashMod [
 	| top second |
 	top := stack pop.
@@ -235,7 +235,7 @@ ForthInterpreter >> _slashMod [
 	stack push: second // top
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #synonyms }
 ForthInterpreter >> _zeroEqual [
 	| top |
 	top := stack pop.
@@ -271,7 +271,7 @@ ForthInterpreter >> char [
 	stack push: word first charCode
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'marker-support' }
 ForthInterpreter >> checkDuplicatedMarker: word [
 	| index |
 	index := self indexOfWord: word.
@@ -291,7 +291,7 @@ ForthInterpreter >> checkPairingStackIsEmpty [
 	pairingStack ifNotEmpty: [ self signalIfElseThenUnpairing ] 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'if-else-then-support' }
 ForthInterpreter >> checkPreviousIf [
 	pairingStack top = #if ifFalse: [ self signalIfElseThenUnpairing ]
 ]
@@ -309,35 +309,11 @@ ForthInterpreter >> compile: aReadStream [
 ]
 
 { #category : #'forth-primitives' }
-ForthInterpreter >> continueAfterElseOrThen [
-	| word |
-	word := self getNextWord. 
-	[ word isEmpty or: [ self isElseOrThenAtFalseLevel: word ] ]
-		whileFalse: [ self updateNestLevel: word.
-			self handleSkipWord: word.
-			word := self getNextWord ]
-]
-
-{ #category : #'forth-primitives' }
-ForthInterpreter >> continueAfterThen [
-	| word | 
-	word := self getNextWord.
-	[ word isNotEmpty and: [ (self isThen: word) not ] ]
-		whileTrue: [ 
-			(self isIf: word) ifTrue: [ self pushIfToPairingStack ].
-			self updateNestLevel: word.
-			self handleSkipWord: word.
-			word := self getNextWord ].
-	self updateNestLevel: word.
-	(self isThen: word) ifTrue: [ self updatePairingStack ] 
-]
-
-{ #category : #'forth-primitives' }
 ForthInterpreter >> cr [
 	Transcript show: Character cr
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'if-else-then-support' }
 ForthInterpreter >> decrementNestLevel [
 	nestLevel := nestLevel - 1
 ]
@@ -425,7 +401,7 @@ ForthInterpreter >> forget [
 	self forgetWord: word
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'forget-support' }
 ForthInterpreter >> forgetWord: word [
 	self removeLastVersionOfWord: word
 ]
@@ -477,16 +453,6 @@ ForthInterpreter >> getStringBeforeQuoteAndDiscardQuote: aReadStream [
 ]
 
 { #category : #'forth-primitives' }
-ForthInterpreter >> handleSkipWord: word [
-	(self isDotQuote: word)
-		ifTrue: [ self skipDotQuoteString ].
-	(self isComment: word)
-		ifTrue: [ self skipCommentString ].
-	(self isLineComment: word)
-		ifTrue: [ self skipLineCommentString ]
-]
-
-{ #category : #'forth-primitives' }
 ForthInterpreter >> if [
 	self incrementNestLevel.
 	self pushIfToPairingStack.
@@ -495,12 +461,12 @@ ForthInterpreter >> if [
 	self skipUntilElseOrThenWithNestLevel: nestLevel
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'if-else-then-support' }
 ForthInterpreter >> incrementNestLevel [
 	nestLevel := nestLevel + 1
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'marker-support' }
 ForthInterpreter >> indexOfWord: word [ 
 	| index |
 	index := 0.
@@ -547,32 +513,6 @@ ForthInterpreter >> isEligibleForLoweringCase: word [
 			car isUppercase
 				or: [ car isSpecial
 						or: [ car isOtherPunctuation or: [ car isConnectorPunctuation ] ] ] ]
-]
-
-{ #category : #'forth-primitives' }
-ForthInterpreter >> isElse: word [
-	^ word = 'else'
-]
-
-{ #category : #'forth-primitives' }
-ForthInterpreter >> isElseOrThen: word [
-	| bool |
-	bool := #(else then) includes: word.
-	(self isThen: word) ifTrue: [ self updatePairingStack ].
-	^ bool
-]
-
-{ #category : #'forth-primitives' }
-ForthInterpreter >> isElseOrThenAtFalseLevel: word [
-	| bool |
-	(self isIf: word)
-		ifTrue: [ self pushIfToPairingStack ].
-	(self isElse: word)
-		ifTrue: [ self pushElseToPairingStack ].
-	bool := (self isElseOrThen: word)
-		and: [ self isFalseLevelMatchesNestLevel ].
-	self updateNestLevel: word.
-	^ bool
 ]
 
 { #category : #testing }
@@ -622,26 +562,6 @@ ForthInterpreter >> isSignal: aCharacter [
 	^ aCharacter = $-
 ]
 
-{ #category : #'forth-primitives' }
-ForthInterpreter >> isThen: word [
-	| bool |
-	bool := word = 'then'.
-	^ bool
-]
-
-{ #category : #'forth-primitives' }
-ForthInterpreter >> isThenAtFalseLevel: word [
-	
-   | bool |
-	(self isIf: word)
-		ifTrue: [ self pushIfToPairingStack ].
-	(self isElse: word)
-		ifTrue: [ self pushElseToPairingStack ].
-	bool := self isThen: word.
-	self updateNestLevel: word.
-	^ bool
-]
-
 { #category : #testing }
 ForthInterpreter >> isWhiteSpace: aCharacter [ 
 	^ { Character space. Character tab. Character cr. Character lf } includes: aCharacter
@@ -664,7 +584,7 @@ ForthInterpreter >> marker [
 	self markerWord: marker
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'marker-support' }
 ForthInterpreter >> markerWord: marker [
 	self checkDuplicatedMarker: marker.
 	WordDictionary addFirst: marker -> ('__marker {1}' format: {marker})
@@ -707,7 +627,7 @@ ForthInterpreter >> over [
 	
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'forth-primitive-support' }
 ForthInterpreter >> primitiveWords [
 	
 	^ #(
@@ -720,12 +640,12 @@ ForthInterpreter >> primitiveWords [
 
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'if-else-then-support' }
 ForthInterpreter >> pushElseToPairingStack [
 	pairingStack push: #else
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'if-else-then-support' }
 ForthInterpreter >> pushIfToPairingStack [
 	pairingStack push: #if
 ]
@@ -743,7 +663,7 @@ ForthInterpreter >> removeElseAndIfFromPairingStack [
 		ifFalse: [ self signalIfElseThenUnpairing ]
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'forget-support' }
 ForthInterpreter >> removeLastVersionOfWord: word [
 	| index |
 	index := self indexOfWord: word.
@@ -752,7 +672,7 @@ ForthInterpreter >> removeLastVersionOfWord: word [
 	WordDictionary removeAt: index
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'marker-support' }
 ForthInterpreter >> removeWordsAfterMarker: marker [ 
 
 	[ WordDictionary first key = marker ] whileFalse: [  
@@ -788,59 +708,54 @@ ForthInterpreter >> rot [
 	
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'forth-primitive-support' }
 ForthInterpreter >> showString: aReadStream [
 	| string |
 	string := self getStringBeforeQuoteAndDiscardQuote: aReadStream.
 	Transcript show: string
 ]
 
-{ #category : #signalling }
+{ #category : #'error signalling' }
 ForthInterpreter >> signalAbort [
 	ForthAbort new signal
 ]
 
-{ #category : #signalling }
+{ #category : #'error signalling' }
 ForthInterpreter >> signalIfElseThenUnpairing [
 	ForthUnpairingIfElseThen new signal
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'error signalling' }
 ForthInterpreter >> signalMarkerDuplicateSomeWord: word [ 
 	(ForthMarkerDuplicatedWord marker: word) signal
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'error signalling' }
 ForthInterpreter >> signalMissingWord: word [ 
 	(ForthMissingWord messageText: word) signal
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'forth-primitive-support' }
 ForthInterpreter >> skipBackSlashComment: aReadStream [ 
 	self skipStringBeforeCrAndDiscardCr: aReadStream
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'forth-primitive-support' }
 ForthInterpreter >> skipComment: aReadStream [
 	self skipStringBeforeRightParenthesisAndDiscardRightParenthesis: aReadStream
 ]
 
-{ #category : #'forth-primitives' }
-ForthInterpreter >> skipCommentString [
-	self skipStringUntilChar: $)
-]
-
-{ #category : #'forth-primitives' }
+{ #category : #'forth-primitive-support' }
 ForthInterpreter >> skipDotQuoteString [
 	self skipStringUntilChar: $"
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'forth-primitive-support' }
 ForthInterpreter >> skipLineCommentString [
 	self skipStringUntilChar: Character cr
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'forth-primitive-support' }
 ForthInterpreter >> skipStringBeforeCrAndDiscardCr: aReadStream [ 
 	| car |
 	car := aReadStream next.
@@ -856,7 +771,7 @@ ForthInterpreter >> skipStringBeforeRightParenthesisAndDiscardRightParenthesis: 
 		whileTrue: [ car := aReadStream next ]
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'forth-primitive-support' }
 ForthInterpreter >> skipStringUntilChar: char [
 	| car |
 	car := stream next.
@@ -864,7 +779,7 @@ ForthInterpreter >> skipStringUntilChar: char [
 		whileTrue: [ car := stream next ]
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'forth-primitive-support' }
 ForthInterpreter >> skipUntilElseOrThenWithNestLevel: aTargetNestLevel [ 
 		| word |
 		word := self getNextWord. 
@@ -878,7 +793,7 @@ ForthInterpreter >> skipUntilElseOrThenWithNestLevel: aTargetNestLevel [
 		self skipUntilElseOrThenWithNestLevel: aTargetNestLevel
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'forth-primitive-support' }
 ForthInterpreter >> skipUntilThenWithNestLevel: aTargetNestLevel [ 
 	| word |
 	self flag: #maybeDelete.
@@ -940,13 +855,13 @@ ForthInterpreter >> swap [
 	
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'forth-primitive-support' }
 ForthInterpreter >> synonymousOf: word [ 
 	^ self synonyms at: word ifAbsent: [ word ]
 	
 ]
 
-{ #category : #'forth-primitives' }
+{ #category : #'forth-primitive-support' }
 ForthInterpreter >> synonyms [
 	^ {  
 	
@@ -997,14 +912,6 @@ ForthInterpreter >> top [
 { #category : #'forth-primitives' }
 ForthInterpreter >> true [
 	stack push: -1
-]
-
-{ #category : #'forth-primitives' }
-ForthInterpreter >> updateNestLevel: word [
-	(self isIf: word)
-		ifTrue: [ nestLevel := nestLevel + 1 ].
-	(self isThen: word)
-		ifTrue: [ nestLevel := nestLevel - 1 ]
 ]
 
 { #category : #'forth-primitives' }
