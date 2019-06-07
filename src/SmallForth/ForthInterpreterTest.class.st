@@ -373,15 +373,6 @@ ForthInterpreterTest >> testNestedIfElseThen2 [
 ]
 
 { #category : #tests }
-ForthInterpreterTest >> testNestedIfElseThen3 [
-	
-	self assert: (forth eval: 'true if false if 1 2 3 else 4 5 6 then 7 8 9 else 10 11 12 then'; 
-	stackCopy) equals: #(4 5 6 7 8 9) reverse.
-	
-	
-]
-
-{ #category : #tests }
 ForthInterpreterTest >> testNestedIfElseThen4 [
 	
 	self assert: (forth eval: 'true if true if 1 2 3 else 4 5 6 then 7 8 9 else 10 11 12 then'; 
@@ -414,73 +405,6 @@ ForthInterpreterTest >> testNestedIfElseThen5 [
 ]
 
 { #category : #tests }
-ForthInterpreterTest >> testNestedIfElseThen6 [
-	| expr | 
-	
-	expr :=  '
-	
-	{1}	 if 1 else 2 
-	{2} if 3 else 4 
-	then 5 then 6
-	
-	'.
-	
-	self assert: (forth eval: (expr format: #(false false)); stackCopy) equals: #(2 4 5 6) reversed.
-	self assert: (forth eval: (expr format: #(false true)); stackCopy) equals: #(2 3 5 6) reversed.
-	self assert: (forth eval: (expr format: #(true false)); stackCopy) equals: #(1 6) reversed.
-	self assert: (forth eval: (expr format: #(true true)); stackCopy) equals: #(1 6) reversed.
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testNestedIfElseThen62 [
-	| expr stack |
-	
-	"
-	ForthInterpreterTest generateNestedIfsWith3IfsFor: 62
-	"
-	
-	self flag: #todo. "Testar no SwiftForth"
-	
-	expr := 'true if 1 true if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9'.
-	stack := #(1 2 4 9).
-	
-	self assert: (forth eval: expr; stackCopy) equals: stack reversed
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testNestedIfElseThen63 [
-	| expr stack |
-	
-	"
-	ForthInterpreterTest generateNestedIfsWith3IfsFor: 63
-	"
-	
-	expr := 'true if 1 true if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9'.
-	stack := #(1 2 4 8 9).
-	
-	self assert: (forth eval: expr; stackCopy) equals: stack reversed
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testNestedIfElseThen6Bug3 [
-	| expr | 
-	
-	expr :=  '
-	
-	{1}	 if 1 else 2 
-	{2} if 3 else 4 
-	then 5 then 6
-	
-	'.
-	
-	self assert: (forth eval: (expr format: #(true false)); stackCopy) equals: #(1 6) reversed
-	
-	
-]
-
-{ #category : #tests }
 ForthInterpreterTest >> testNestedIfThen [ 
 	
 	self assert: (forth eval: 'false if false if 1 then 2 then 3'; stackCopy) equals: #(3).
@@ -498,13 +422,6 @@ ForthInterpreterTest >> testNestedIfThen2 [
 ForthInterpreterTest >> testNestedIfThen3 [
 	
 	self assert: (forth eval: 'true if false if 1 2 3 then 4 5 6 then 7 8 9'; stackCopy) equals: #(9 8 7 6 5 4).
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testNestedIfThen4 [
-	
-	self assert: (forth eval: 'true if true if 1 2 3 then 4 5 6 then 7 8 9'; stackCopy) equals: #(9 8 7 6 5 4 3 2 1).
 	
 ]
 
@@ -656,13 +573,6 @@ ForthInterpreterTest >> testTrueIfFalseIfThenThen [
 ForthInterpreterTest >> testTrueIfThen [ 
 	
 	self assert: (forth eval: 'true if 1 then 2'; stackCopy) equals: #(1 2) reversed.
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testTrueIfTrueIfThenThen [ 
-	
-	self assert: (forth eval: 'true if 1 true if 2 then 3 then 4'; stackCopy) equals: #(1 2 3 4) reversed.
 	
 ]
 
