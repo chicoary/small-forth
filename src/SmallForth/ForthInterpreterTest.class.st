@@ -110,6 +110,15 @@ ForthInterpreterTest >> testDictionaryPersitenceBetweenEvals [
 ]
 
 { #category : #tests }
+ForthInterpreterTest >> testDictionaryUppercaseWord [
+	
+		forth eval: ': /TEST 888 999 DUP ;'.
+		
+		self assert: (forth eval: '/test'; stackCopy) equals: #(888 999 999) reversed
+	
+]
+
+{ #category : #tests }
 ForthInterpreterTest >> testDivide [
 	
 	self assert: (forth eval: '20 7 /'; top) equals: 2.
