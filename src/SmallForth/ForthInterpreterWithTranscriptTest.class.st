@@ -425,7 +425,7 @@ ForthInterpreterWithTranscriptTest >> testTwoMarker2 [
 	]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'test support' }
 ForthInterpreterWithTranscriptTest >> useTranscriptOn: aBlockClosure [
 	skipTests
 		ifTrue: [ self inform: 'Skiping...'. self skip ]
