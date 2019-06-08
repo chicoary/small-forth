@@ -101,6 +101,15 @@ ForthInterpreterTest >> testClass [
 ]
 
 { #category : #tests }
+ForthInterpreterTest >> testDictionaryPersitenceBetweenEvals [
+	
+		forth eval: ': test 888 999 ;'.
+		
+		self assert: (forth eval: 'test'; stackCopy) equals: #(888 999) reversed
+	
+]
+
+{ #category : #tests }
 ForthInterpreterTest >> testDivide [
 	
 	self assert: (forth eval: '20 7 /'; top) equals: 2.

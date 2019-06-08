@@ -393,6 +393,13 @@ ForthInterpreter >> false [
 	stack push: 0
 ]
 
+{ #category : #evaluating }
+ForthInterpreter >> forceToLowercase: word [
+	^ (self isEligibleForLoweringCase: word)
+		ifTrue: [ word asLowercase ]
+		ifFalse: [ word ]
+]
+
 { #category : #'forth-primitives' }
 ForthInterpreter >> forget [
 	| word |
@@ -408,7 +415,7 @@ ForthInterpreter >> forgetWord: word [
 { #category : #evaluating }
 ForthInterpreter >> forthPerform: word [
 	| syn lowercase |
-	lowercase := self maybeInLowercase: word.
+	lowercase := self forceToLowercase: word.
 	(self
 		forthRespondsTo: (syn := (self synonymousOf: lowercase) asSymbol))
 		ifTrue: [ self perform: syn ]
@@ -469,7 +476,7 @@ ForthInterpreter >> incrementNestLevel [
 ForthInterpreter >> indexOfWord: word [ 
 	| index |
 	index := 0.
-	WordDictionary detect: [ :assoc | index := index + 1. assoc key = word ]
+	WordDictionary detect: [ :assoc | index := index + 1. (self forceToLowercase: assoc key) = word ]
 	ifNone: [ index := 0 ].
 
 	^ index
@@ -582,13 +589,6 @@ ForthInterpreter >> marker [
 ForthInterpreter >> markerWord: marker [
 	self checkDuplicatedMarker: marker.
 	WordDictionary addFirst: marker -> ('__marker {1}' format: {marker})
-]
-
-{ #category : #evaluating }
-ForthInterpreter >> maybeInLowercase: word [
-	^ (self isEligibleForLoweringCase: word)
-		ifTrue: [ word asLowercase ]
-		ifFalse: [ word ]
 ]
 
 { #category : #'forth-primitives' }
