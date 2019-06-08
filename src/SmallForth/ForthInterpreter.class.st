@@ -26,7 +26,6 @@ Class {
 		'stack',
 		'stream',
 		'acceptUppercase',
-		'falseLevel',
 		'nestLevel',
 		'pairingStack'
 	],
@@ -346,7 +345,7 @@ ForthInterpreter >> else [
 	self flag: #testing.
 	(pairingStack isEmpty or: [pairingStack top ~= #if]) ifTrue: [ self signalIfElseThenUnpairing ].
 	self pushElseToPairingStack.
-	self skipUntilElseOrThenWithNestLevel: nestLevel 
+	self skipUntilElseOrThenWithFalseLevel: nestLevel 
 ]
 
 { #category : #'forth-primitives' }
@@ -454,11 +453,11 @@ ForthInterpreter >> getStringBeforeQuoteAndDiscardQuote: aReadStream [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> if [
+	self flag: #testing.
 	self incrementNestLevel.
 	self pushIfToPairingStack.
 	stack pop = -1 "True" ifTrue: [ ^ self ].
-	falseLevel := nestLevel.
-	self skipUntilElseOrThenWithNestLevel: nestLevel
+	self skipUntilElseOrThenWithFalseLevel: nestLevel
 ]
 
 { #category : #'if-else-then-support' }
@@ -513,11 +512,6 @@ ForthInterpreter >> isEligibleForLoweringCase: word [
 			car isUppercase
 				or: [ car isSpecial
 						or: [ car isOtherPunctuation or: [ car isConnectorPunctuation ] ] ] ]
-]
-
-{ #category : #testing }
-ForthInterpreter >> isFalseLevelMatchesNestLevel [
-	^ falseLevel = nestLevel
 ]
 
 { #category : #testing }
@@ -780,17 +774,18 @@ ForthInterpreter >> skipStringUntilChar: char [
 ]
 
 { #category : #'forth-primitive-support' }
-ForthInterpreter >> skipUntilElseOrThenWithNestLevel: aTargetNestLevel [ 
+ForthInterpreter >> skipUntilElseOrThenWithFalseLevel: aFalseNestLevel [ 
 		| word |
+		self flag: #testing.
 		word := self getNextWord. 
 		word ifEmpty: [ ^ nil ].
 		word = 'if' ifTrue: [ self pushIfToPairingStack. self incrementNestLevel ].
-		word = 'else' ifTrue: [ self checkPreviousIf. self pushElseToPairingStack. nestLevel = aTargetNestLevel ifTrue: [ ^ nil ] ].
+		word = 'else' ifTrue: [ self checkPreviousIf. self pushElseToPairingStack. nestLevel = aFalseNestLevel ifTrue: [ ^ self ] ].
 		word = 'then' ifTrue: [ 
 			self removeElseAndIfFromPairingStack. 
-			nestLevel = aTargetNestLevel ifTrue: [ ^ nil ]. 
+			nestLevel = aFalseNestLevel ifTrue: [ ^ self ]. 
 			self decrementNestLevel ].
-		self skipUntilElseOrThenWithNestLevel: aTargetNestLevel
+		self skipUntilElseOrThenWithFalseLevel: aFalseNestLevel
 ]
 
 { #category : #'forth-primitive-support' }
@@ -803,7 +798,7 @@ ForthInterpreter >> skipUntilThenWithNestLevel: aTargetNestLevel [
 	word = 'else' ifTrue: [ self pushElseToPairingStack. nestLevel = aTargetNestLevel ifTrue: [ ^ nil ] ].
 	word = 'then' ifTrue: [ 
 			self removeElseAndIfFromPairingStack. 
-			nestLevel = aTargetNestLevel ifTrue: [ ^ nil ]. 
+			nestLevel = aTargetNestLevel ifTrue: [ ^ self ]. 
 			self decrementNestLevel ].
 	self skipUntilThenWithNestLevel: aTargetNestLevel	
 ]
