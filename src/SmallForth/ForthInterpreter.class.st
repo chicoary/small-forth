@@ -106,6 +106,16 @@ ForthInterpreter >> _abortQuote [
 ]
 
 { #category : #synonyms }
+ForthInterpreter >> _addsOne [
+	stack push: stack pop + 1
+]
+
+{ #category : #synonyms }
+ForthInterpreter >> _addsTwo [
+	stack push: stack pop + 2
+]
+
+{ #category : #synonyms }
 ForthInterpreter >> _backSlash [
 	self skipBackSlashComment: stream
 ]
@@ -127,6 +137,11 @@ ForthInterpreter >> _divide [
 	second := stack pop.
 	stack push: (second // top) 
 	
+]
+
+{ #category : #synonyms }
+ForthInterpreter >> _dividesByTwo [
+	stack push: stack pop >> 1
 ]
 
 { #category : #synonyms }
@@ -204,6 +219,11 @@ ForthInterpreter >> _mult [
 ]
 
 { #category : #synonyms }
+ForthInterpreter >> _multipliesByTwo [
+	stack push: stack pop << 1
+]
+
+{ #category : #synonyms }
 ForthInterpreter >> _notEqual [
 	| top second |
 	top := stack pop.
@@ -232,6 +252,16 @@ ForthInterpreter >> _slashMod [
 	second := stack pop.
 	stack push: second \\ top.
 	stack push: second // top
+]
+
+{ #category : #synonyms }
+ForthInterpreter >> _subtractsOne [
+	stack push: stack pop - 1
+]
+
+{ #category : #synonyms }
+ForthInterpreter >> _subtractsTwo [
+	stack push: stack pop - 2
 ]
 
 { #category : #synonyms }
@@ -417,13 +447,14 @@ ForthInterpreter >> forthPerform: word [
 	| syn lowercase |
 	lowercase := self forceToLowercase: word.
 	(self
-		forthRespondsTo: (syn := (self synonymousOf: lowercase) asSymbol))
-		ifTrue: [ self perform: syn ]
-		ifFalse: [ self evalWord: lowercase ]
+		isPrimitive: (syn := (self synonymousOf: lowercase) asSymbol))
+			ifTrue: [ self perform: syn ]
+			ifFalse: [ self evalWord: lowercase ]
 ]
 
 { #category : #testing }
 ForthInterpreter >> forthRespondsTo: word [
+	self flag: #remove.
 	^ self isPrimitive: word 
 	
 ]
@@ -627,7 +658,7 @@ ForthInterpreter >> primitiveWords [
 	^ #(
 	_2drop _2dup _2over _2swap __marker _abortQuote _backSlash _colon _comment _divide _dot _dotQuote _dotS _equal 
 	_greaterThan _greaterThanZero _lessThan _lessThanZero _minus _mult _notEqual _plus _questionMarkDup _slashMod 
-	_zeroEqual 
+	_zeroEqual _addsOne _subtractsOne _addsTwo _subtractsTwo _multipliesByTwo _dividesByTwo
 	
 	abort and char cr drop dup else emit #false forget if invert marker mod or over rot space spaces swap then #true)
 	
@@ -884,6 +915,12 @@ ForthInterpreter >> synonyms [
 		'0>' -> '_greaterThanZero'.
 		'?dup' -> '_questionMarkDup'.
 		'abort"' -> '_abortQuote'.
+		'1+' -> '_addsOne'.
+		'2+' -> '_addsTwo'.
+		'1-' -> '_subtractsOne'.
+		'2-' -> '_subtractsTwo'.
+		'2*' -> '_multipliesByTwo'.
+		'2/' -> '_dividesByTwo'.
 	
 	} asDictionary 
 ]

@@ -76,6 +76,18 @@ ForthInterpreterTest >> testAbort2 [
 ]
 
 { #category : #tests }
+ForthInterpreterTest >> testAddsOne [
+		self assert: (forth eval: '3 1+'; stackCopy) equals: #(4).
+		
+]
+
+{ #category : #tests }
+ForthInterpreterTest >> testAddsTwo [
+		self assert: (forth eval: '3 2+'; stackCopy) equals: #(5).
+		
+]
+
+{ #category : #tests }
 ForthInterpreterTest >> testAnd [
 	
 	self assert: (forth eval: '0 0 and'; top) equals: 0.
@@ -124,6 +136,12 @@ ForthInterpreterTest >> testDivide [
 	self assert: (forth eval: '20 7 /'; top) equals: 2.
 	self assert: forth stackCopy size equals: 1.
 	
+]
+
+{ #category : #tests }
+ForthInterpreterTest >> testDividesByTwo [
+		self assert: (forth eval: '8 2/'; stackCopy) equals: #(4).
+		
 ]
 
 { #category : #tests }
@@ -325,6 +343,12 @@ ForthInterpreterTest >> testMult [
 ]
 
 { #category : #tests }
+ForthInterpreterTest >> testMultipliesByTwo [
+		self assert: (forth eval: '3 2*'; stackCopy) equals: #(6).
+		
+]
+
+{ #category : #tests }
 ForthInterpreterTest >> testNotEqual [
 	
 	self assert: (forth eval: '7 dup <>'; top) equals: 0.
@@ -420,6 +444,18 @@ ForthInterpreterTest >> testSquare [
 		
 		'; top) equals: 49.
 		self assert: forth stackCopy size equals: 1
+]
+
+{ #category : #tests }
+ForthInterpreterTest >> testSubtractsOne [
+		self assert: (forth eval: '3 1-'; stackCopy) equals: #(2)
+		
+]
+
+{ #category : #tests }
+ForthInterpreterTest >> testSubtractsTwo [
+		self assert: (forth eval: '3 2-'; stackCopy) equals: #(1).
+		
 ]
 
 { #category : #tests }
