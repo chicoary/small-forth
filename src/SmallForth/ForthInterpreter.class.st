@@ -131,7 +131,7 @@ ForthInterpreter >> _comment [
 	self skipComment: stream
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #synonyms }
 ForthInterpreter >> _copyOnStack [
 	stack push: returnStack top
 ]
@@ -139,6 +139,7 @@ ForthInterpreter >> _copyOnStack [
 { #category : #synonyms }
 ForthInterpreter >> _divide [
 	| top second |
+	self flag: #todo. "Renomear para _divides"
 	top := stack pop.
 	second := stack pop.
 	stack push: (second // top) 
@@ -250,7 +251,7 @@ ForthInterpreter >> _pushOnReturnStack [
 	returnStack push: stack pop 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #synonyms }
 ForthInterpreter >> _pushOnStack [
 	stack push: returnStack pop
 ]
@@ -268,6 +269,15 @@ ForthInterpreter >> _slashMod [
 	second := stack pop.
 	stack push: second \\ top.
 	stack push: second // top
+]
+
+{ #category : #synonyms }
+ForthInterpreter >> _starSlash [
+	| third second top |
+	top := stack pop.
+	second := stack pop.
+	third := stack pop.
+	stack push: third * second // top
 ]
 
 { #category : #synonyms }
@@ -691,7 +701,9 @@ ForthInterpreter >> primitiveWords [
 	_greaterThanZero _lessThan _lessThanZero _minus _mult _multipliesByTwo _notEqual _plus 
 	_pushOnReturnStack _pushOnStack _questionMarkDup _slashMod _subtractsOne _subtractsTwo _zeroEqual 
 	
-	abort abs and char cr drop dup else emit #false forget if invert marker max min mod negate or over rot space spaces swap then #true)
+	abort abs and char cr drop dup else emit #false forget if invert marker max min mod negate or over rot space spaces swap 	then #true
+		
+	_starSlash)
 	
 	
 ]
@@ -747,7 +759,7 @@ ForthInterpreter >> resetDictionary [
 	WordDictionary removeAll 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 ForthInterpreter >> returnStackCopy [
 	^ returnStack copy
 ]
@@ -943,6 +955,7 @@ ForthInterpreter >> synonyms [
 		'2*' -> '_multipliesByTwo'.				'2/' -> '_dividesByTwo'.
 		'r>' -> '_pushOnStack'.					'>r' -> '_pushOnReturnStack'.
 		'r@' -> '_copyOnStack'.
+		'*/' -> '_starSlash'.
 	
 	} asDictionary 
 ]

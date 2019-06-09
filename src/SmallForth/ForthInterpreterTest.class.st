@@ -507,6 +507,13 @@ ForthInterpreterTest >> testSquare [
 ]
 
 { #category : #tests }
+ForthInterpreterTest >> testStarSlash [
+	
+		self assert: (forth eval: '225 32 100 */'; stackCopy) equals: #(72).
+		
+]
+
+{ #category : #tests }
 ForthInterpreterTest >> testSubtractsOne [
 		self assert: (forth eval: '3 1-'; stackCopy) equals: #(2)
 		
