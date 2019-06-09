@@ -76,6 +76,15 @@ ForthInterpreterTest >> testAbort2 [
 ]
 
 { #category : #tests }
+ForthInterpreterTest >> testAbs [
+	
+	self assert: (forth eval: '7 abs'; stackCopy) equals: #(7).
+	self assert: (forth eval: '-7 abs'; stackCopy) equals: #(7).
+
+	
+]
+
+{ #category : #tests }
 ForthInterpreterTest >> testAddsOne [
 		self assert: (forth eval: '3 1+'; stackCopy) equals: #(4).
 		
@@ -291,6 +300,22 @@ ForthInterpreterTest >> testMarkerDuplicateWord [
 ]
 
 { #category : #tests }
+ForthInterpreterTest >> testMax [
+	
+	self assert: (forth eval: '7 9 max'; stackCopy) equals: #(9).
+
+	
+]
+
+{ #category : #tests }
+ForthInterpreterTest >> testMin [
+	
+	self assert: (forth eval: '7 9 min'; stackCopy) equals: #(7).
+
+	
+]
+
+{ #category : #tests }
 ForthInterpreterTest >> testMinus [
 	
 	self assert: (forth eval: '7 9 -'; top) equals: -2.
@@ -348,6 +373,15 @@ ForthInterpreterTest >> testMultipliesByTwo [
 		self assert: (forth eval: '3 2*'; stackCopy) equals: #(6).
 		self assert: (forth eval: '-3 2*'; stackCopy) equals: #(-6).
 		
+]
+
+{ #category : #tests }
+ForthInterpreterTest >> testNegate [
+	
+	self assert: (forth eval: '7 negate'; stackCopy) equals: #(-7).
+	self assert: (forth eval: '-7 negate'; stackCopy) equals: #(7).
+
+	
 ]
 
 { #category : #tests }

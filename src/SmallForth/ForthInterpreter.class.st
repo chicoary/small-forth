@@ -280,6 +280,11 @@ ForthInterpreter >> abort [
 	self signalAbort
 ]
 
+{ #category : #'forth-primitives' }
+ForthInterpreter >> abs [
+	stack push: stack pop abs
+]
+
 { #category : #accessing }
 ForthInterpreter >> acceptUppercase [
 	acceptUppercase := true
@@ -616,11 +621,26 @@ ForthInterpreter >> markerWord: marker [
 ]
 
 { #category : #'forth-primitives' }
+ForthInterpreter >> max [
+	stack push: (stack pop max: stack pop)
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> min [
+	stack push: (stack pop min: stack pop)
+]
+
+{ #category : #'forth-primitives' }
 ForthInterpreter >> mod [
 	| top second |
 	top := stack pop.
 	second := stack pop.
 	stack push: second \\ top
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> negate [
+	stack push: stack pop negated
 ]
 
 { #category : #'forth-primitives' }
@@ -651,7 +671,11 @@ ForthInterpreter >> primitiveWords [
 	_dot _dotQuote _dotS _equal _greaterThan _greaterThanZero _lessThan _lessThanZero _minus _mult _multipliesByTwo _notEqual 
 	_plus _questionMarkDup _slashMod _subtractsOne _subtractsTwo _zeroEqual 
 	
-	abort and char cr drop dup else emit #false forget if invert marker mod or over rot space spaces swap then #true)
+	abort and char cr drop dup else emit #false forget if invert marker mod or over rot space spaces swap then #true
+	abs
+	negate
+	min
+	max)
 	
 
 ]

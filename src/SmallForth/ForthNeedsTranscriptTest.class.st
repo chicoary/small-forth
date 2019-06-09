@@ -1,17 +1,17 @@
 Class {
-	#name : #ForthInterpreterWithTranscriptTest,
+	#name : #ForthNeedsTranscriptTest,
 	#superclass : #ForthInterpreterTest,
 	#category : #'SmallForth-Tests-Core'
 }
 
 { #category : #running }
-ForthInterpreterWithTranscriptTest >> setUp [ 
+ForthNeedsTranscriptTest >> setUp [ 
 	super setUp.
 	skipTests := true
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testAbort [
+ForthNeedsTranscriptTest >> testAbort [
 	
 	self useTranscriptOn: [
 		forth eval: 'false abort ." Must see me"'.
@@ -22,7 +22,7 @@ ForthInterpreterWithTranscriptTest >> testAbort [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testAbortWithMessage [
+ForthNeedsTranscriptTest >> testAbortWithMessage [
 	
 	self useTranscriptOn: [
 	
@@ -34,7 +34,7 @@ ForthInterpreterWithTranscriptTest >> testAbortWithMessage [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testAbortWithMessage2 [
+ForthNeedsTranscriptTest >> testAbortWithMessage2 [
 	
 	self useTranscriptOn:[
 	self should: [ forth eval: 'true abort" Message" ." Must not see me"' ] raise: ForthAbort.
@@ -46,7 +46,7 @@ ForthInterpreterWithTranscriptTest >> testAbortWithMessage2 [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testBackSlash [
+ForthNeedsTranscriptTest >> testBackSlash [
 		
 		self useTranscriptOn:[
 		forth eval: '
@@ -64,7 +64,7 @@ ForthInterpreterWithTranscriptTest >> testBackSlash [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testChar [
+ForthNeedsTranscriptTest >> testChar [
 		
 		self useTranscriptOn:[
 		forth eval: 'char * emit'.
@@ -76,7 +76,7 @@ ForthInterpreterWithTranscriptTest >> testChar [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testComment [
+ForthNeedsTranscriptTest >> testComment [
 		
 		self useTranscriptOn:[
 		forth eval: '42 emit ( I am a comment) ." Comment"'.
@@ -88,7 +88,7 @@ ForthInterpreterWithTranscriptTest >> testComment [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testCr [
+ForthNeedsTranscriptTest >> testCr [
 		
 		self useTranscriptOn:[
 		forth eval: '." abcd" cr ." efg"'.
@@ -100,7 +100,7 @@ ForthInterpreterWithTranscriptTest >> testCr [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testDot [
+ForthNeedsTranscriptTest >> testDot [
 	
 	self useTranscriptOn:[
 	forth eval: '7 dup * .'.
@@ -111,7 +111,7 @@ ForthInterpreterWithTranscriptTest >> testDot [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testDot2 [
+ForthNeedsTranscriptTest >> testDot2 [
 	
 	self useTranscriptOn:[
 	forth eval: '77 42 . .'.
@@ -122,7 +122,7 @@ ForthInterpreterWithTranscriptTest >> testDot2 [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testDotQuote [
+ForthNeedsTranscriptTest >> testDotQuote [
 		
 		self useTranscriptOn:[
 		forth eval: '42 emit ." Hello    World!"'.
@@ -134,7 +134,7 @@ ForthInterpreterWithTranscriptTest >> testDotQuote [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testDotQuoteWithEmptyString [
+ForthNeedsTranscriptTest >> testDotQuoteWithEmptyString [
 		
 		self useTranscriptOn:[
 		forth eval: '." "'.
@@ -146,7 +146,7 @@ ForthInterpreterWithTranscriptTest >> testDotQuoteWithEmptyString [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testDotS [
+ForthNeedsTranscriptTest >> testDotS [
 	
 	self useTranscriptOn:[
 	forth eval: '1 2 3 .s'.
@@ -158,7 +158,7 @@ ForthInterpreterWithTranscriptTest >> testDotS [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testEmit [
+ForthNeedsTranscriptTest >> testEmit [
 		
 		self useTranscriptOn:[
 		forth eval: '42 emit'.
@@ -170,7 +170,7 @@ ForthInterpreterWithTranscriptTest >> testEmit [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testForget [
+ForthNeedsTranscriptTest >> testForget [
 		
 		self useTranscriptOn:[
 		forth eval: '
@@ -191,7 +191,7 @@ ForthInterpreterWithTranscriptTest >> testForget [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testIfElseThenWithComment [
+ForthNeedsTranscriptTest >> testIfElseThenWithComment [
 	
 	self useTranscriptOn:[
 		forth eval: 'false if 1 ( I have an else and a then in the middle) else ." Must (with else or then) see me" then'.
@@ -205,7 +205,7 @@ ForthInterpreterWithTranscriptTest >> testIfElseThenWithComment [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testIfElseThenWithComment2 [
+ForthNeedsTranscriptTest >> testIfElseThenWithComment2 [
 	
 	self useTranscriptOn:[
 		forth eval: 'true if ." Must see me" else 2 ( I have an else and a then in the middle) then'.
@@ -219,7 +219,7 @@ ForthInterpreterWithTranscriptTest >> testIfElseThenWithComment2 [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testIfElseThenWithDotQuote [
+ForthNeedsTranscriptTest >> testIfElseThenWithDotQuote [
 	
 	self useTranscriptOn:[
 		forth eval: 'false if ." I have an else and a then in the middle" else ." Must see me" then'.
@@ -233,7 +233,7 @@ ForthInterpreterWithTranscriptTest >> testIfElseThenWithDotQuote [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testIfElseThenWithDotQuote2 [
+ForthNeedsTranscriptTest >> testIfElseThenWithDotQuote2 [
 	
 	self useTranscriptOn:[
 		forth eval: 'true if ." Must see me" else ." I have an else and a then in the middle" then'.
@@ -247,7 +247,7 @@ ForthInterpreterWithTranscriptTest >> testIfElseThenWithDotQuote2 [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testIfElseThenWithLineComment [
+ForthNeedsTranscriptTest >> testIfElseThenWithLineComment [
 	
 	self useTranscriptOn:[
 		forth eval: 'false if 1 \ I have an else and a then in the middle
@@ -262,7 +262,7 @@ ForthInterpreterWithTranscriptTest >> testIfElseThenWithLineComment [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testIfElseThenWithLineComment2 [
+ForthNeedsTranscriptTest >> testIfElseThenWithLineComment2 [
 	
 	self useTranscriptOn:[
 		forth eval: 'true if ." Must see me" 
@@ -278,7 +278,7 @@ ForthInterpreterWithTranscriptTest >> testIfElseThenWithLineComment2 [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testIfThenWithComment [
+ForthNeedsTranscriptTest >> testIfThenWithComment [
 	
 	self useTranscriptOn:[
 		forth eval: 'false if 1 ( I have an else and a then in the middle) then ." Must see me"'.
@@ -292,7 +292,7 @@ ForthInterpreterWithTranscriptTest >> testIfThenWithComment [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testIfThenWithDotQuote [
+ForthNeedsTranscriptTest >> testIfThenWithDotQuote [
 	
 	self useTranscriptOn:[
 		forth eval: 'false if ." I have an else and a then in the middle" then ." Must see me"'.
@@ -306,7 +306,7 @@ ForthInterpreterWithTranscriptTest >> testIfThenWithDotQuote [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testIfThenWithLineComment [
+ForthNeedsTranscriptTest >> testIfThenWithLineComment [
 	
 	self useTranscriptOn:[
 		forth eval: 'false if 1 
@@ -324,7 +324,7 @@ ForthInterpreterWithTranscriptTest >> testIfThenWithLineComment [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testMarker [
+ForthNeedsTranscriptTest >> testMarker [
 		
 		self useTranscriptOn:[
 		forth eval: '
@@ -345,7 +345,7 @@ ForthInterpreterWithTranscriptTest >> testMarker [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testSpace [
+ForthNeedsTranscriptTest >> testSpace [
 		
 		self useTranscriptOn:[
 		forth eval: '." abcd" space space space ." efg"'.
@@ -357,7 +357,7 @@ ForthInterpreterWithTranscriptTest >> testSpace [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testSpaces [
+ForthNeedsTranscriptTest >> testSpaces [
 		
 		self useTranscriptOn:[
 		forth eval: '." abcd" 3 spaces ." efg"'.
@@ -369,7 +369,7 @@ ForthInterpreterWithTranscriptTest >> testSpaces [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testTranscript [
+ForthNeedsTranscriptTest >> testTranscript [
 		
 		self useTranscriptOn:[
 		
@@ -382,7 +382,7 @@ ForthInterpreterWithTranscriptTest >> testTranscript [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testTwoMarker [
+ForthNeedsTranscriptTest >> testTwoMarker [
 		
 		self useTranscriptOn:[
 		forth eval: '
@@ -404,7 +404,7 @@ ForthInterpreterWithTranscriptTest >> testTwoMarker [
 ]
 
 { #category : #tests }
-ForthInterpreterWithTranscriptTest >> testTwoMarker2 [
+ForthNeedsTranscriptTest >> testTwoMarker2 [
 		
 		self useTranscriptOn:[
 		forth eval: '
@@ -426,7 +426,7 @@ ForthInterpreterWithTranscriptTest >> testTwoMarker2 [
 ]
 
 { #category : #'test support' }
-ForthInterpreterWithTranscriptTest >> useTranscriptOn: aBlockClosure [
+ForthNeedsTranscriptTest >> useTranscriptOn: aBlockClosure [
 	skipTests
 		ifTrue: [ self inform: 'Skiping...'. self skip ]
 		ifFalse: [ Transcript openIfNone.
