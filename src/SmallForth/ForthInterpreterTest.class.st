@@ -141,6 +141,7 @@ ForthInterpreterTest >> testDivide [
 { #category : #tests }
 ForthInterpreterTest >> testDividesByTwo [
 		self assert: (forth eval: '8 2/'; stackCopy) equals: #(4).
+		self assert: (forth eval: '-8 2/'; stackCopy) equals: #(-4).
 		
 ]
 
@@ -345,6 +346,7 @@ ForthInterpreterTest >> testMult [
 { #category : #tests }
 ForthInterpreterTest >> testMultipliesByTwo [
 		self assert: (forth eval: '3 2*'; stackCopy) equals: #(6).
+		self assert: (forth eval: '-3 2*'; stackCopy) equals: #(-6).
 		
 ]
 
