@@ -452,13 +452,6 @@ ForthInterpreter >> forthPerform: word [
 			ifFalse: [ self evalWord: lowercase ]
 ]
 
-{ #category : #testing }
-ForthInterpreter >> forthRespondsTo: word [
-	self flag: #remove.
-	^ self isPrimitive: word 
-	
-]
-
 { #category : #evaluating }
 ForthInterpreter >> getNextWord [
 	| car writeStream word |
@@ -654,11 +647,9 @@ ForthInterpreter >> over [
 
 { #category : #'forth-primitive-support' }
 ForthInterpreter >> primitiveWords [
-	
-	^ #(
-	_2drop _2dup _2over _2swap __marker _abortQuote _backSlash _colon _comment _divide _dot _dotQuote _dotS _equal 
-	_greaterThan _greaterThanZero _lessThan _lessThanZero _minus _mult _notEqual _plus _questionMarkDup _slashMod 
-	_zeroEqual _addsOne _subtractsOne _addsTwo _subtractsTwo _multipliesByTwo _dividesByTwo
+	^ #(_2drop _2dup _2over _2swap __marker _abortQuote _addsOne _addsTwo _backSlash _colon _comment _divide _dividesByTwo 
+	_dot _dotQuote _dotS _equal _greaterThan _greaterThanZero _lessThan _lessThanZero _minus _mult _multipliesByTwo _notEqual 
+	_plus _questionMarkDup _slashMod _subtractsOne _subtractsTwo _zeroEqual 
 	
 	abort and char cr drop dup else emit #false forget if invert marker mod or over rot space spaces swap then #true)
 	
@@ -890,7 +881,6 @@ ForthInterpreter >> synonymousOf: word [
 { #category : #'forth-primitive-support' }
 ForthInterpreter >> synonyms [
 	^ {  
-	
 		'/mod' -> '_slashMod'.
 		'.s' -> '_dotS'.
 		'.' -> '_dot'.
