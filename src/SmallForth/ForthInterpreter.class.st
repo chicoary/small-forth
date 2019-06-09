@@ -532,11 +532,7 @@ ForthInterpreter >> initialize [
 	acceptUppercase := false.
 	nestLevel := 0.
 	
-	self flag: #implementing. "O data stack poderia ser instanciado aqui também?"
-	
 	pairingStack := Stack new.
-	
-	self flag: #testing.
 	returnStack := Stack new.
 	
 ]
@@ -932,38 +928,22 @@ ForthInterpreter >> synonymousOf: word [
 { #category : #'forth-primitive-support' }
 ForthInterpreter >> synonyms [
 	^ {  
-		'/mod' -> '_slashMod'.
-		'.s' -> '_dotS'.
-		'.' -> '_dot'.
-		'*' -> '_mult'.
-		'+' -> '_plus'.
-		'-' -> '_minus'.
-		'/' -> '_divide'.
-		'2swap' -> '_2swap'.
-		'2dup' -> '_2dup'.
-		'2over' -> '_2over'.
-		'2drop' -> '_2drop'.
-		'."' -> '_dotQuote'.
-		':' -> '_colon'.
-		'(' -> '_comment'.
-		'\' -> '_backSlash'.
-		'=' -> '_equal'.
-		'<>' -> '_notEqual'.
-		'<' -> '_lessThan'.
-		'>' -> '_greaterThan'.
-		'0=' -> '_zeroEqual'.
-		'0<' -> '_lessThanZero'.
-		'0>' -> '_greaterThanZero'.
-		'?dup' -> '_questionMarkDup'.
-		'abort"' -> '_abortQuote'.
-		'1+' -> '_addsOne'.
-		'2+' -> '_addsTwo'.
-		'1-' -> '_subtractsOne'.
-		'2-' -> '_subtractsTwo'.
-		'2*' -> '_multipliesByTwo'.
-		'2/' -> '_dividesByTwo'.
-		'r>' -> '_pushOnStack'.
-		'>r' -> '_pushOnReturnStack'.
+		'/mod' -> '_slashMod'.					'.s' -> '_dotS'.
+		'.' -> '_dot'.								'*' -> '_mult'.
+		'+' -> '_plus'.								'-' -> '_minus'.
+		'/' -> '_divide'.							'2swap' -> '_2swap'.
+		'2dup' -> '_2dup'.							'2over' -> '_2over'.
+		'2drop' -> '_2drop'.						'."' -> '_dotQuote'.
+		':' -> '_colon'.							'(' -> '_comment'.
+		'\' -> '_backSlash'.						'=' -> '_equal'.
+		'<>' -> '_notEqual'.						'<' -> '_lessThan'.
+		'>' -> '_greaterThan'.					'0=' -> '_zeroEqual'.
+		'0<' -> '_lessThanZero'.					'0>' -> '_greaterThanZero'.
+		'?dup' -> '_questionMarkDup'.			'abort"' -> '_abortQuote'.
+		'1+' -> '_addsOne'.						'2+' -> '_addsTwo'.
+		'1-' -> '_subtractsOne'.					'2-' -> '_subtractsTwo'.
+		'2*' -> '_multipliesByTwo'.				'2/' -> '_dividesByTwo'.
+		'r>' -> '_pushOnStack'.					'>r' -> '_pushOnReturnStack'.
 		'r@' -> '_copyOnStack'.
 	
 	} asDictionary 
