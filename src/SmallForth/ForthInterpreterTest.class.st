@@ -122,6 +122,14 @@ ForthInterpreterTest >> testClass [
 ]
 
 { #category : #tests }
+ForthInterpreterTest >> testCopyFromReturnStack [
+	
+	forth eval: '7 >r r@'.
+	self assert: forth stackCopy equals: #(7).
+	self assert: forth returnStackCopy equals: #(7).
+]
+
+{ #category : #tests }
 ForthInterpreterTest >> testDictionaryPersitenceBetweenEvals [
 	
 		forth eval: ': test 888 999 ;'.
@@ -442,6 +450,22 @@ ForthInterpreterTest >> testPushNumber [
 	self assert: forth stackCopy size equals: 1.
 	
 	
+]
+
+{ #category : #tests }
+ForthInterpreterTest >> testPushOnReturnStack [
+	
+	forth eval: '7 >r'.
+	self assert: forth stackCopy isEmpty.
+	self assert: forth returnStackCopy equals: #(7) 
+]
+
+{ #category : #tests }
+ForthInterpreterTest >> testPushOnStack [
+	
+	forth eval: '7 >r r>'.
+	self assert: forth stackCopy equals: #(7).
+	self assert: forth returnStackCopy isEmpty
 ]
 
 { #category : #tests }

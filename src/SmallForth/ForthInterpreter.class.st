@@ -27,7 +27,8 @@ Class {
 		'stream',
 		'acceptUppercase',
 		'nestLevel',
-		'pairingStack'
+		'pairingStack',
+		'returnStack'
 	],
 	#classVars : [
 		'WordDictionary'
@@ -128,6 +129,11 @@ ForthInterpreter >> _colon [
 { #category : #synonyms }
 ForthInterpreter >> _comment [
 	self skipComment: stream
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreter >> _copyOnStack [
+	stack push: returnStack top
 ]
 
 { #category : #synonyms }
@@ -237,6 +243,16 @@ ForthInterpreter >> _plus [
 	top := stack pop.
 	second := stack pop.
 	stack push: second + top
+]
+
+{ #category : #synonyms }
+ForthInterpreter >> _pushOnReturnStack [
+	returnStack push: stack pop 
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreter >> _pushOnStack [
+	stack push: returnStack pop
 ]
 
 { #category : #synonyms }
@@ -515,7 +531,13 @@ ForthInterpreter >> indexOfWord: word [
 ForthInterpreter >> initialize [
 	acceptUppercase := false.
 	nestLevel := 0.
-	pairingStack := Stack new
+	
+	self flag: #implementing. "O data stack poderia ser instanciado aqui também?"
+	
+	pairingStack := Stack new.
+	
+	self flag: #testing.
+	returnStack := Stack new.
 	
 ]
 
@@ -672,10 +694,10 @@ ForthInterpreter >> primitiveWords [
 	_plus _questionMarkDup _slashMod _subtractsOne _subtractsTwo _zeroEqual 
 	
 	abort and char cr drop dup else emit #false forget if invert marker mod or over rot space spaces swap then #true
-	abs
-	negate
-	min
-	max)
+	abs negate min max
+	_pushOnStack
+	_pushOnReturnStack 
+	_copyOnStack)
 	
 
 ]
@@ -729,6 +751,11 @@ ForthInterpreter >> removeWordsAfterMarker: marker [
 { #category : #initialization }
 ForthInterpreter >> resetDictionary [
 	WordDictionary removeAll 
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreter >> returnStackCopy [
+	^ returnStack copy
 ]
 
 { #category : #'forth-primitives' }
@@ -935,6 +962,9 @@ ForthInterpreter >> synonyms [
 		'2-' -> '_subtractsTwo'.
 		'2*' -> '_multipliesByTwo'.
 		'2/' -> '_dividesByTwo'.
+		'r>' -> '_pushOnStack'.
+		'>r' -> '_pushOnReturnStack'.
+		'r@' -> '_copyOnStack'.
 	
 	} asDictionary 
 ]
