@@ -685,17 +685,15 @@ ForthInterpreter >> over [
 
 { #category : #'forth-primitive-support' }
 ForthInterpreter >> primitiveWords [
-	^ #(_2drop _2dup _2over _2swap __marker _abortQuote _addsOne _addsTwo _backSlash _colon _comment _divide _dividesByTwo 
-	_dot _dotQuote _dotS _equal _greaterThan _greaterThanZero _lessThan _lessThanZero _minus _mult _multipliesByTwo _notEqual 
-	_plus _questionMarkDup _slashMod _subtractsOne _subtractsTwo _zeroEqual 
+	^ #(
+	_2drop _2dup _2over _2swap __marker _abortQuote _addsOne _addsTwo _backSlash _colon 
+	_comment _copyOnStack _divide _dividesByTwo _dot _dotQuote _dotS _equal _greaterThan 
+	_greaterThanZero _lessThan _lessThanZero _minus _mult _multipliesByTwo _notEqual _plus 
+	_pushOnReturnStack _pushOnStack _questionMarkDup _slashMod _subtractsOne _subtractsTwo _zeroEqual 
 	
-	abort and char cr drop dup else emit #false forget if invert marker mod or over rot space spaces swap then #true
-	abs negate min max
-	_pushOnStack
-	_pushOnReturnStack 
-	_copyOnStack)
+	abort abs and char cr drop dup else emit #false forget if invert marker max min mod negate or over rot space spaces swap then #true)
 	
-
+	
 ]
 
 { #category : #'if-else-then-support' }
