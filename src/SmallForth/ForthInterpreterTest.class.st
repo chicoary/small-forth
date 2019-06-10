@@ -514,6 +514,13 @@ ForthInterpreterTest >> testStarSlash [
 ]
 
 { #category : #tests }
+ForthInterpreterTest >> testStarSlashMod [
+	self assert: (forth eval: '225 32 88 */mod'; stackCopy) equals: #(72 81) reversed
+	
+	
+]
+
+{ #category : #tests }
 ForthInterpreterTest >> testSubtractsOne [
 		self assert: (forth eval: '3 1-'; stackCopy) equals: #(2)
 		

@@ -281,6 +281,17 @@ ForthInterpreter >> _starSlash [
 ]
 
 { #category : #synonyms }
+ForthInterpreter >> _starSlashMod [
+	| third second top times |
+	top := stack pop.
+	second := stack pop.
+	third := stack pop.
+	times := third * second.
+	stack push: times \\ top.
+	stack push: times // top
+]
+
+{ #category : #synonyms }
 ForthInterpreter >> _subtractsOne [
 	stack push: stack pop - 1
 ]
@@ -699,11 +710,13 @@ ForthInterpreter >> primitiveWords [
 	_2drop _2dup _2over _2swap __marker _abortQuote _addsOne _addsTwo _backSlash _colon 
 	_comment _copyOnStack _divide _dividesByTwo _dot _dotQuote _dotS _equal _greaterThan 
 	_greaterThanZero _lessThan _lessThanZero _minus _mult _multipliesByTwo _notEqual _plus 
-	_pushOnReturnStack _pushOnStack _questionMarkDup _slashMod _subtractsOne _subtractsTwo _zeroEqual 
+	_pushOnReturnStack _pushOnStack _questionMarkDup _slashMod _subtractsOne _subtractsTwo 
+	_zeroEqual _starSlash 
+	_starSlashMod
 	
 	abort abs and char cr drop dup else emit #false forget if invert marker max min mod negate or over rot space spaces swap 	then #true
 		
-	_starSlash)
+	)
 	
 	
 ]
@@ -954,8 +967,8 @@ ForthInterpreter >> synonyms [
 		'1-' -> '_subtractsOne'.					'2-' -> '_subtractsTwo'.
 		'2*' -> '_multipliesByTwo'.				'2/' -> '_dividesByTwo'.
 		'r>' -> '_pushOnStack'.					'>r' -> '_pushOnReturnStack'.
-		'r@' -> '_copyOnStack'.
-		'*/' -> '_starSlash'.
+		'r@' -> '_copyOnStack'.					'*/' -> '_starSlash'.
+		'*/mod' -> '_starSlashMod'.
 	
 	} asDictionary 
 ]
