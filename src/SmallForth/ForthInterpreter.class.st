@@ -150,6 +150,15 @@ ForthInterpreter >> _divide [
 ]
 
 { #category : #synonyms }
+ForthInterpreter >> _divides [
+	| top second |
+	top := stack pop.
+	second := stack pop.
+	stack push: (second // top) 
+	
+]
+
+{ #category : #synonyms }
 ForthInterpreter >> _dividesByTwo [
 	stack push: stack pop >> 1
 ]
@@ -360,8 +369,6 @@ ForthInterpreter >> checkNestLevel [
 
 { #category : #evaluating }
 ForthInterpreter >> checkPairingStackIsEmpty [
-	self flag: #testing. "Foi invocado?"
-	"self halt."
 	pairingStack ifNotEmpty: [ self signalIfElseThenUnpairing ] 
 ]
 
@@ -407,7 +414,6 @@ ForthInterpreter >> discardWhiteSpacesOn: aReadStream [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> do [
-	self flag: #implementing.
 	index := stack pop.
 	limit := stack pop.
 	position := stream position
@@ -425,7 +431,6 @@ ForthInterpreter >> dup [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> else [
-	self flag: #testing.
 	(pairingStack isEmpty or: [pairingStack top ~= #if]) ifTrue: [ self signalIfElseThenUnpairing ].
 	self pushElseToPairingStack.
 	self skipUntilElseOrThenWithFalseLevel: nestLevel 
@@ -445,8 +450,6 @@ ForthInterpreter >> eval [
 				ifTrue: [ self pushNumberToStack: word ]
 				ifFalse: [ self forthPerform: word ].
 			word := self getNextWord ].
-	
-	self flag: #testing.
 	self checkPairingStackIsEmpty
 ]
 
@@ -537,11 +540,11 @@ ForthInterpreter >> getStringBeforeQuoteAndDiscardQuote: aReadStream [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> if [
-	self flag: #testing.
 	self incrementNestLevel.
 	self pushIfToPairingStack.
 	stack pop = -1 "True" ifTrue: [ ^ self ].
 	self skipUntilElseOrThenWithFalseLevel: nestLevel
+	
 ]
 
 { #category : #'if-else-then-support' }
@@ -659,7 +662,6 @@ ForthInterpreter >> lastVersionAtWord: word [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> loop [
-	self flag: #implementing.
 	index := index + 1.
 	index = limit ifFalse: [ self repeat ]
 ]
@@ -726,7 +728,7 @@ ForthInterpreter >> over [
 ForthInterpreter >> primitiveWords [
 	^ #(
 	_2drop _2dup _2over _2swap __marker _abortQuote _addsOne _addsTwo _backSlash _colon 
-	_comment _copyOnStack _divide _dividesByTwo _dot _dotQuote _dotS _equal _greaterThan 
+	_comment _copyOnStack _divides _dividesByTwo _dot _dotQuote _dotS _equal _greaterThan 
 	_greaterThanZero _lessThan _lessThanZero _minus _mult _multipliesByTwo _notEqual _plus 
 	_pushOnReturnStack _pushOnStack _questionMarkDup _slashMod _subtractsOne _subtractsTwo 
 	_zeroEqual _starSlash _starSlashMod
@@ -785,7 +787,7 @@ ForthInterpreter >> removeWordsAfterMarker: marker [
 	
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'forth-primitive-support' }
 ForthInterpreter >> repeat [
 	stream position: position
 ]
@@ -891,7 +893,6 @@ ForthInterpreter >> skipStringUntilChar: char [
 { #category : #'forth-primitive-support' }
 ForthInterpreter >> skipUntilElseOrThenWithFalseLevel: aFalseNestLevel [ 
 		| word |
-		self flag: #testing.
 		word := self getNextWord. 
 		word ifEmpty: [ ^ nil ].
 		word = 'if' ifTrue: [ self pushIfToPairingStack. self incrementNestLevel ].
@@ -906,7 +907,6 @@ ForthInterpreter >> skipUntilElseOrThenWithFalseLevel: aFalseNestLevel [
 { #category : #'forth-primitive-support' }
 ForthInterpreter >> skipUntilThenWithNestLevel: aTargetNestLevel [ 
 	| word |
-	self flag: #maybeDelete.
 	word := self getNextWord. 
 	word ifEmpty: [ ^ nil ].
 	word = 'if' ifTrue: [ self pushIfToPairingStack. self incrementNestLevel ].
@@ -977,7 +977,7 @@ ForthInterpreter >> synonyms [
 		'/mod' -> '_slashMod'.					'.s' -> '_dotS'.
 		'.' -> '_dot'.								'*' -> '_mult'.
 		'+' -> '_plus'.								'-' -> '_minus'.
-		'/' -> '_divide'.							'2swap' -> '_2swap'.
+		'/' -> '_divides'.							'2swap' -> '_2swap'.
 		'2dup' -> '_2dup'.							'2over' -> '_2over'.
 		'2drop' -> '_2drop'.						'."' -> '_dotQuote'.
 		':' -> '_colon'.							'(' -> '_comment'.
@@ -999,8 +999,6 @@ ForthInterpreter >> synonyms [
 { #category : #'forth-primitives' }
 ForthInterpreter >> then [
 	self updatePairingStack.
-	self flag: #testing.
-	"self halt."
 	nestLevel = 1 ifTrue: [ self checkPairingStackIsEmpty ].
 	self decrementNestLevel.
 	

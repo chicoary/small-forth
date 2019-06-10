@@ -164,7 +164,6 @@ ForthInterpreterTest >> testDividesByTwo [
 
 { #category : #tests }
 ForthInterpreterTest >> testDoLoop [
-	self flag: #testing.
 	self assert: (forth eval: '3 0 do 9 loop'; stackCopy) equals: #(9 9 9) reversed
 	
 	
