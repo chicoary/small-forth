@@ -31,6 +31,12 @@ ForthInterpreterTest >> setUp [
 ]
 
 { #category : #tests }
+ForthInterpreterTest >> test2DUPUppercased [
+	self assert: (forth eval: '3 4 2dup'; stackCopy) equals: #(3 4 3 4) reversed.
+	self assert: (forth eval: '3 4 2DUP'; stackCopy) equals: #(3 4 3 4) reversed
+]
+
+{ #category : #tests }
 ForthInterpreterTest >> test2drop [
 	
 		self assert: (forth eval: '1 2 3 4 2drop'; top) equals: 2.
@@ -224,6 +230,12 @@ ForthInterpreterTest >> testFalse [
 	
 	
 	
+]
+
+{ #category : #test }
+ForthInterpreterTest >> testForceToLowercaseFor2DUP [
+	self assert: (forth forceToLowercase: '2DUP') equals: '2dup'.
+
 ]
 
 { #category : #tests }

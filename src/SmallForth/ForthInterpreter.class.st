@@ -471,6 +471,8 @@ ForthInterpreter >> false [
 
 { #category : #evaluating }
 ForthInterpreter >> forceToLowercase: word [
+	self flag: #testing.
+	"self haltIf: [ word = '2DUP' ]."
 	^ (self isEligibleForLoweringCase: word)
 		ifTrue: [ word asLowercase ]
 		ifFalse: [ word ]
@@ -588,10 +590,10 @@ ForthInterpreter >> isDotQuoteWord: word [
 { #category : #evaluating }
 ForthInterpreter >> isEligibleForLoweringCase: word [
 	^ word
-		allSatisfy: [ :car | 
+		allSatisfy: [ :car | car isDigit or: [
 			car isUppercase
 				or: [ car isSpecial
-						or: [ car isOtherPunctuation or: [ car isConnectorPunctuation ] ] ] ]
+						or: [ car isOtherPunctuation or: [ car isConnectorPunctuation ] ] ] ]]
 ]
 
 { #category : #testing }
