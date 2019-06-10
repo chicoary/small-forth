@@ -28,7 +28,10 @@ Class {
 		'acceptUppercase',
 		'nestLevel',
 		'pairingStack',
-		'returnStack'
+		'returnStack',
+		'index',
+		'limit',
+		'position'
 	],
 	#classVars : [
 		'WordDictionary'
@@ -403,6 +406,14 @@ ForthInterpreter >> discardWhiteSpacesOn: aReadStream [
 ]
 
 { #category : #'forth-primitives' }
+ForthInterpreter >> do [
+	self flag: #implementing.
+	index := stack pop.
+	limit := stack pop.
+	position := stream position
+]
+
+{ #category : #'forth-primitives' }
 ForthInterpreter >> drop [
 	stack pop
 ]
@@ -647,6 +658,13 @@ ForthInterpreter >> lastVersionAtWord: word [
 ]
 
 { #category : #'forth-primitives' }
+ForthInterpreter >> loop [
+	self flag: #implementing.
+	index := index + 1.
+	index = limit ifFalse: [ self repeat ]
+]
+
+{ #category : #'forth-primitives' }
 ForthInterpreter >> marker [
 	| marker |
 	marker := self getNextWord.
@@ -711,11 +729,11 @@ ForthInterpreter >> primitiveWords [
 	_comment _copyOnStack _divide _dividesByTwo _dot _dotQuote _dotS _equal _greaterThan 
 	_greaterThanZero _lessThan _lessThanZero _minus _mult _multipliesByTwo _notEqual _plus 
 	_pushOnReturnStack _pushOnStack _questionMarkDup _slashMod _subtractsOne _subtractsTwo 
-	_zeroEqual _starSlash 
-	_starSlashMod
+	_zeroEqual _starSlash _starSlashMod
 	
 	abort abs and char cr drop dup else emit #false forget if invert marker max min mod negate or over rot space spaces swap 	then #true
-		
+	do 
+	loop	
 	)
 	
 	
@@ -765,6 +783,11 @@ ForthInterpreter >> removeWordsAfterMarker: marker [
 	
 	
 	
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreter >> repeat [
+	stream position: position
 ]
 
 { #category : #initialization }
