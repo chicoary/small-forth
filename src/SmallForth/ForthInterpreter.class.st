@@ -140,16 +140,6 @@ ForthInterpreter >> _copyOnStack [
 ]
 
 { #category : #synonyms }
-ForthInterpreter >> _divide [
-	| top second |
-	self flag: #todo. "Renomear para _divides"
-	top := stack pop.
-	second := stack pop.
-	stack push: (second // top) 
-	
-]
-
-{ #category : #synonyms }
 ForthInterpreter >> _divides [
 	| top second |
 	top := stack pop.
@@ -518,10 +508,6 @@ ForthInterpreter >> getNextWord [
 		whileTrue: [ writeStream nextPut: car.
 			car := stream next ].
 	word := writeStream contents.
-	
-	self flag: #debugging.
-	"self haltIf: [#(if else then) includes: word]."
-	"self haltIf: [#(then) includes: word]."
 	^ word
 ]
 
@@ -536,6 +522,11 @@ ForthInterpreter >> getStringBeforeQuoteAndDiscardQuote: aReadStream [
 	
 	car := aReadStream next ].
    ^ writeStream  contents
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreter >> i [
+	stack push: index
 ]
 
 { #category : #'forth-primitives' }
@@ -735,7 +726,8 @@ ForthInterpreter >> primitiveWords [
 	
 	abort abs and char cr drop dup else emit #false forget if invert marker max min mod negate or over rot space spaces swap 	then #true
 	do 
-	loop	
+	loop
+	i	
 	)
 	
 	
