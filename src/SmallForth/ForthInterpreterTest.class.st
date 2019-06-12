@@ -169,20 +169,6 @@ ForthInterpreterTest >> testDividesByTwo [
 ]
 
 { #category : #tests }
-ForthInterpreterTest >> testDoLoop [
-	self assert: (forth eval: '3 0 do 9 loop'; stackCopy) equals: #(9 9 9) reversed.
-	self assert: (forth eval: '5 2 do 9 loop'; stackCopy) equals: #(9 9 9) reversed.
-	self assert: (forth eval: '-2 -5 do 9 loop'; stackCopy) equals: #(9 9 9) reversed
-	
-	
-]
-
-{ #category : #tests }
-ForthInterpreterTest >> testDoLoopWithIndex [
-	self assert: (forth eval: '3 0 do i loop'; stackCopy) equals: #(0 1 2) reversed
-]
-
-{ #category : #tests }
 ForthInterpreterTest >> testDrop [
 	
 	self assert: (forth eval: '20 7 drop'; top) equals: 20.
@@ -232,7 +218,7 @@ ForthInterpreterTest >> testFalse [
 	
 ]
 
-{ #category : #test }
+{ #category : #tests }
 ForthInterpreterTest >> testForceToLowercaseFor2DUP [
 	self assert: (forth forceToLowercase: '2DUP') equals: '2dup'.
 

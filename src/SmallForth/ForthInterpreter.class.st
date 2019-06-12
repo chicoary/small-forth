@@ -28,10 +28,7 @@ Class {
 		'acceptUppercase',
 		'nestLevel',
 		'pairingStack',
-		'returnStack',
-		'index',
-		'limit',
-		'position'
+		'returnStack'
 	],
 	#classVars : [
 		'WordDictionary'
@@ -367,7 +364,7 @@ ForthInterpreter >> checkPreviousIf [
 	pairingStack top = #if ifFalse: [ self signalIfElseThenUnpairing ]
 ]
 
-{ #category : #compiling }
+{ #category : #'forth-dictionary-support' }
 ForthInterpreter >> compile: aReadStream [
 	| word car writeStream |
 	writeStream := WriteStream on: String empty.
@@ -404,9 +401,13 @@ ForthInterpreter >> discardWhiteSpacesOn: aReadStream [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> do [
+	| index limit position |
 	index := stack pop.
 	limit := stack pop.
-	position := stream position
+	position := stream position.
+	returnStack push: position.
+	returnStack push: limit.
+	returnStack push: index
 ]
 
 { #category : #'forth-primitives' }
@@ -471,8 +472,6 @@ ForthInterpreter >> false [
 
 { #category : #evaluating }
 ForthInterpreter >> forceToLowercase: word [
-	self flag: #testing.
-	"self haltIf: [ word = '2DUP' ]."
 	^ (self isEligibleForLoweringCase: word)
 		ifTrue: [ word asLowercase ]
 		ifFalse: [ word ]
@@ -526,8 +525,10 @@ ForthInterpreter >> getStringBeforeQuoteAndDiscardQuote: aReadStream [
    ^ writeStream  contents
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'forth-primitives' }
 ForthInterpreter >> i [
+	| index |	
+	index := returnStack top.
 	stack push: index
 ]
 
@@ -545,7 +546,7 @@ ForthInterpreter >> incrementNestLevel [
 	nestLevel := nestLevel + 1
 ]
 
-{ #category : #'marker-support' }
+{ #category : #'forth-dictionary-support' }
 ForthInterpreter >> indexOfWord: word [ 
 	| index |
 	index := 0.
@@ -558,10 +559,11 @@ ForthInterpreter >> indexOfWord: word [
 { #category : #initialization }
 ForthInterpreter >> initialize [
 	acceptUppercase := false.
+	
 	nestLevel := 0.
 	
 	pairingStack := Stack new.
-	returnStack := Stack new.
+	returnStack := Stack new
 	
 ]
 
@@ -643,7 +645,15 @@ ForthInterpreter >> isWhiteSpace: aCharacter [
 	^ { Character space. Character tab. Character cr. Character lf } includes: aCharacter
 ]
 
-{ #category : #evaluating }
+{ #category : #'forth-primitives' }
+ForthInterpreter >> j [
+	
+	| index |
+	index := returnStack fourth.
+	stack push: index
+]
+
+{ #category : #'forth-dictionary-support' }
 ForthInterpreter >> lastVersionAtWord: word [
 	| lastVersion index |
 	index := self indexOfWord: word.
@@ -655,8 +665,32 @@ ForthInterpreter >> lastVersionAtWord: word [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> loop [
+	| index limit position |	
+	index := returnStack pop.
+	limit := returnStack pop.
 	index := index + 1.
-	index = limit ifFalse: [ self repeat ]
+	index = limit 
+		ifTrue: [  
+			position := returnStack pop.
+		] 
+		ifFalse: [ 
+			position := returnStack top.
+			stream position: position.
+			returnStack push: limit.
+			returnStack push: index
+		]
+	
+	"control := loopControlStack at: loopNestLevel.
+	index := control index.
+	limit := control limit.
+	index := index + 1.
+	control index: index.
+	index = limit
+		ifFalse: [ self repeat ]
+		ifTrue: [ 
+			loopControlStack removeLast.
+			self decrementLoopNestLevel ].
+	"
 ]
 
 { #category : #'forth-primitives' }
@@ -666,7 +700,7 @@ ForthInterpreter >> marker [
 	self markerWord: marker
 ]
 
-{ #category : #'marker-support' }
+{ #category : #'forth-dictionary-support' }
 ForthInterpreter >> markerWord: marker [
 	self checkDuplicatedMarker: marker.
 	WordDictionary addFirst: marker -> ('__marker {1}' format: {marker})
@@ -726,10 +760,8 @@ ForthInterpreter >> primitiveWords [
 	_pushOnReturnStack _pushOnStack _questionMarkDup _slashMod _subtractsOne _subtractsTwo 
 	_zeroEqual _starSlash _starSlashMod
 	
-	abort abs and char cr drop dup else emit #false forget if invert marker max min mod negate or over rot space spaces swap 	then #true
-	do 
-	loop
-	i	
+	abort abs and char cr drop dup else emit #false forget if invert marker max min mod negate or over rot space spaces swap 	then #true do loop i	
+	j
 	)
 	
 	
@@ -758,7 +790,7 @@ ForthInterpreter >> removeElseAndIfFromPairingStack [
 		ifFalse: [ self signalIfElseThenUnpairing ]
 ]
 
-{ #category : #'forget-support' }
+{ #category : #'forth-dictionary-support' }
 ForthInterpreter >> removeLastVersionOfWord: word [
 	| index |
 	index := self indexOfWord: word.
@@ -767,7 +799,7 @@ ForthInterpreter >> removeLastVersionOfWord: word [
 	WordDictionary removeAt: index
 ]
 
-{ #category : #'marker-support' }
+{ #category : #'forth-dictionary-support' }
 ForthInterpreter >> removeWordsAfterMarker: marker [ 
 
 	[ WordDictionary first key = marker ] whileFalse: [  
@@ -781,12 +813,7 @@ ForthInterpreter >> removeWordsAfterMarker: marker [
 	
 ]
 
-{ #category : #'forth-primitive-support' }
-ForthInterpreter >> repeat [
-	stream position: position
-]
-
-{ #category : #initialization }
+{ #category : #'forth-dictionary-support' }
 ForthInterpreter >> resetDictionary [
 	WordDictionary removeAll 
 ]
