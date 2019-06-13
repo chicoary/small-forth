@@ -22,3 +22,9 @@ ForthLoopTest >> testDoLoopWithIndex [
 ForthLoopTest >> testNestedDoLoop [
 	self assert: (forth eval: '3 1 do 4 1 do i j loop loop'; stackCopy) equals: #(1 1 2 1 3 1 1 2 2 2 3 2) reversed
 ]
+
+{ #category : #tests }
+ForthLoopTest >> testPlusDoLoop [
+	self assert: (forth eval: '20 0 do i 3 +loop'; stackCopy) equals: #(0 3 6 9 12 15 18) reversed.
+
+]

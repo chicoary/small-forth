@@ -62,40 +62,40 @@ ForthInterpreter class >> initialize [
 	WordDictionary := OrderedCollection new
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _2drop [
 	stack
 		pop;
 		pop
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _2dup [
 	stack push: stack second.
 	stack push: stack second
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _2over [
 	stack push: stack fourth.
 	stack push: stack fourth
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _2swap [
 	stack swap: 1 with: 3.
 	stack swap: 2 with: 4
 	
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> __marker [
 	| marker |
 	marker := self getNextWord.
 	self removeWordsAfterMarker: marker
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _abortQuote [
 	| abort |
 	abort := stack pop ~= 0.
@@ -106,37 +106,37 @@ ForthInterpreter >> _abortQuote [
 		ifFalse: [ self getStringBeforeQuoteAndDiscardQuote: stream ]
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _addsOne [
 	stack push: stack pop + 1
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _addsTwo [
 	stack push: stack pop + 2
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _backSlash [
 	self skipBackSlashComment: stream
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _colon [
 	self compile: stream
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _comment [
 	self skipComment: stream
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _copyOnStack [
 	stack push: returnStack top
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _divides [
 	| top second |
 	top := stack pop.
@@ -145,22 +145,22 @@ ForthInterpreter >> _divides [
 	
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _dividesByTwo [
 	stack push: stack pop >> 1
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _dot [
 	Transcript show: stack pop; space
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _dotQuote [
 	self showString: stream
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _dotS [
 	Transcript 
 		show: ('<{1}>' format: { stack size });
@@ -169,7 +169,7 @@ ForthInterpreter >> _dotS [
 		space
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _equal [
 	| top second |
 	top := stack pop.
@@ -177,7 +177,7 @@ ForthInterpreter >> _equal [
 	second = top ifTrue: [ stack push: -1 ] ifFalse: [ stack push: 0 ]
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _greaterThan [
 	| top second |
 	top := stack pop.
@@ -185,14 +185,14 @@ ForthInterpreter >> _greaterThan [
 	second > top ifTrue: [ stack push: -1 ] ifFalse: [ stack push: 0 ]
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _greaterThanZero [
 	| top |
 	top := stack pop.
 	0 < top ifTrue: [ stack push: -1 ] ifFalse: [ stack push: 0 ]
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _lessThan [
 	| top second |
 	top := stack pop.
@@ -200,14 +200,14 @@ ForthInterpreter >> _lessThan [
 	second < top ifTrue: [ stack push: -1 ] ifFalse: [ stack push: 0 ]
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _lessThanZero [
 	| top |
 	top := stack pop.
 	0 > top ifTrue: [ stack push: -1 ] ifFalse: [ stack push: 0 ]
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _minus [
 	| top second |
 	top := stack pop.
@@ -216,7 +216,7 @@ ForthInterpreter >> _minus [
 	
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _mult [
 	| top second |
 	top := stack pop.
@@ -224,12 +224,12 @@ ForthInterpreter >> _mult [
 	stack push: second * top
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _multipliesByTwo [
 	stack push: stack pop << 1
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _notEqual [
 	| top second |
 	top := stack pop.
@@ -237,7 +237,7 @@ ForthInterpreter >> _notEqual [
 	second = top ifTrue: [ stack push: 0 ] ifFalse: [ stack push: -1 ]
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _plus [
 	| top second |
 	top := stack pop.
@@ -245,23 +245,30 @@ ForthInterpreter >> _plus [
 	stack push: second + top
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
+ForthInterpreter >> _plusLoop [
+	| increment |
+	increment := stack pop.
+	self loopWithIncrement: increment
+]
+
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _pushOnReturnStack [
 	returnStack push: stack pop 
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _pushOnStack [
 	stack push: returnStack pop
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _questionMarkDup [
 	stack top = 0
 		ifFalse: [ stack push: stack top ]
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _slashMod [
 	| top second |
 	top := stack pop.
@@ -270,7 +277,7 @@ ForthInterpreter >> _slashMod [
 	stack push: second // top
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _starSlash [
 	| third second top |
 	top := stack pop.
@@ -279,7 +286,7 @@ ForthInterpreter >> _starSlash [
 	stack push: third * second // top
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _starSlashMod [
 	| third second top times |
 	top := stack pop.
@@ -290,17 +297,17 @@ ForthInterpreter >> _starSlashMod [
 	stack push: times // top
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _subtractsOne [
 	stack push: stack pop - 1
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _subtractsTwo [
 	stack push: stack pop - 2
 ]
 
-{ #category : #synonyms }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _zeroEqual [
 	| top |
 	top := stack pop.
@@ -665,32 +672,21 @@ ForthInterpreter >> lastVersionAtWord: word [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> loop [
-	| index limit position |	
+	self loopWithIncrement: 1
+]
+
+{ #category : #'forth-synonyms' }
+ForthInterpreter >> loopWithIncrement: increment [
+	| limit index position |
 	index := returnStack pop.
 	limit := returnStack pop.
-	index := index + 1.
-	index = limit 
-		ifTrue: [  
-			position := returnStack pop.
-		] 
-		ifFalse: [ 
-			position := returnStack top.
+	index := index + increment.
+	index >= limit
+		ifTrue: [ returnStack pop	"Remove position" ]
+		ifFalse: [ position := returnStack top.
 			stream position: position.
 			returnStack push: limit.
-			returnStack push: index
-		]
-	
-	"control := loopControlStack at: loopNestLevel.
-	index := control index.
-	limit := control limit.
-	index := index + 1.
-	control index: index.
-	index = limit
-		ifFalse: [ self repeat ]
-		ifTrue: [ 
-			loopControlStack removeLast.
-			self decrementLoopNestLevel ].
-	"
+			returnStack push: index ]
 ]
 
 { #category : #'forth-primitives' }
@@ -758,10 +754,9 @@ ForthInterpreter >> primitiveWords [
 	_comment _copyOnStack _divides _dividesByTwo _dot _dotQuote _dotS _equal _greaterThan 
 	_greaterThanZero _lessThan _lessThanZero _minus _mult _multipliesByTwo _notEqual _plus 
 	_pushOnReturnStack _pushOnStack _questionMarkDup _slashMod _subtractsOne _subtractsTwo 
-	_zeroEqual _starSlash _starSlashMod
+	_zeroEqual _starSlash _starSlashMod _plusLoop
 	
-	abort abs and char cr drop dup else emit #false forget if invert marker max min mod negate or over rot space spaces swap 	then #true do loop i	
-	j
+	abort abs and char cr drop dup else emit #false forget if invert marker max min mod negate or over rot space spaces swap 	then #true do loop i	j
 	)
 	
 	
@@ -1012,8 +1007,7 @@ ForthInterpreter >> synonyms [
 		'2*' -> '_multipliesByTwo'.				'2/' -> '_dividesByTwo'.
 		'r>' -> '_pushOnStack'.					'>r' -> '_pushOnReturnStack'.
 		'r@' -> '_copyOnStack'.					'*/' -> '_starSlash'.
-		'*/mod' -> '_starSlashMod'.
-	
+		'*/mod' -> '_starSlashMod'.				'+loop' -> '_plusLoop'.
 	} asDictionary 
 ]
 
