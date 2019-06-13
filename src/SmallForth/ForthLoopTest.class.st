@@ -5,12 +5,6 @@ Class {
 }
 
 { #category : #tests }
-ForthLoopTest >> testDescendentPlusDoLoop [
-	self assert: (forth eval: '-20 0 do i -3 +loop'; stackCopy) equals: #(0 -3 -6 -9 -12 -15 -18) reversed.
-
-]
-
-{ #category : #tests }
 ForthLoopTest >> testDoLoop [
 	self assert: (forth eval: '3 0 do 9 loop'; stackCopy) equals: #(9 9 9) reversed.
 	self assert: (forth eval: '5 2 do 9 loop'; stackCopy) equals: #(9 9 9) reversed.
@@ -22,6 +16,12 @@ ForthLoopTest >> testDoLoop [
 { #category : #tests }
 ForthLoopTest >> testDoLoopWithIndex [
 	self assert: (forth eval: '3 0 do i loop'; stackCopy) equals: #(0 1 2) reversed
+]
+
+{ #category : #tests }
+ForthLoopTest >> testNegativeIncrementPlusDoLoop [
+	self assert: (forth eval: '-20 0 do i -3 +loop'; stackCopy) equals: #(0 -3 -6 -9 -12 -15 -18) reversed.
+
 ]
 
 { #category : #tests }
