@@ -675,13 +675,14 @@ ForthInterpreter >> loop [
 	self loopWithIncrement: 1
 ]
 
-{ #category : #'forth-synonyms' }
+{ #category : #'forth-loop-support' }
 ForthInterpreter >> loopWithIncrement: increment [
-	| limit index position |
+	| limit index position sign |
 	index := returnStack pop.
 	limit := returnStack pop.
 	index := index + increment.
-	index >= limit
+	sign := increment sign.
+	(index - limit) * sign >= 0
 		ifTrue: [ returnStack pop	"Remove position" ]
 		ifFalse: [ position := returnStack top.
 			stream position: position.
