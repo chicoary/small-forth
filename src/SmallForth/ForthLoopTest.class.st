@@ -5,6 +5,13 @@ Class {
 }
 
 { #category : #tests }
+ForthLoopTest >> testBegintUntilLoop [
+	
+	self assert: (forth eval: '1 2 3 4 5 6 7 8 9 begin 5 < until'; stackCopy) equals: #(1 2 3) reversed.
+	 
+]
+
+{ #category : #tests }
 ForthLoopTest >> testDoLoop [
 	self assert: (forth eval: '3 0 do 9 loop'; stackCopy) equals: #(9 9 9) reversed.
 	self assert: (forth eval: '5 2 do 9 loop'; stackCopy) equals: #(9 9 9) reversed.

@@ -342,6 +342,14 @@ ForthInterpreter >> and [
 ]
 
 { #category : #'forth-primitives' }
+ForthInterpreter >> begin [
+	| position |
+	
+	position := stream position.
+	returnStack push: position.
+]
+
+{ #category : #'forth-primitives' }
 ForthInterpreter >> char [
 	| word |
 	word := self getNextWord.
@@ -764,7 +772,7 @@ ForthInterpreter >> primitiveWords [
 	_pushOnReturnStack _pushOnStack _questionMarkDup _slashMod _subtractsOne _subtractsTwo 
 	_zeroEqual _starSlash _starSlashMod _plusLoop
 	
-	abort abs and char cr drop dup else emit #false forget if invert marker max min mod negate or over rot space spaces swap 	then #true do loop i	j
+	abort abs and char cr drop dup else emit #false forget if invert marker max min mod negate or over 	rot space spaces swap 	then #true do loop i	j begin until
 	)
 	
 	
@@ -1036,6 +1044,18 @@ ForthInterpreter >> top [
 { #category : #'forth-primitives' }
 ForthInterpreter >> true [
 	stack push: -1
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> until [
+	| repeat position |
+	
+	repeat := stack pop = 0.
+	repeat
+		ifTrue: [ 
+			position := returnStack top.
+			stream position: position ]
+		ifFalse: [ returnStack pop ]
 ]
 
 { #category : #'forth-primitives' }
