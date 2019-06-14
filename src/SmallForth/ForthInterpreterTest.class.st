@@ -128,6 +128,15 @@ ForthInterpreterTest >> testClass [
 ]
 
 { #category : #tests }
+ForthInterpreterTest >> testClearTheStack [
+	
+	self should: [ forth eval: '1 2 3 XX' ] raise: ForthMissingWord.
+	self assert: [ forth stackCopy isEmpty ]
+		
+		
+]
+
+{ #category : #tests }
 ForthInterpreterTest >> testCopyFromReturnStack [
 	
 	forth eval: '7 >r r@'.

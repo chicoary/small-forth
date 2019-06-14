@@ -100,7 +100,7 @@ ForthInterpreter >> _abortQuote [
 	| abort |
 	abort := stack pop ~= 0.
 	abort
-		ifTrue: [ stack removeAll.
+		ifTrue: [ self emptyStack.
 			self _dotQuote.
 			self signalAbort ]
 		ifFalse: [ self getStringBeforeQuoteAndDiscardQuote: stream ]
@@ -319,7 +319,7 @@ ForthInterpreter >> abort [
 	| abort |
 	abort := stack pop ~= 0.
 	abort ifFalse: [ ^ self ].
-	stack removeAll.
+	self emptyStack.
 	self signalAbort
 ]
 
@@ -437,6 +437,11 @@ ForthInterpreter >> else [
 { #category : #'forth-primitives' }
 ForthInterpreter >> emit [
 	Transcript show: (Character value: stack pop)
+]
+
+{ #category : #evaluating }
+ForthInterpreter >> emptyStack [
+	stack removeAll
 ]
 
 { #category : #evaluating }
@@ -665,7 +670,9 @@ ForthInterpreter >> lastVersionAtWord: word [
 	| lastVersion index |
 	index := self indexOfWord: word.
 	index = 0
-		ifTrue: [ self signalMissingWord: word ].
+		ifTrue: [ 
+			self emptyStack. 
+			self signalMissingWord: word ].
 	lastVersion := (WordDictionary at: index) value.
 	^ lastVersion
 ]
