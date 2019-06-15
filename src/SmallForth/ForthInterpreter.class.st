@@ -28,7 +28,8 @@ Class {
 		'acceptUppercase',
 		'nestLevel',
 		'pairingStack',
-		'returnStack'
+		'returnStack',
+		'maxLoopCount'
 	],
 	#classVars : [
 		'WordDictionary'
@@ -334,6 +335,19 @@ ForthInterpreter >> acceptUppercase [
 ]
 
 { #category : #'forth-primitives' }
+ForthInterpreter >> again [
+	| loopCount position |
+	position := returnStack pop.
+	maxLoopCount > 0
+		ifTrue: [ loopCount := returnStack pop.
+			loopCount := loopCount + 1.
+			loopCount >= maxLoopCount ifTrue: [ self signalMaxLoopCountHasBeenReached ].
+			returnStack push: loopCount ].
+	stream position: position.	"again"
+	returnStack push: position
+]
+
+{ #category : #'forth-primitives' }
 ForthInterpreter >> and [
 	| top second |
 	top := stack pop.
@@ -343,7 +357,11 @@ ForthInterpreter >> and [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> begin [
-	| position |
+	| position loopCount |
+		
+	maxLoopCount > 0 ifTrue: [ 
+		loopCount := 0. 
+		returnStack push: loopCount ].
 	
 	position := stream position.
 	returnStack push: position.
@@ -583,7 +601,9 @@ ForthInterpreter >> initialize [
 	nestLevel := 0.
 	
 	pairingStack := Stack new.
-	returnStack := Stack new
+	returnStack := Stack new.
+	
+
 	
 ]
 
@@ -723,6 +743,11 @@ ForthInterpreter >> max [
 	stack push: (stack pop max: stack pop)
 ]
 
+{ #category : #'as yet unclassified' }
+ForthInterpreter >> maxLoopCount: anInteger [ 
+	maxLoopCount := anInteger.
+]
+
 { #category : #'forth-primitives' }
 ForthInterpreter >> min [
 	stack push: (stack pop min: stack pop)
@@ -773,6 +798,8 @@ ForthInterpreter >> primitiveWords [
 	_zeroEqual _starSlash _starSlashMod _plusLoop
 	
 	abort abs and char cr drop dup else emit #false forget if invert marker max min mod negate or over 	rot space spaces swap 	then #true do loop i	j begin until
+				
+	again
 	)
 	
 	
@@ -871,6 +898,11 @@ ForthInterpreter >> signalIfElseThenUnpairing [
 { #category : #'error signalling' }
 ForthInterpreter >> signalMarkerDuplicateSomeWord: word [ 
 	(ForthMarkerDuplicatedWord marker: word) signal
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> signalMaxLoopCountHasBeenReached [
+	ForthMaxLoopCountHasBeenReached new signal
 ]
 
 { #category : #'error signalling' }

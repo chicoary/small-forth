@@ -121,6 +121,22 @@ ForthInterpreterTest >> testAnd [
 ]
 
 { #category : #tests }
+ForthInterpreterTest >> testAtPutWithStack [
+	
+	| s x |
+	
+	self flag: #testing.
+	
+	s := Stack new.
+	x := 'whatever'.
+	s push: x; push: x.
+	self assert: s equals: { x. x }.
+	s at: 2 put: x.
+	self assert: s equals: { x }.
+	
+]
+
+{ #category : #tests }
 ForthInterpreterTest >> testClass [
 	
 		self should: [ forth eval: '42 class' ] raise: ForthMissingWord  

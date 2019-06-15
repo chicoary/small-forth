@@ -5,6 +5,14 @@ Class {
 }
 
 { #category : #tests }
+ForthLoopTest >> testBeginAgainLoop [
+ 
+	forth maxLoopCount: 50.
+
+	self should: [ forth eval: 'begin again' ] raise: ForthMaxLoopCountHasBeenReached
+]
+
+{ #category : #tests }
 ForthLoopTest >> testBegintUntilLoop [
 	
 	self assert: (forth eval: '1 2 3 4 5 6 7 8 9 begin 5 < until'; stackCopy) equals: #(1 2 3) reversed.
@@ -23,6 +31,14 @@ ForthLoopTest >> testDoLoop [
 { #category : #tests }
 ForthLoopTest >> testDoLoopWithIndex [
 	self assert: (forth eval: '3 0 do i loop'; stackCopy) equals: #(0 1 2) reversed
+]
+
+{ #category : #tests }
+ForthLoopTest >> testMaxLoopCount [
+	self flag: #implementing. "Testar outros loops que não o BEGIN AGAIN"
+	self flag: #testing. 
+	forth maxLoopCount: 50.
+	self should: [ forth eval: '10 0 do i . R> R> 1+ >R >R loop' ] raise: ForthMaxLoopCountHasBeenReached
 ]
 
 { #category : #tests }
