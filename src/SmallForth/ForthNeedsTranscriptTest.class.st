@@ -148,11 +148,12 @@ ForthNeedsTranscriptTest >> testDotQuoteWithEmptyString [
 { #category : #tests }
 ForthNeedsTranscriptTest >> testDotS [
 	
-	self useTranscriptOn:[
-	forth eval: '1 2 3 .s'.
-	self assert: forth stackCopy size equals: 3.
-	self assert: forth stackCopy equals: #(3 2 1).
-	self assert: (UIManager default confirm: 'Do you see an ''<3> 1 2 3'' on Transcript?').
+	self useTranscriptOn: [
+		
+		forth eval: '1 2 3 .s'.
+		self assert: forth stackCopy size equals: 3.
+		self assert: forth stackCopy equals: #(3 2 1).
+		self assert: (UIManager default confirm: 'Do you see an ''<3> 1 2 3'' on Transcript?').
 
 	]
 ]

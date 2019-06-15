@@ -32,6 +32,20 @@ ForthLoopTest >> testNegativeIncrementPlusDoLoop [
 ]
 
 { #category : #tests }
+ForthLoopTest >> testNestedBegintUntilLoop [
+	
+	self assert: (forth eval: 
+	'
+		: gen 0 do i loop ;
+	
+		20 gen begin begin 12 < until 7 < until
+	
+	'
+	; stackCopy) equals: #(0 1 2 3 4 5) reversed
+	 
+]
+
+{ #category : #tests }
 ForthLoopTest >> testNestedDoLoop [
 	self assert: (forth eval: '3 1 do 4 1 do i j loop loop'; stackCopy) equals: #(1 1 2 1 3 1 1 2 2 2 3 2) reversed
 ]
