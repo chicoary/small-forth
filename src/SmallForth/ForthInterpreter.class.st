@@ -604,6 +604,7 @@ ForthInterpreter >> initialize [
 	acceptUppercase := false.
 	
 	nestLevel := 0.
+	maxLoopCount := 0.
 	
 	pairingStack := Stack new.
 	returnStack := Stack new.
@@ -711,6 +712,11 @@ ForthInterpreter >> lastVersionAtWord: word [
 ]
 
 { #category : #'forth-primitives' }
+ForthInterpreter >> leave [
+	self skipUntilEndOfLoop 
+]
+
+{ #category : #'forth-primitives' }
 ForthInterpreter >> loop [
 	self loopWithIncrement: 1
 ]
@@ -813,9 +819,11 @@ ForthInterpreter >> primitiveWords [
 	_pushOnReturnStack _pushOnStack _questionMarkDup _slashMod _subtractsOne _subtractsTwo 
 	_zeroEqual _starSlash _starSlashMod _plusLoop
 	
-	abort abs and char cr drop dup else emit #false forget if invert marker max min mod negate or over 	rot space spaces swap 	then #true do loop i	j begin until
+	abort abs and char cr drop dup else emit #false forget if invert marker max min mod 
+	negate or over 	rot space spaces swap 	then #true do loop i	j begin until again
 				
-	again
+	leave
+	
 	)
 	
 	
@@ -974,7 +982,7 @@ ForthInterpreter >> skipStringUntilChar: char [
 ForthInterpreter >> skipUntilElseOrThenWithFalseLevel: aFalseNestLevel [ 
 		| word |
 		word := self getNextWord. 
-		word ifEmpty: [ ^ nil ].
+		word ifEmpty: [ ^ self ].
 		word = 'if' ifTrue: [ self pushIfToPairingStack. self incrementNestLevel ].
 		word = 'else' ifTrue: [ self checkPreviousIf. self pushElseToPairingStack. nestLevel = aFalseNestLevel ifTrue: [ ^ self ] ].
 		word = 'then' ifTrue: [ 
@@ -982,6 +990,15 @@ ForthInterpreter >> skipUntilElseOrThenWithFalseLevel: aFalseNestLevel [
 			nestLevel = aFalseNestLevel ifTrue: [ ^ self ]. 
 			self decrementNestLevel ].
 		self skipUntilElseOrThenWithFalseLevel: aFalseNestLevel
+]
+
+{ #category : #'forth-loop-support' }
+ForthInterpreter >> skipUntilEndOfLoop [
+	| word |
+	word := self getNextWord. 
+	word ifEmpty: [ ^ self ].
+	word = 'loop' ifTrue: [ ^ self ]. 
+	self skipUntilEndOfLoop
 ]
 
 { #category : #'forth-primitive-support' }

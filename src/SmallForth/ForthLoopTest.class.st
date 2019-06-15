@@ -34,6 +34,13 @@ ForthLoopTest >> testDoLoopWithIndex [
 ]
 
 { #category : #tests }
+ForthLoopTest >> testDoLoopWithLeave [
+
+	self assert: (forth eval: '1 10 0 do 2 leave 3 loop  4'; stackCopy) equals: #(1 2 4) reversed.
+	
+]
+
+{ #category : #tests }
 ForthLoopTest >> testMaxLoopCountWithDoLoop [
 	forth maxLoopCount: 1500.
 	self should: [ forth eval: '10 0 do i R> R> 1+ >R >R loop' ] 
