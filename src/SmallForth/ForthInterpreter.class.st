@@ -434,7 +434,12 @@ ForthInterpreter >> discardWhiteSpacesOn: aReadStream [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> do [
-	| index limit position |
+	| index limit position loopCount |
+	
+	maxLoopCount > 0 ifTrue: [ 
+		loopCount := 0. 
+		returnStack push: loopCount ].
+	
 	index := stack pop.
 	limit := stack pop.
 	position := stream position.
@@ -712,15 +717,26 @@ ForthInterpreter >> loop [
 
 { #category : #'forth-loop-support' }
 ForthInterpreter >> loopWithIncrement: increment [
-	| limit index position sign |
+	| limit index position sign loopCount |
+	
 	index := returnStack pop.
 	limit := returnStack pop.
+	position := returnStack pop.
+	
+	maxLoopCount > 0
+		ifTrue: [ loopCount := returnStack pop.
+			loopCount := loopCount + 1.
+			loopCount >= maxLoopCount ifTrue: [ self signalMaxLoopCountHasBeenReached ].
+			returnStack push: loopCount ].
+	
+	
 	index := index + increment.
 	sign := increment sign.
 	(index - limit) * sign >= 0
-		ifTrue: [ returnStack pop	"Remove position" ]
-		ifFalse: [ position := returnStack top.
+		ifTrue: [ "nothing" ]
+		ifFalse: [ 
 			stream position: position.
+			returnStack push: position.
 			returnStack push: limit.
 			returnStack push: index ]
 ]
@@ -743,7 +759,7 @@ ForthInterpreter >> max [
 	stack push: (stack pop max: stack pop)
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'forth-loop-support' }
 ForthInterpreter >> maxLoopCount: anInteger [ 
 	maxLoopCount := anInteger.
 ]

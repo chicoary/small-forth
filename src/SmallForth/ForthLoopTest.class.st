@@ -34,11 +34,10 @@ ForthLoopTest >> testDoLoopWithIndex [
 ]
 
 { #category : #tests }
-ForthLoopTest >> testMaxLoopCount [
-	self flag: #implementing. "Testar outros loops que não o BEGIN AGAIN"
-	self flag: #testing. 
-	forth maxLoopCount: 50.
-	self should: [ forth eval: '10 0 do i . R> R> 1+ >R >R loop' ] raise: ForthMaxLoopCountHasBeenReached
+ForthLoopTest >> testMaxLoopCountWithDoLoop [
+	forth maxLoopCount: 1500.
+	self should: [ forth eval: '10 0 do i R> R> 1+ >R >R loop' ] 
+	raise: ForthMaxLoopCountHasBeenReached
 ]
 
 { #category : #tests }

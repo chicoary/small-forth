@@ -124,9 +124,7 @@ ForthInterpreterTest >> testAnd [
 ForthInterpreterTest >> testAtPutWithStack [
 	
 	| s x |
-	
-	self flag: #testing.
-	
+		
 	s := Stack new.
 	x := 'whatever'.
 	s push: x; push: x.
