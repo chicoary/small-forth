@@ -981,7 +981,7 @@ ForthInterpreter >> skipStringUntilChar: char [
 { #category : #'forth-primitive-support' }
 ForthInterpreter >> skipUntilElseOrThenWithFalseLevel: aFalseNestLevel [ 
 		| word |
-		word := self getNextWord. 
+		word := self getNextWord asLowercase. 
 		word ifEmpty: [ ^ self ].
 		word = 'if' ifTrue: [ self pushIfToPairingStack. self incrementNestLevel ].
 		word = 'else' ifTrue: [ self checkPreviousIf. self pushElseToPairingStack. nestLevel = aFalseNestLevel ifTrue: [ ^ self ] ].
@@ -1004,7 +1004,7 @@ ForthInterpreter >> skipUntilEndOfLoop [
 { #category : #'forth-primitive-support' }
 ForthInterpreter >> skipUntilThenWithNestLevel: aTargetNestLevel [ 
 	| word |
-	word := self getNextWord. 
+	word := self getNextWord asLowercase. 
 	word ifEmpty: [ ^ nil ].
 	word = 'if' ifTrue: [ self pushIfToPairingStack. self incrementNestLevel ].
 	word = 'else' ifTrue: [ self pushElseToPairingStack. nestLevel = aTargetNestLevel ifTrue: [ ^ nil ] ].
