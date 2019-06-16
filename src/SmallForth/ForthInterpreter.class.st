@@ -997,7 +997,7 @@ ForthInterpreter >> skipUntilEndOfLoop [
 	| word |
 	word := self getNextWord. 
 	word ifEmpty: [ ^ self ].
-	word = 'loop' ifTrue: [ ^ self ]. 
+	word asLowercase = 'loop' ifTrue: [ ^ self ]. 
 	self skipUntilEndOfLoop
 ]
 

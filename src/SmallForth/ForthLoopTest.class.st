@@ -37,6 +37,7 @@ ForthLoopTest >> testDoLoopWithIndex [
 ForthLoopTest >> testDoLoopWithLeave [
 
 	self assert: (forth eval: '1 10 0 do 2 leave 3 loop  4'; stackCopy) equals: #(1 2 4) reversed.
+	self assert: (forth eval: '1 10 0 do 2 leave 3 LOOP  4'; stackCopy) equals: #(1 2 4) reversed.
 	
 ]
 
