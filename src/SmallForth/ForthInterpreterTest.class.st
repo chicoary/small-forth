@@ -26,8 +26,7 @@ ForthInterpreterTest >> closeTranscriptWindow [
 ForthInterpreterTest >> setUp [ 
 	super setUp.
 	forth := ForthInterpreter new.
-	forth resetDictionary.
-	self skipTranscriptTestsOff
+	forth resetDictionary
 ]
 
 { #category : #tests }

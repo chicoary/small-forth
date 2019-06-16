@@ -356,8 +356,6 @@ ForthNeedsTranscriptTest >> testMarker [
 { #category : #tests }
 ForthNeedsTranscriptTest >> testPage [
 	
-	self skipTranscriptTestsOff.
-	
 	self useTranscriptOn: [
 		forth eval: '
 			." Something is wrong, you can see me!"

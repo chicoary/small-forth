@@ -124,7 +124,7 @@ ForthInterpreter >> _backSlash [
 
 { #category : #'forth-synonyms' }
 ForthInterpreter >> _colon [
-	self compile: stream
+	self addWordToDictionaryWithStream: stream
 ]
 
 { #category : #'forth-synonyms' }
@@ -334,6 +334,24 @@ ForthInterpreter >> acceptUppercase [
 	acceptUppercase := true
 ]
 
+{ #category : #'forth-dictionary-support' }
+ForthInterpreter >> addWord: word ToDictionaryWithStream: aReadStream [
+	| car writeStream |
+	writeStream := WriteStream on: String empty.
+	car := self discardWhiteSpacesOn: aReadStream.
+	[ car = $; ]
+		whileFalse: [ writeStream nextPut: car.
+			car := aReadStream next ].
+	WordDictionary addFirst: word -> writeStream contents
+]
+
+{ #category : #'forth-dictionary-support' }
+ForthInterpreter >> addWordToDictionaryWithStream: aReadStream [
+	| word |
+	word := self getNextWord.
+	self addWord: word ToDictionaryWithStream: aReadStream
+]
+
 { #category : #'forth-primitives' }
 ForthInterpreter >> again [
 	| loopCount position |
@@ -395,18 +413,6 @@ ForthInterpreter >> checkPairingStackIsEmpty [
 { #category : #'if-else-then-support' }
 ForthInterpreter >> checkPreviousIf [
 	pairingStack top = #if ifFalse: [ self signalIfElseThenUnpairing ]
-]
-
-{ #category : #'forth-dictionary-support' }
-ForthInterpreter >> compile: aReadStream [
-	| word car writeStream |
-	writeStream := WriteStream on: String empty.
-	word := self getNextWord.
-	car := self discardWhiteSpacesOn: aReadStream.
-	[ car = $; ]
-		whileFalse: [ writeStream nextPut: car.
-			car := aReadStream next ].
-	WordDictionary addFirst: word -> writeStream contents
 ]
 
 { #category : #'forth-primitives' }
@@ -1005,7 +1011,7 @@ ForthInterpreter >> skipUntilEndOfLoop [
 
 	word := self getNextWord. 
 	word ifEmpty: [ ^ self ].
-	(#(loop again) includes: word asLowercase) ifTrue: [ ^ self ]. 
+	(#(loop again '+loop') includes: word asLowercase) ifTrue: [ ^ self ]. 
 	self skipUntilEndOfLoop
 ]
 
