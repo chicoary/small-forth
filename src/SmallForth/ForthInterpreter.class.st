@@ -995,9 +995,10 @@ ForthInterpreter >> skipUntilElseOrThenWithFalseLevel: aFalseNestLevel [
 { #category : #'forth-loop-support' }
 ForthInterpreter >> skipUntilEndOfLoop [
 	| word |
+
 	word := self getNextWord. 
 	word ifEmpty: [ ^ self ].
-	word asLowercase = 'loop' ifTrue: [ ^ self ]. 
+	(#(loop again) includes: word asLowercase) ifTrue: [ ^ self ]. 
 	self skipUntilEndOfLoop
 ]
 

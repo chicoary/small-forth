@@ -13,6 +13,12 @@ ForthLoopTest >> testBeginAgainLoop [
 ]
 
 { #category : #tests }
+ForthLoopTest >> testBeginAgainLoopWithLeave [
+
+	self assert: (forth eval: '1 begin 2 leave 3 again 4'; stackCopy) equals: #(1 2 4) reversed
+]
+
+{ #category : #tests }
 ForthLoopTest >> testBegintUntilLoop [
 	
 	self assert: (forth eval: '1 2 3 4 5 6 7 8 9 begin 5 < until'; stackCopy) equals: #(1 2 3) reversed.
