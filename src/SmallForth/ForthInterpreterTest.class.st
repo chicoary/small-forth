@@ -27,7 +27,7 @@ ForthInterpreterTest >> setUp [
 	super setUp.
 	forth := ForthInterpreter new.
 	forth resetDictionary.
-	skipTests := false
+	self skipTranscriptTestsOff
 ]
 
 { #category : #tests }

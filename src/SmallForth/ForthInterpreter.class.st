@@ -810,6 +810,12 @@ ForthInterpreter >> over [
 	
 ]
 
+{ #category : #'forth-primitives' }
+ForthInterpreter >> page [
+	
+	Transcript clear
+]
+
 { #category : #'forth-primitive-support' }
 ForthInterpreter >> primitiveWords [
 	^ #(
@@ -823,6 +829,7 @@ ForthInterpreter >> primitiveWords [
 	negate or over 	rot space spaces swap 	then #true do loop i	j begin until again
 				
 	leave
+	page
 	
 	)
 	

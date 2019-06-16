@@ -5,8 +5,18 @@ Class {
 }
 
 { #category : #running }
-ForthNeedsTranscriptTest >> setUp [ 
+ForthNeedsTranscriptTest >> setUp [
 	super setUp.
+	self skipTranscriptTestsOn
+]
+
+{ #category : #running }
+ForthNeedsTranscriptTest >> skipTranscriptTestsOff [
+	skipTests := false
+]
+
+{ #category : #running }
+ForthNeedsTranscriptTest >> skipTranscriptTestsOn [
 	skipTests := true
 ]
 
@@ -66,12 +76,10 @@ ForthNeedsTranscriptTest >> testBackSlash [
 { #category : #tests }
 ForthNeedsTranscriptTest >> testChar [
 		
-		self useTranscriptOn:[
+	self useTranscriptOn: [
 		forth eval: 'char * emit'.
 		self assert: forth stackCopy isEmpty.
 		self assert: (UIManager default confirm: 'Do you see an * on Transcript?').
-		
-	
 	]
 ]
 
@@ -342,6 +350,22 @@ ForthNeedsTranscriptTest >> testMarker [
 		self assert: (UIManager default confirm: 'Do you see an ''Hello, I speak Forth.'' in on Transcript?').
 
 	
+	]
+]
+
+{ #category : #tests }
+ForthNeedsTranscriptTest >> testPage [
+	
+	self skipTranscriptTestsOff.
+	
+	self useTranscriptOn: [
+		forth eval: '
+			." Something is wrong, you can see me!"
+			page
+			." PAGE works!"
+		'.
+		self assert: forth stackCopy isEmpty.
+		self assert: (UIManager default confirm: 'Do you see only an ''PAGE works!'' message on Transcript?').
 	]
 ]
 
