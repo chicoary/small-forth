@@ -63,6 +63,16 @@ ForthLoopTest >> testMaxLoopCountWithDoLoop [
 ]
 
 { #category : #tests }
+ForthLoopTest >> testMaxLoopCountWithPlusDoLoop [
+
+	self flag: #testing.
+
+	forth maxLoopCount: 50.
+	self should: [ forth eval: '10 0 do i R> R> 3 + >R >R 2 +loop' ] 
+	raise: ForthMaxLoopCountHasBeenReached
+]
+
+{ #category : #tests }
 ForthLoopTest >> testNegativeIncrementPlusDoLoop [
 	self assert: (forth eval: '-20 0 do i -3 +loop'; stackCopy) equals: #(0 -3 -6 -9 -12 -15 -18) reversed.
 
