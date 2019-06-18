@@ -19,6 +19,12 @@ ForthLoopTest >> testBeginAgainLoopWithLeave [
 ]
 
 { #category : #tests }
+ForthLoopTest >> testBeginWhileRepeat [
+
+	self assert: (forth eval: '1 begin 2 false while 3 repeat 4'; stackCopy) equals: #(1 2 4) reversed
+]
+
+{ #category : #tests }
 ForthLoopTest >> testBegintUntilLoop [
 	
 	self assert: (forth eval: '1 2 3 4 5 6 7 8 9 begin 5 < until'; stackCopy) equals: #(1 2 3) reversed.
@@ -64,8 +70,6 @@ ForthLoopTest >> testMaxLoopCountWithDoLoop [
 
 { #category : #tests }
 ForthLoopTest >> testMaxLoopCountWithPlusDoLoop [
-
-	self flag: #testing.
 
 	forth maxLoopCount: 50.
 	self should: [ forth eval: '10 0 do i R> R> 3 + >R >R 2 +loop' ] 

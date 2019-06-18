@@ -832,10 +832,9 @@ ForthInterpreter >> primitiveWords [
 	_zeroEqual _starSlash _starSlashMod _plusLoop
 	
 	abort abs and char cr drop dup else emit #false forget if invert marker max min mod 
-	negate or over 	rot space spaces swap 	then #true do loop i	j begin until again
+	negate or over 	rot space spaces swap 	then #true do loop i	j begin until again leave page
 				
-	leave
-	page
+		while
 	
 	)
 	
@@ -886,6 +885,15 @@ ForthInterpreter >> removeWordsAfterMarker: marker [
 	
 	
 	
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> repeat [
+
+	| position |
+	
+	position := returnStack top.
+	stream position: position.
 ]
 
 { #category : #'forth-dictionary-support' }
@@ -1013,6 +1021,16 @@ ForthInterpreter >> skipUntilEndOfLoop [
 	word ifEmpty: [ ^ self ].
 	(#(loop again '+loop') includes: word asLowercase) ifTrue: [ ^ self ]. 
 	self skipUntilEndOfLoop
+]
+
+{ #category : #'forth-loop-support' }
+ForthInterpreter >> skipUntilRepeat [
+	| word |
+
+	word := self getNextWord. 
+	word ifEmpty: [ ^ self ].
+	(word asLowercase = 'repeat') ifTrue: [ ^ self ]. 
+	self skipUntilRepeat
 ]
 
 { #category : #'forth-primitive-support' }
@@ -1148,4 +1166,12 @@ ForthInterpreter >> updatePairingStack [
 { #category : #'forth-primitives' }
 ForthInterpreter >> updatePairingStackForElse [
 	pairingStack push: #else
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> while [
+	| bool |
+	
+	bool := stack pop ~= 0.
+	bool ifFalse: [ self skipUntilRepeat ]
 ]
