@@ -615,6 +615,72 @@ ForthInterpreterTest >> testUppercase [
 ]
 
 { #category : #tests }
+ForthInterpreterTest >> testVariable [
+		
+		self assert: (forth eval: '
+		
+			variable date
+			variable month
+			variable year
+			
+			18 date !
+			06 month !
+			2019 year !
+			
+			date @
+			month @
+			year @
+		
+		'; stackCopy) equals: #(18 6 2019) reversed
+		
+	
+]
+
+{ #category : #tests }
+ForthInterpreterTest >> testVariableInsideWord [
+		
+		self assert: (forth eval: '
+		
+			variable date
+			variable month
+
+			18 date  !
+			 6 month !
+			
+			: test variable date 19 date ! date @ month @ ;
+			
+			test
+			date @
+		
+		'; stackCopy) equals: #(19 6 18) reversed
+		
+	
+]
+
+{ #category : #tests }
+ForthInterpreterTest >> testVariableShadowInsideWord [
+		
+			self assert: (forth eval: '
+		
+			variable date
+			variable month
+			variable year
+
+			18 date  !
+			 6 month !
+			2019 year !
+			
+			: test  variable year 2020 year ! date @ month @ year @ ;
+		
+			test
+			date @ month @	year @
+		
+		'; stackCopy) equals: #(18 6 2020 18 6 2019) reversed
+		
+	
+]
+
+{ #category : #tests }
 ForthInterpreterTest >> testZeroEqual [ 
 	
 	self assert: (forth eval: '7 dup - 0='; top) equals: -1.

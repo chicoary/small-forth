@@ -27,9 +27,10 @@ Class {
 		'stream',
 		'acceptUppercase',
 		'nestLevel',
-		'pairingStack',
 		'returnStack',
-		'maxLoopCount'
+		'maxLoopCount',
+		'variables',
+		'pairingLoopStack'
 	],
 	#classVars : [
 		'WordDictionary'
@@ -117,6 +118,18 @@ ForthInterpreter >> _addsTwo [
 	stack push: stack pop + 2
 ]
 
+{ #category : #'variable-support' }
+ForthInterpreter >> _at [
+	
+	| variableAddress variableValue |
+	
+	variableAddress := stack pop.
+	
+	variableValue := (variables detect: [ :assoc | assoc key == variableAddress ]) value.
+	
+	stack push: variableValue 
+]
+
 { #category : #'forth-synonyms' }
 ForthInterpreter >> _backSlash [
 	self skipBackSlashComment: stream
@@ -176,6 +189,17 @@ ForthInterpreter >> _equal [
 	top := stack pop.
 	second := stack pop.
 	second = top ifTrue: [ stack push: -1 ] ifFalse: [ stack push: 0 ]
+]
+
+{ #category : #'variable-support' }
+ForthInterpreter >> _exclamationMark [
+
+	| variableAddress variableValue |
+
+	variableAddress := stack pop.
+	variableValue := stack pop.
+	
+	(variables detect: [ :assoc | assoc key == variableAddress ]) value: variableValue
 ]
 
 { #category : #'forth-synonyms' }
@@ -251,6 +275,17 @@ ForthInterpreter >> _plusLoop [
 	| increment |
 	increment := stack pop.
 	self loopWithIncrement: increment
+]
+
+{ #category : #'variable-support' }
+ForthInterpreter >> _pushAddressOfVariable [
+	
+	| variableName variableAddress |
+	
+	variableName := self getNextWord.
+	variableAddress := self addressOfVariableNamed: variableName.
+	
+	stack push: variableAddress
 ]
 
 { #category : #'forth-synonyms' }
@@ -334,7 +369,7 @@ ForthInterpreter >> acceptUppercase [
 	acceptUppercase := true
 ]
 
-{ #category : #'forth-dictionary-support' }
+{ #category : #'dictionary-support' }
 ForthInterpreter >> addWord: word ToDictionaryWithStream: aReadStream [
 	| car writeStream |
 	writeStream := WriteStream on: String empty.
@@ -345,11 +380,16 @@ ForthInterpreter >> addWord: word ToDictionaryWithStream: aReadStream [
 	WordDictionary addFirst: word -> writeStream contents
 ]
 
-{ #category : #'forth-dictionary-support' }
+{ #category : #'dictionary-support' }
 ForthInterpreter >> addWordToDictionaryWithStream: aReadStream [
 	| word |
 	word := self getNextWord.
 	self addWord: word ToDictionaryWithStream: aReadStream
+]
+
+{ #category : #'variable-support' }
+ForthInterpreter >> addressOfVariableNamed: variableName [
+	^ variableName asSymbol hash
 ]
 
 { #category : #'forth-primitives' }
@@ -406,18 +446,36 @@ ForthInterpreter >> checkNestLevel [
 ]
 
 { #category : #evaluating }
-ForthInterpreter >> checkPairingStackIsEmpty [
-	pairingStack ifNotEmpty: [ self signalIfElseThenUnpairing ] 
+ForthInterpreter >> checkPairingLoopStackIsEmpty [
+	pairingLoopStack ifNotEmpty: [ self signalIfElseThenUnpairing ] 
 ]
 
 { #category : #'if-else-then-support' }
 ForthInterpreter >> checkPreviousIf [
-	pairingStack top = #if ifFalse: [ self signalIfElseThenUnpairing ]
+	pairingLoopStack top = #if ifFalse: [ self signalIfElseThenUnpairing ]
 ]
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> cr [
 	Transcript show: Character cr
+]
+
+{ #category : #'variable-support' }
+ForthInterpreter >> createEntryOfVariableNamed: aVariableName [
+	| variableAddress |
+	
+	variableAddress := self addressOfVariableNamed: aVariableName.
+	variables addFirst: variableAddress -> 0	"zero"
+]
+
+{ #category : #'variable-support' }
+ForthInterpreter >> createVariableNamed: aVariableName [ 
+	| variableEntryString |
+	
+	self createEntryOfVariableNamed: aVariableName.
+	
+	variableEntryString := '_pushAddressOfVariable {1}' format: { aVariableName }.
+	WordDictionary addFirst: aVariableName -> variableEntryString
 ]
 
 { #category : #'if-else-then-support' }
@@ -466,7 +524,7 @@ ForthInterpreter >> dup [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> else [
-	(pairingStack isEmpty or: [pairingStack top ~= #if]) ifTrue: [ self signalIfElseThenUnpairing ].
+	(pairingLoopStack isEmpty or: [pairingLoopStack top ~= #if]) ifTrue: [ self signalIfElseThenUnpairing ].
 	self pushElseToPairingStack.
 	self skipUntilElseOrThenWithFalseLevel: nestLevel 
 ]
@@ -486,28 +544,33 @@ ForthInterpreter >> eval [
 	| word | 
 	word := self getNextWord. 
 	[ word isEmpty ]
-		whileFalse: [ (self isNumber: word)
+		whileFalse: [ 
+			(self isNumber: word)
 				ifTrue: [ self pushNumberToStack: word ]
 				ifFalse: [ self forthPerform: word ].
 			word := self getNextWord ].
-	self checkPairingStackIsEmpty
+	self checkPairingLoopStackIsEmpty
 ]
 
 { #category : #evaluating }
 ForthInterpreter >> eval: aForthExpression [
 	self 
-		stream: (ReadStream on: aForthExpression);
+		stream: (ReadStream on: aForthExpression); "New stream"
 		stack: ForthStack new;	"New stack"
+		variables: OrderedCollection new; "New collection"
 		eval
 ]
 
 { #category : #evaluating }
 ForthInterpreter >> evalWord: word [
+
 	^ [ 
 		ForthInterpreter new
 			stream: (ReadStream on: (self lastVersionAtWord: word));
-			stack: self stack; "Same stack"
-			eval 
+			stack: "self" stack; "Same stack"
+			variables: variables; "Same variables"
+			eval;
+			removeLocalVariables. 
 		]
 		on: KeyNotFound
 		do: [ (ForthMissingWord messageText: ('Missing word: {1}' format: {word}))
@@ -574,6 +637,24 @@ ForthInterpreter >> getStringBeforeQuoteAndDiscardQuote: aReadStream [
    ^ writeStream  contents
 ]
 
+{ #category : #'variable-support' }
+ForthInterpreter >> getValueOnShadowedVariableAddress: aVariableAddress [
+	(variables
+		detect: [ :assoc | assoc key == aVariableAddress ]) value
+]
+
+{ #category : #'variable-support' }
+ForthInterpreter >> getValueOnVariableAddress: variableAddress [ 
+	^ (variables
+		detect: [ :assoc | assoc key == variableAddress ]) value
+]
+
+{ #category : #'variable-support' }
+ForthInterpreter >> getValueOnVariableAddress: variableAddress onVariableCollection: aVariableCollection [
+	^ (aVariableCollection
+		detect: [ :assoc | assoc key == variableAddress ]) value
+]
+
 { #category : #'forth-primitives' }
 ForthInterpreter >> i [
 	| index |	
@@ -595,7 +676,7 @@ ForthInterpreter >> incrementNestLevel [
 	nestLevel := nestLevel + 1
 ]
 
-{ #category : #'forth-dictionary-support' }
+{ #category : #'dictionary-support' }
 ForthInterpreter >> indexOfWord: word [ 
 	| index |
 	index := 0.
@@ -608,15 +689,10 @@ ForthInterpreter >> indexOfWord: word [
 { #category : #initialization }
 ForthInterpreter >> initialize [
 	acceptUppercase := false.
-	
 	nestLevel := 0.
 	maxLoopCount := 0.
-	
-	pairingStack := Stack new.
-	returnStack := Stack new.
-	
-
-	
+	pairingLoopStack := Stack new.
+	returnStack := Stack new
 ]
 
 { #category : #'forth-primitives' }
@@ -705,7 +781,7 @@ ForthInterpreter >> j [
 	stack push: index
 ]
 
-{ #category : #'forth-dictionary-support' }
+{ #category : #'dictionary-support' }
 ForthInterpreter >> lastVersionAtWord: word [
 	| lastVersion index |
 	index := self indexOfWord: word.
@@ -727,7 +803,7 @@ ForthInterpreter >> loop [
 	self loopWithIncrement: 1
 ]
 
-{ #category : #'forth-loop-support' }
+{ #category : #'loop-support' }
 ForthInterpreter >> loopWithIncrement: increment [
 	| limit index position sign loopCount |
 	
@@ -760,7 +836,7 @@ ForthInterpreter >> marker [
 	self markerWord: marker
 ]
 
-{ #category : #'forth-dictionary-support' }
+{ #category : #'dictionary-support' }
 ForthInterpreter >> markerWord: marker [
 	self checkDuplicatedMarker: marker.
 	WordDictionary addFirst: marker -> ('__marker {1}' format: {marker})
@@ -771,7 +847,7 @@ ForthInterpreter >> max [
 	stack push: (stack pop max: stack pop)
 ]
 
-{ #category : #'forth-loop-support' }
+{ #category : #'loop-support' }
 ForthInterpreter >> maxLoopCount: anInteger [ 
 	maxLoopCount := anInteger.
 ]
@@ -792,6 +868,11 @@ ForthInterpreter >> mod [
 { #category : #'forth-primitives' }
 ForthInterpreter >> negate [
 	stack push: stack pop negated
+]
+
+{ #category : #'variable-support' }
+ForthInterpreter >> newVariableCollection [
+	^ OrderedCollection new
 ]
 
 { #category : #'forth-primitives' }
@@ -831,10 +912,15 @@ ForthInterpreter >> primitiveWords [
 	_pushOnReturnStack _pushOnStack _questionMarkDup _slashMod _subtractsOne _subtractsTwo 
 	_zeroEqual _starSlash _starSlashMod _plusLoop
 	
+	_pushAddressOfVariable
+	_exclamationMark
+	_at
+	
 	abort abs and char cr drop dup else emit #false forget if invert marker max min mod 
-	negate or over 	rot space spaces swap 	then #true do loop i	j begin until again leave page
-				
-		while
+	negate or over 	rot space spaces swap 	then #true do loop i	j begin until again leave 
+	page while
+	
+	variable
 	
 	)
 	
@@ -843,12 +929,18 @@ ForthInterpreter >> primitiveWords [
 
 { #category : #'if-else-then-support' }
 ForthInterpreter >> pushElseToPairingStack [
-	pairingStack push: #else
+	pairingLoopStack push: #else
+]
+
+{ #category : #'variable-support' }
+ForthInterpreter >> pushFlagOnVariables: aVariableCollection [ 
+	
+	aVariableCollection addFirst: -1 "flag" -> nil
 ]
 
 { #category : #'if-else-then-support' }
 ForthInterpreter >> pushIfToPairingStack [
-	pairingStack push: #if
+	pairingLoopStack push: #if
 ]
 
 { #category : #evaluating }
@@ -858,13 +950,13 @@ ForthInterpreter >> pushNumberToStack: word [
 
 { #category : #removing }
 ForthInterpreter >> removeElseAndIfFromPairingStack [
-	pairingStack top = #else
-		ifTrue: [ pairingStack pop ].
-	pairingStack pop = #if
+	pairingLoopStack top = #else
+		ifTrue: [ pairingLoopStack pop ].
+	pairingLoopStack pop = #if
 		ifFalse: [ self signalIfElseThenUnpairing ]
 ]
 
-{ #category : #'forth-dictionary-support' }
+{ #category : #'dictionary-support' }
 ForthInterpreter >> removeLastVersionOfWord: word [
 	| index |
 	index := self indexOfWord: word.
@@ -873,7 +965,15 @@ ForthInterpreter >> removeLastVersionOfWord: word [
 	WordDictionary removeAt: index
 ]
 
-{ #category : #'forth-dictionary-support' }
+{ #category : #'variable-support' }
+ForthInterpreter >> removeLocalVariables [
+	
+	variables first key = -1 "flag" ifTrue: [ variables removeFirst. ^ self ].
+	variables removeFirst.
+	self removeLocalVariables
+]
+
+{ #category : #'dictionary-support' }
 ForthInterpreter >> removeWordsAfterMarker: marker [ 
 
 	[ WordDictionary first key = marker ] whileFalse: [  
@@ -896,7 +996,7 @@ ForthInterpreter >> repeat [
 	stream position: position.
 ]
 
-{ #category : #'forth-dictionary-support' }
+{ #category : #'dictionary-support' }
 ForthInterpreter >> resetDictionary [
 	WordDictionary removeAll 
 ]
@@ -1013,7 +1113,7 @@ ForthInterpreter >> skipUntilElseOrThenWithFalseLevel: aFalseNestLevel [
 		self skipUntilElseOrThenWithFalseLevel: aFalseNestLevel
 ]
 
-{ #category : #'forth-loop-support' }
+{ #category : #'loop-support' }
 ForthInterpreter >> skipUntilEndOfLoop [
 	| word |
 
@@ -1023,7 +1123,7 @@ ForthInterpreter >> skipUntilEndOfLoop [
 	self skipUntilEndOfLoop
 ]
 
-{ #category : #'forth-loop-support' }
+{ #category : #'loop-support' }
 ForthInterpreter >> skipUntilRepeat [
 	| word |
 
@@ -1121,13 +1221,17 @@ ForthInterpreter >> synonyms [
 		'r>' -> '_pushOnStack'.					'>r' -> '_pushOnReturnStack'.
 		'r@' -> '_copyOnStack'.					'*/' -> '_starSlash'.
 		'*/mod' -> '_starSlashMod'.				'+loop' -> '_plusLoop'.
+						
+		'!' -> '_exclamationMark'.
+		'@' -> '_at'.
+		
 	} asDictionary 
 ]
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> then [
-	self updatePairingStack.
-	nestLevel = 1 ifTrue: [ self checkPairingStackIsEmpty ].
+	self updatePairingLoopStack.
+	nestLevel = 1 ifTrue: [ self checkPairingLoopStackIsEmpty ].
 	self decrementNestLevel.
 	
 	
@@ -1156,16 +1260,32 @@ ForthInterpreter >> until [
 ]
 
 { #category : #'forth-primitives' }
-ForthInterpreter >> updatePairingStack [
-	pairingStack top = #else
-		ifTrue: [ pairingStack pop ].
-	pairingStack pop = #if
+ForthInterpreter >> updatePairingLoopStack [
+	pairingLoopStack top = #else
+		ifTrue: [ pairingLoopStack pop ].
+	pairingLoopStack pop = #if
 		ifFalse: [ self signalIfElseThenUnpairing ]
 ]
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> updatePairingStackForElse [
-	pairingStack push: #else
+	pairingLoopStack push: #else
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> variable [
+	| variableName |
+	
+	variableName := self getNextWord.
+	self createVariableNamed: variableName  
+]
+
+{ #category : #'variable-support' }
+ForthInterpreter >> variables: aVariableCollection [ 
+	
+	self pushFlagOnVariables: aVariableCollection.
+		
+	variables := aVariableCollection
 ]
 
 { #category : #'forth-primitives' }
