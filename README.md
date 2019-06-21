@@ -22,7 +22,7 @@ Strings are displayed in Pharo Smalltalk Transcript.
 
 ![SmallForth Hello World](https://chicoary.files.wordpress.com/2019/06/smallforth-hello-world.png)
 
-There is still no REPL available.
+There is still no [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop) available.
 
 ## Examples
 
