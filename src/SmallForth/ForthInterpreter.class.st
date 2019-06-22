@@ -30,7 +30,8 @@ Class {
 		'returnStack',
 		'maxLoopCount',
 		'variables',
-		'pairingLoopStack'
+		'pairingLoopStack',
+		'positionAfterRepeat'
 	],
 	#classVars : [
 		'WordDictionary'
@@ -979,6 +980,10 @@ ForthInterpreter >> repeat [
 
 	| position |
 	
+	self flag: #fix. "The implementation below does not take into account nested loops.
+	A simple fix is reset positionAfterRepeat after escape from loop."
+	positionAfterRepeat ifNil: [ positionAfterRepeat := stream position ].
+	
 	position := returnStack top.
 	stream position: position.
 ]
@@ -1113,6 +1118,10 @@ ForthInterpreter >> skipUntilEndOfLoop [
 { #category : #'loop-support' }
 ForthInterpreter >> skipUntilRepeat [
 	| word |
+	
+	self flag: #fix. "The implementation below does not take into account nested loops.
+	A simple fix is reset positionAfterRepeat after escape from loop."
+	positionAfterRepeat ifNotNil: [  stream position: positionAfterRepeat. ^ self ].
 
 	word := self getNextWord. 
 	word ifEmpty: [ ^ self ].
