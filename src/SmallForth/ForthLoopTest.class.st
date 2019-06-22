@@ -25,6 +25,17 @@ ForthLoopTest >> testBeginWhileRepeat [
 ]
 
 { #category : #tests }
+ForthLoopTest >> testBeginWhileRepeatWithVariable [
+
+	self assert: (forth eval: '
+	variable x
+	0 x !
+	1 begin 2 x @ 1+ x ! x @ 5 < while 3 repeat 4
+	'
+	; stackCopy) equals: #(1 2 3 2 3 2 3 2 3 2 4) reversed
+]
+
+{ #category : #tests }
 ForthLoopTest >> testBegintUntilLoop [
 	
 	self assert: (forth eval: '1 2 3 4 5 6 7 8 9 begin 5 < until'; stackCopy) equals: #(1 2 3) reversed.

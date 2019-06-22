@@ -906,22 +906,9 @@ ForthInterpreter >> page [
 { #category : #'forth-primitive-support' }
 ForthInterpreter >> primitiveWords [
 	^ #(
-	_2drop _2dup _2over _2swap __marker _abortQuote _addsOne _addsTwo _backSlash _colon 
-	_comment _copyOnStack _divides _dividesByTwo _dot _dotQuote _dotS _equal _greaterThan 
-	_greaterThanZero _lessThan _lessThanZero _minus _mult _multipliesByTwo _notEqual _plus 
-	_pushOnReturnStack _pushOnStack _questionMarkDup _slashMod _subtractsOne _subtractsTwo 
-	_zeroEqual _starSlash _starSlashMod _plusLoop
-	
-	_pushAddressOfVariable
-	_exclamationMark
-	_at
-	
-	abort abs and char cr drop dup else emit #false forget if invert marker max min mod 
-	negate or over 	rot space spaces swap 	then #true do loop i	j begin until again leave 
-	page while
-	
-	variable
-	
+	_2drop _2dup _2over _2swap __marker _abortQuote _addsOne _addsTwo _at _backSlash _colon 	_comment _copyOnStack _divides _dividesByTwo _dot _dotQuote _dotS _equal 	_exclamationMark 	_greaterThan _greaterThanZero _lessThan _lessThanZero _minus _mult _multipliesByTwo _notEqual 	_plus _plusLoop _pushAddressOfVariable 	_pushOnReturnStack _pushOnStack _questionMarkDup 	_slashMod _starSlash _starSlashMod _subtractsOne _subtractsTwo _zeroEqual 
+					
+	abort abs again and 	begin char cr do drop dup else emit #false forget i if invert j leave loop 	marker max min mod 	negate or over page rot space spaces swap then 	#true until variable 	while repeat		
 	)
 	
 	
