@@ -44,7 +44,7 @@ To obtain the contents of the stack use `stackCopy`:
 (ForthInterpreter new eval: '1 2 dup';stackCopy) asArray >>> #(2 2 1)
 ```
 
-Here is a more complex example:
+Here is a more complex example (See [4. Decisions, Decisions…](https://www.forth.com/starting-forth/4-conditional-if-then-statements/) in Starting Forth):
 
 
 ```Smalltalk
