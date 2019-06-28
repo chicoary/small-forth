@@ -1,8 +1,193 @@
 Class {
 	#name : #ForthLoopTest,
 	#superclass : #ForthInterpreterTest,
+	#classInstVars : [
+		'generateAll'
+	],
 	#category : #'SmallForth-Tests-Core'
 }
+
+{ #category : #'as yet unclassified' }
+ForthLoopTest class >> arrayTimes: x fromYArray: yArray andZArray: zArray [ 
+	| array coll |
+	self flag: #implementing.
+	
+	coll := OrderedCollection empty.
+	
+	coll add: 1.
+	
+	coll := coll, yArray.
+	x timesRepeat: [ coll := coll, zArray, yArray ].
+	
+	coll add: 10.
+	
+	array := coll asArray.
+	^ array
+	
+]
+
+{ #category : #'code generation' }
+ForthLoopTest class >> calculateStackFromCounter: aCounter [
+	| x y z xTimes yTimes zTimes stackString yArray zArray xArray |
+	self flag: #implementing.
+	x := (aCounter at: 1) digitValue.
+	y := (aCounter at: 2) digitValue.
+	z := (aCounter at: 3) digitValue.
+	self flag: #todo.	"Usar arrays em vez de strings e depois usar #asString para converter em strinh o array gerado"
+	yArray := self yArrayFrom: y.
+	zArray := self zArrayFrom: z.
+	xArray := self arrayTimes: x fromYArray: yArray andZArray: zArray.
+	stackString := xArray asString.
+
+	"xTimes := ''.
+	yTimes := ''.
+	zTimes := ''.
+	
+	yTimes := yTimes, ' 2 3 '.
+	y timesRepeat: [ yTimes := yTimes, ' 4 3 ' ].
+	yTimes := yTimes, ' 5 '.
+	
+	zTimes := zTimes, ' 6 7 '.
+	z timesRepeat: [ zTimes := zTimes, ' 8 7 ' ].
+	zTimes := zTimes, ' 9 '.
+	
+	xTimes := xTimes, yTimes.
+	x timesRepeat: [ xTimes := xTimes, zTimes, yTimes ].
+	
+	stackString := '#(1 {1} 10)' format: { xTimes }."
+	^ stackString
+]
+
+{ #category : #'code generation' }
+ForthLoopTest class >> compileFromMethodSource: source [
+	"^ self compile: source classified: 'generated-test'"
+	
+	(generateAll
+		or: [ (self canUnderstand: source asInstanceSideBehaviorName asSymbol) not ])
+		ifTrue: [ 
+			self compile: source classified: 'generated-test' ]
+]
+
+{ #category : #initialization }
+ForthLoopTest class >> generateMissingTestsOnly [
+	generateAll := false
+]
+
+{ #category : #'code generation' }
+ForthLoopTest class >> generateNestedBeginWhileRepeatLoopTests [
+	<script>
+	| smallForthSource max string size testMethodSource |
+	self flag: #todo.	"Evitar gerar duas vezes um teste. Ver o gerador de testes para os nested ifs"
+
+	"(Trace reset; entries) inspect."
+	[ :job | 
+	job title: 'Generating tests for loops BEGIN WHILE REPEAT' translated.
+	max := 3r222.
+	0 to: max do: [ :n | 
+		job progress: 1.0 * n / max.
+		(Delay forMilliseconds: 10) wait.
+		string := '000' , (n radix: 3).
+		size := string size.
+		string := string copyFrom: size - 2 to: size.
+		smallForthSource := self
+			sourceOfNestedBeginWhileRepeatLoopTestFor: string.
+		testMethodSource := self
+			testMethodSourceOfNestedBeginWhileRepeatLoopFor: smallForthSource
+			counter: string.
+		self compileFromMethodSource: testMethodSource ] ] asJob run.
+	self inform: 'Done'
+]
+
+{ #category : #'initialize - event' }
+ForthLoopTest class >> initialize [ 
+	self generateMissingTestsOnly
+]
+
+{ #category : #'code generation' }
+ForthLoopTest class >> sourceOfNestedBeginWhileRepeatLoopTestFor: string [ 
+
+	| source a b c |
+
+	self flag: #implmenting.
+	
+	a := (string at: 1) digitValue.	
+	b := (string at: 2) digitValue.
+	c := (string at: 3) digitValue.
+	
+	source := ' variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ {2} < while 4 y @ 1+ y ! repeat 5
+		x @ {1} <
+	while 6
+		0 z ! begin 7 z @ {3} < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	' format: { a . b . c }.
+	^ source
+]
+
+{ #category : #'code generation' }
+ForthLoopTest class >> swiftForthSourceCompacted: smallForthSource [
+	^ (': test {1} ;' format: {smallForthSource}) withSeparatorsCompacted
+]
+
+{ #category : #'code generation' }
+ForthLoopTest class >> testMethodSourceOfNestedBeginWhileRepeatLoopFor: smallForthSource counter: aCounter [ 
+	| testMethodSource stream swiftForthSource |
+	
+	swiftForthSource := self swiftForthSourceCompacted: smallForthSource.
+	
+	stream := WriteStream on: String empty.
+	
+	stream << 'testNestedBeginWhileRepeatLoop_' << aCounter.
+	stream cr. 
+	
+	stream cr. 
+	stream nextPut: $".
+	stream cr. 
+	stream << swiftForthSource.
+	stream cr. 
+	stream nextPut: $".
+	stream cr.
+	
+	stream cr.  
+	stream << 'self assert: (forth eval: '''. 
+	stream cr. 
+	stream << smallForthSource.
+	stream cr. 
+	stream << ''''.
+	stream cr. 
+	stream << ('; stackCopy) equals: {1} reversed' format: { self calculateStackFromCounter: aCounter } ).
+	
+	testMethodSource := stream contents.
+	
+	^ testMethodSource
+]
+
+{ #category : #'as yet unclassified' }
+ForthLoopTest class >> yArrayFrom: y [ 
+	| array coll |
+	self flag: #testing. 
+	coll := OrderedCollection empty.
+	coll add: 2; add: 3.
+	y timesRepeat: [ coll add: 4; add: 3 ].
+	coll add: 5.
+	array := coll asArray.
+	^ array
+]
+
+{ #category : #'as yet unclassified' }
+ForthLoopTest class >> zArrayFrom: z [ 
+	| array coll |
+	self flag: #testing. 
+	coll := OrderedCollection empty.
+	coll add: 6; add: 7.
+	z timesRepeat: [ coll add: 8; add: 7 ].
+	coll add: 9.
+	array := coll asArray.
+	^ array
+]
 
 { #category : #tests }
 ForthLoopTest >> testBeginAgainLoop [
@@ -91,6 +276,600 @@ ForthLoopTest >> testMaxLoopCountWithPlusDoLoop [
 ForthLoopTest >> testNegativeIncrementPlusDoLoop [
 	self assert: (forth eval: '-20 0 do i -3 +loop'; stackCopy) equals: #(0 -3 -6 -9 -12 -15 -18) reversed.
 
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_000 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5 x @ 0 < while 6 0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5
+		x @ 0 <
+	while 6
+		0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_001 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5 x @ 0 < while 6 0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5
+		x @ 0 <
+	while 6
+		0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_002 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5 x @ 0 < while 6 0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5
+		x @ 0 <
+	while 6
+		0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_010 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5 x @ 0 < while 6 0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5
+		x @ 0 <
+	while 6
+		0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_011 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5 x @ 0 < while 6 0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5
+		x @ 0 <
+	while 6
+		0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_012 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5 x @ 0 < while 6 0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5
+		x @ 0 <
+	while 6
+		0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_020 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5 x @ 0 < while 6 0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5
+		x @ 0 <
+	while 6
+		0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_021 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5 x @ 0 < while 6 0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5
+		x @ 0 <
+	while 6
+		0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_022 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5 x @ 0 < while 6 0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5
+		x @ 0 <
+	while 6
+		0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_100 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5 x @ 1 < while 6 0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5
+		x @ 1 <
+	while 6
+		0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 5 6 7 9 2 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_101 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5 x @ 1 < while 6 0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5
+		x @ 1 <
+	while 6
+		0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 5 6 7 8 7 9 2 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_102 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5 x @ 1 < while 6 0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5
+		x @ 1 <
+	while 6
+		0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 5 6 7 8 7 8 7 9 2 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_110 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5 x @ 1 < while 6 0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5
+		x @ 1 <
+	while 6
+		0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 5 6 7 9 2 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_111 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5 x @ 1 < while 6 0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5
+		x @ 1 <
+	while 6
+		0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 5 6 7 8 7 9 2 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_112 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5 x @ 1 < while 6 0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5
+		x @ 1 <
+	while 6
+		0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_120 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5 x @ 1 < while 6 0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5
+		x @ 1 <
+	while 6
+		0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 4 3 5 6 7 9 2 3 4 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_121 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5 x @ 1 < while 6 0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5
+		x @ 1 <
+	while 6
+		0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 4 3 5 6 7 8 7 9 2 3 4 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_122 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5 x @ 1 < while 6 0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5
+		x @ 1 <
+	while 6
+		0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_200 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5 x @ 2 < while 6 0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5
+		x @ 2 <
+	while 6
+		0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 5 6 7 9 2 3 5 6 7 9 2 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_201 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5 x @ 2 < while 6 0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5
+		x @ 2 <
+	while 6
+		0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 5 6 7 8 7 9 2 3 5 6 7 8 7 9 2 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_202 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5 x @ 2 < while 6 0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 0 < while 4 y @ 1+ y ! repeat 5
+		x @ 2 <
+	while 6
+		0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 5 6 7 8 7 8 7 9 2 3 5 6 7 8 7 8 7 9 2 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_210 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5 x @ 2 < while 6 0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5
+		x @ 2 <
+	while 6
+		0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 5 6 7 9 2 3 4 3 5 6 7 9 2 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_211 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5 x @ 2 < while 6 0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5
+		x @ 2 <
+	while 6
+		0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 5 6 7 8 7 9 2 3 4 3 5 6 7 8 7 9 2 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_212 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5 x @ 2 < while 6 0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 1 < while 4 y @ 1+ y ! repeat 5
+		x @ 2 <
+	while 6
+		0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_220 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5 x @ 2 < while 6 0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5
+		x @ 2 <
+	while 6
+		0 z ! begin 7 z @ 0 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 4 3 5 6 7 9 2 3 4 3 4 3 5 6 7 9 2 3 4 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_221 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5 x @ 2 < while 6 0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5
+		x @ 2 <
+	while 6
+		0 z ! begin 7 z @ 1 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 4 3 5 6 7 8 7 9 2 3 4 3 4 3 5 6 7 8 7 9 2 3 4 3 4 3 5 10) reversed
+]
+
+{ #category : #'generated-test' }
+ForthLoopTest >> testNestedBeginWhileRepeatLoop_222 [
+
+"
+: test variable x variable y variable z 1 0 x ! begin 2 0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5 x @ 2 < while 6 0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9 x @ 1+ x ! repeat 10 ;
+"
+
+self assert: (forth eval: '
+ variable x variable y variable z
+	1 0 x !
+	begin 2 
+		0 y ! begin 3 y @ 2 < while 4 y @ 1+ y ! repeat 5
+		x @ 2 <
+	while 6
+		0 z ! begin 7 z @ 2 < while 8 z @ 1+ z ! repeat 9
+		x @ 1+ x !
+	repeat 10
+	
+'
+; stackCopy) equals: #(1 2 3 4 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 4 3 5 10) reversed
 ]
 
 { #category : #tests }

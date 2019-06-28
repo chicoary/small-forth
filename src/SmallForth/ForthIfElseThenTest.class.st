@@ -52,7 +52,7 @@ ForthIfElseThenTest class >> generateIfsTests [
 	job progress: 1.00. ] asJob run
 ]
 
-{ #category : #'code generation' }
+{ #category : #initialization }
 ForthIfElseThenTest class >> generateMissingTestsOnly [
 	generateAll := false
 ]
@@ -250,7 +250,7 @@ ForthIfElseThenTest class >> generateTestsWithTwoIfs2 [
 
 { #category : #initialization }
 ForthIfElseThenTest class >> initialize [ 
-	generateAll := false
+	self generateMissingTestsOnly
 ]
 
 { #category : #'code generation' }

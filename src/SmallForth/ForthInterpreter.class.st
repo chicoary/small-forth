@@ -31,7 +31,8 @@ Class {
 		'maxLoopCount',
 		'variables',
 		'pairingLoopStack',
-		'positionAfterRepeat'
+		'loopLevel',
+		'skipStack'
 	],
 	#classVars : [
 		'WordDictionary'
@@ -417,13 +418,13 @@ ForthInterpreter >> and [
 { #category : #'forth-primitives' }
 ForthInterpreter >> begin [
 	| position loopCount |
-		
-	maxLoopCount > 0 ifTrue: [ 
-		loopCount := 0. 
-		returnStack push: loopCount ].
 	
+	loopLevel := loopLevel + 1.
+	maxLoopCount > 0 ifTrue: [ loopCount := 0. returnStack push: loopCount ].
 	position := stream position.
 	returnStack push: position.
+	
+	
 ]
 
 { #category : #'forth-primitives' }
@@ -639,9 +640,13 @@ ForthInterpreter >> getStringBeforeQuoteAndDiscardQuote: aReadStream [
 ]
 
 { #category : #'variable-support' }
-ForthInterpreter >> getValueOnShadowedVariableAddress: aVariableAddress [
-	(variables
-		detect: [ :assoc | assoc key == aVariableAddress ]) value
+ForthInterpreter >> getValueOfVariableNamed: aVariableName [
+	| variableAddress variableValue |
+
+	variableAddress := self addressOfVariableNamed: aVariableName.
+	variableValue := (variables
+		detect: [ :assoc | assoc key == variableAddress ]) value.
+	^ variableValue
 ]
 
 { #category : #'variable-support' }
@@ -692,6 +697,9 @@ ForthInterpreter >> initialize [
 	acceptUppercase := false.
 	nestLevel := 0.
 	maxLoopCount := 0.
+	
+	loopLevel := 0.
+	
 	pairingLoopStack := Stack new.
 	returnStack := Stack new
 ]
@@ -977,15 +985,10 @@ ForthInterpreter >> removeWordsAfterMarker: marker [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> repeat [
-
 	| position |
 	
-	self flag: #fix. "The implementation below does not take into account nested loops.
-	A simple fix is reset positionAfterRepeat after escape from loop."
-	positionAfterRepeat ifNil: [ positionAfterRepeat := stream position ].
-	
 	position := returnStack top.
-	stream position: position.
+	stream position: position
 ]
 
 { #category : #'dictionary-support' }
@@ -1091,6 +1094,25 @@ ForthInterpreter >> skipStringUntilChar: char [
 		whileTrue: [ car := stream next ]
 ]
 
+{ #category : #'loop-support' }
+ForthInterpreter >> skipToAfterRepeat: aTargetLoopLevel [
+	
+	| word |
+		
+	word := self getNextWord.
+	word ifEmpty: [ ^ self ].
+	word asLowercase = 'begin'
+		ifTrue: [ loopLevel := loopLevel + 1 ].
+	word asLowercase = 'repeat'
+		ifTrue: [ | isTargetLevel |
+			isTargetLevel := loopLevel = aTargetLoopLevel.
+			loopLevel := loopLevel - 1.
+			isTargetLevel ifTrue: [ 
+				returnStack pop. "position?"
+				^ self ] ].
+	self skipToAfterRepeat: aTargetLoopLevel
+]
+
 { #category : #'forth-primitive-support' }
 ForthInterpreter >> skipUntilElseOrThenWithFalseLevel: aFalseNestLevel [ 
 		| word |
@@ -1113,20 +1135,6 @@ ForthInterpreter >> skipUntilEndOfLoop [
 	word ifEmpty: [ ^ self ].
 	(#(loop again '+loop') includes: word asLowercase) ifTrue: [ ^ self ]. 
 	self skipUntilEndOfLoop
-]
-
-{ #category : #'loop-support' }
-ForthInterpreter >> skipUntilRepeat [
-	| word |
-	
-	self flag: #fix. "The implementation below does not take into account nested loops.
-	A simple fix is reset positionAfterRepeat after escape from loop."
-	positionAfterRepeat ifNotNil: [  stream position: positionAfterRepeat. ^ self ].
-
-	word := self getNextWord. 
-	word ifEmpty: [ ^ self ].
-	(word asLowercase = 'repeat') ifTrue: [ ^ self ]. 
-	self skipUntilRepeat
 ]
 
 { #category : #'forth-primitive-support' }
@@ -1289,5 +1297,5 @@ ForthInterpreter >> while [
 	| bool |
 	
 	bool := stack pop ~= 0.
-	bool ifFalse: [ self skipUntilRepeat ]
+	bool ifFalse: [ self skipToAfterRepeat: loopLevel ]
 ]
