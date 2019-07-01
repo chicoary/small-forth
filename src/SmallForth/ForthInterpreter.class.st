@@ -32,7 +32,8 @@ Class {
 		'variables',
 		'pairingLoopStack',
 		'loopLevel',
-		'skipStack'
+		'positionStack',
+		'loopCountStack'
 	],
 	#classVars : [
 		'WordDictionary'
@@ -148,11 +149,6 @@ ForthInterpreter >> _comment [
 ]
 
 { #category : #'forth-synonyms' }
-ForthInterpreter >> _copyOnStack [
-	stack push: returnStack top
-]
-
-{ #category : #'forth-synonyms' }
 ForthInterpreter >> _divides [
 	| top second |
 	top := stack pop.
@@ -213,10 +209,26 @@ ForthInterpreter >> _greaterThan [
 ]
 
 { #category : #'forth-synonyms' }
+ForthInterpreter >> _greaterThanR [
+	returnStack push: stack pop 
+]
+
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _greaterThanZero [
 	| top |
 	top := stack pop.
 	0 < top ifTrue: [ stack push: -1 ] ifFalse: [ stack push: 0 ]
+]
+
+{ #category : #'forth-primitives' }
+ForthInterpreter >> _iSingleQuotationMark [
+	
+	| index |
+	
+	index := returnStack second.
+	stack push: index
+	
+	
 ]
 
 { #category : #'forth-synonyms' }
@@ -291,19 +303,19 @@ ForthInterpreter >> _pushAddressOfVariable [
 ]
 
 { #category : #'forth-synonyms' }
-ForthInterpreter >> _pushOnReturnStack [
-	returnStack push: stack pop 
-]
-
-{ #category : #'forth-synonyms' }
-ForthInterpreter >> _pushOnStack [
-	stack push: returnStack pop
-]
-
-{ #category : #'forth-synonyms' }
 ForthInterpreter >> _questionMarkDup [
 	stack top = 0
 		ifFalse: [ stack push: stack top ]
+]
+
+{ #category : #'forth-synonyms' }
+ForthInterpreter >> _rAt [
+	stack push: returnStack top
+]
+
+{ #category : #'forth-synonyms' }
+ForthInterpreter >> _rGreaterThan [
+	stack push: returnStack pop
 ]
 
 { #category : #'forth-synonyms' }
@@ -397,14 +409,18 @@ ForthInterpreter >> addressOfVariableNamed: variableName [
 { #category : #'forth-primitives' }
 ForthInterpreter >> again [
 	| loopCount position |
-	position := returnStack pop.
+	
+	position := positionStack pop.
+	
 	maxLoopCount > 0
-		ifTrue: [ loopCount := returnStack pop.
+		ifTrue: [ loopCount := loopCountStack pop.
 			loopCount := loopCount + 1.
 			loopCount >= maxLoopCount ifTrue: [ self signalMaxLoopCountHasBeenReached ].
-			returnStack push: loopCount ].
+			loopCountStack  push: loopCount ].
+		
 	stream position: position.	"again"
-	returnStack push: position
+		
+	positionStack push: position
 ]
 
 { #category : #'forth-primitives' }
@@ -420,9 +436,13 @@ ForthInterpreter >> begin [
 	| position loopCount |
 	
 	loopLevel := loopLevel + 1.
-	maxLoopCount > 0 ifTrue: [ loopCount := 0. returnStack push: loopCount ].
+	
+	maxLoopCount > 0 ifTrue: [ loopCount := 0. loopCountStack push: loopCount ].
+	
 	position := stream position.
-	returnStack push: position.
+	
+	positionStack push: position.
+	
 	
 	
 ]
@@ -502,16 +522,27 @@ ForthInterpreter >> discardWhiteSpacesOn: aReadStream [
 ForthInterpreter >> do [
 	| index limit position loopCount |
 	
+	self flag: #testing. self haltIf: [ false ].
+	
 	maxLoopCount > 0 ifTrue: [ 
 		loopCount := 0. 
-		returnStack push: loopCount ].
+		loopCountStack push: loopCount ].
 	
 	index := stack pop.
 	limit := stack pop.
+	
 	position := stream position.
-	returnStack push: position.
+	
+	self flag: #implementing. "position em stack separado"
+	"returnStack push: position."
+	positionStack push: position.
+	
 	returnStack push: limit.
-	returnStack push: index
+	returnStack push: index.
+	
+	self flag: #testing. self haltIf: [ false ].
+	
+	
 ]
 
 { #category : #'forth-primitives' }
@@ -664,8 +695,15 @@ ForthInterpreter >> getValueOnVariableAddress: variableAddress onVariableCollect
 { #category : #'forth-primitives' }
 ForthInterpreter >> i [
 	| index |	
+		
+	self flag: #testing. self haltIf: [ false ].
+	
 	index := returnStack top.
-	stack push: index
+	stack push: index.
+	
+	self flag: #testing. self haltIf: [ false ].
+	
+	
 ]
 
 { #category : #'forth-primitives' }
@@ -701,7 +739,9 @@ ForthInterpreter >> initialize [
 	loopLevel := 0.
 	
 	pairingLoopStack := Stack new.
-	returnStack := Stack new
+	returnStack := Stack new.
+	positionStack := Stack new.
+	loopCountStack := Stack new.
 ]
 
 { #category : #'forth-primitives' }
@@ -786,8 +826,11 @@ ForthInterpreter >> isWhiteSpace: aCharacter [
 ForthInterpreter >> j [
 	
 	| index |
-	index := returnStack fourth.
+	
+	index := returnStack third.
 	stack push: index
+	
+	
 ]
 
 { #category : #'dictionary-support' }
@@ -816,26 +859,32 @@ ForthInterpreter >> loop [
 ForthInterpreter >> loopWithIncrement: increment [
 	| limit index position sign loopCount |
 	
-	index := returnStack pop.
-	limit := returnStack pop.
-	position := returnStack pop.
+	self flag: #testing. self haltIf: [false]. 
+	
+	index := returnStack first. 
+	limit := returnStack second. 
 	
 	maxLoopCount > 0
-		ifTrue: [ loopCount := returnStack pop.
+		ifTrue: [ loopCount := loopCountStack pop.
 			loopCount := loopCount + 1.
 			loopCount >= maxLoopCount ifTrue: [ self signalMaxLoopCountHasBeenReached ].
-			returnStack push: loopCount ].
+			loopCountStack  push: loopCount ].
 	
-	
-	index := index + increment.
+	index := index + increment. returnStack pop; push: index.
 	sign := increment sign.
 	(index - limit) * sign >= 0
-		ifTrue: [ "nothing" ]
+		ifTrue: [  
+			returnStack pop; pop.
+			positionStack pop. 
+		] 
 		ifFalse: [ 
-			stream position: position.
-			returnStack push: position.
-			returnStack push: limit.
-			returnStack push: index ]
+			position := positionStack top.
+			stream position: position
+		].
+		
+		self flag: #testing. self haltIf: [false].
+		
+	
 ]
 
 { #category : #'forth-primitives' }
@@ -915,7 +964,7 @@ ForthInterpreter >> page [
 { #category : #'forth-primitive-support' }
 ForthInterpreter >> primitiveWords [
 	^ #(
-	_2drop _2dup _2over _2swap __marker _abortQuote _addsOne _addsTwo _at _backSlash _colon 	_comment _copyOnStack _divides _dividesByTwo _dot _dotQuote _dotS _equal 	_exclamationMark 	_greaterThan _greaterThanZero _lessThan _lessThanZero _minus _mult _multipliesByTwo _notEqual 	_plus _plusLoop _pushAddressOfVariable 	_pushOnReturnStack _pushOnStack _questionMarkDup 	_slashMod _starSlash _starSlashMod _subtractsOne _subtractsTwo _zeroEqual 
+	_2drop _2dup _2over _2swap __marker _abortQuote _addsOne _addsTwo _at _backSlash _colon 	_comment #_rAt _divides _dividesByTwo _dot _dotQuote _dotS _equal 	_exclamationMark 	_greaterThan _greaterThanZero _lessThan _lessThanZero _minus _mult _multipliesByTwo _notEqual 	_plus _plusLoop _pushAddressOfVariable 	#_greaterThanR #_rGreaterThan _questionMarkDup 	_slashMod _starSlash _starSlashMod _subtractsOne _subtractsTwo _zeroEqual _iSingleQuotationMark
 					
 	abort abs again and 	begin char cr do drop dup else emit #false forget i if invert j leave loop 	marker max min mod 	negate or over page rot space spaces swap then 	#true until variable 	while repeat		
 	)
@@ -987,7 +1036,8 @@ ForthInterpreter >> removeWordsAfterMarker: marker [
 ForthInterpreter >> repeat [
 	| position |
 	
-	position := returnStack top.
+	position := positionStack top.
+	
 	stream position: position
 ]
 
@@ -1108,7 +1158,7 @@ ForthInterpreter >> skipToAfterRepeat: aTargetLoopLevel [
 			isTargetLevel := loopLevel = aTargetLoopLevel.
 			loopLevel := loopLevel - 1.
 			isTargetLevel ifTrue: [ 
-				returnStack pop. "position?"
+				positionStack pop.
 				^ self ] ].
 	self skipToAfterRepeat: aTargetLoopLevel
 ]
@@ -1161,11 +1211,6 @@ ForthInterpreter >> spaces [
 	| times |
 	times := stack pop.
 	times timesRepeat: [ self space ]
-]
-
-{ #category : #'private ' }
-ForthInterpreter >> stack [
-	^ stack
 ]
 
 { #category : #accessing }
@@ -1222,12 +1267,11 @@ ForthInterpreter >> synonyms [
 		'1+' -> '_addsOne'.						'2+' -> '_addsTwo'.
 		'1-' -> '_subtractsOne'.					'2-' -> '_subtractsTwo'.
 		'2*' -> '_multipliesByTwo'.				'2/' -> '_dividesByTwo'.
-		'r>' -> '_pushOnStack'.					'>r' -> '_pushOnReturnStack'.
-		'r@' -> '_copyOnStack'.					'*/' -> '_starSlash'.
+		'r>' -> '_rGreaterThan'.					'>r' -> '_greaterThanR'.
+		'r@' -> '_rAt'.								'*/' -> '_starSlash'.
 		'*/mod' -> '_starSlashMod'.				'+loop' -> '_plusLoop'.
-						
-		'!' -> '_exclamationMark'.
-		'@' -> '_at'.
+		'!' -> '_exclamationMark'.				'@' -> '_at'.
+		'i''' -> '_iSingleQuotationMark'.
 		
 	} asDictionary 
 ]
@@ -1253,14 +1297,22 @@ ForthInterpreter >> true [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> until [
-	| repeat position |
+	| repeat position loopCount |
+	
+	maxLoopCount > 0
+		ifTrue: [ loopCount := loopCountStack pop.
+			loopCount := loopCount + 1.
+			loopCount >= maxLoopCount ifTrue: [ self signalMaxLoopCountHasBeenReached ].
+			loopCountStack  push: loopCount ].
 	
 	repeat := stack pop = 0.
 	repeat
 		ifTrue: [ 
-			position := returnStack top.
+			position := positionStack top.
 			stream position: position ]
-		ifFalse: [ returnStack pop ]
+		ifFalse: [ 
+			positionStack pop 
+	]
 ]
 
 { #category : #'forth-primitives' }
@@ -1294,7 +1346,13 @@ ForthInterpreter >> variables: aVariableCollection [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> while [
-	| bool |
+	| bool loopCount |
+	
+	maxLoopCount > 0
+		ifTrue: [ loopCount := loopCountStack pop.
+			loopCount := loopCount + 1.
+			loopCount >= maxLoopCount ifTrue: [ self signalMaxLoopCountHasBeenReached ].
+			loopCountStack push: loopCount ].
 	
 	bool := stack pop ~= 0.
 	bool ifFalse: [ self skipToAfterRepeat: loopLevel ]

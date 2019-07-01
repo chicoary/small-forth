@@ -210,6 +210,14 @@ ForthLoopTest >> testBeginWhileRepeat [
 ]
 
 { #category : #tests }
+ForthLoopTest >> testBeginWhileRepeatWithMaxIterationLimit [
+	
+	forth maxLoopCount: 50.
+	
+	self should: [ forth eval: 'begin true while 99 repeat' ] raise: ForthMaxLoopCountHasBeenReached
+]
+
+{ #category : #tests }
 ForthLoopTest >> testBeginWhileRepeatWithVariable [
 
 	self assert: (forth eval: '
@@ -250,6 +258,12 @@ ForthLoopTest >> testDoLoopWithLeave [
 ]
 
 { #category : #tests }
+ForthLoopTest >> testDoLoopWithLimitVariable [
+	self assert: (forth eval: '3 0 do I'' I loop'; stackCopy) equals: #(3 0 3 1 3 2) reversed.
+	
+]
+
+{ #category : #tests }
 ForthLoopTest >> testDoPlusLoopWithLeave [
 
 	self assert: (forth eval: '1 10 0 do 2 leave 3 +loop  4'; stackCopy) equals: #(1 2 4) reversed.
@@ -259,9 +273,10 @@ ForthLoopTest >> testDoPlusLoopWithLeave [
 
 { #category : #tests }
 ForthLoopTest >> testMaxLoopCountWithDoLoop [
+
 	forth maxLoopCount: 1500.
-	self should: [ forth eval: '10 0 do i R> R> 1+ >R >R loop' ] 
-	raise: ForthMaxLoopCountHasBeenReached
+	
+	self should: [ forth eval: '10 0 do R> R> 1+ >R >R loop' ] raise: ForthMaxLoopCountHasBeenReached
 ]
 
 { #category : #tests }
@@ -888,6 +903,7 @@ ForthLoopTest >> testNestedBegintUntilLoop [
 
 { #category : #tests }
 ForthLoopTest >> testNestedDoLoop [
+
 	self assert: (forth eval: '3 1 do 4 1 do i j loop loop'; stackCopy) equals: #(1 1 2 1 3 1 1 2 2 2 3 2) reversed
 ]
 
