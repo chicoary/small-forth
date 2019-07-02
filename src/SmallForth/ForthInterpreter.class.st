@@ -1339,16 +1339,16 @@ ForthInterpreter >> variables: aVariableCollection [
 { #category : #'forth-primitives' }
 ForthInterpreter >> while [
 	| bool loopCount |
-	
 	maxLoopCount > 0
 		ifTrue: [ loopCount := loopCountStack pop.
 			loopCount := loopCount + 1.
-			loopCount >= maxLoopCount ifTrue: [ self signalMaxLoopCountHasBeenReached ].
+			loopCount >= maxLoopCount
+				ifTrue: [ self signalMaxLoopCountHasBeenReached ].
 			loopCountStack push: loopCount ].
-	
+		
 	bool := stack pop ~= 0.
-	bool ifFalse: [ 
-		returnStack pop; pop.
-		self skipToAfterRepeat: loopLevel 
-	]
+	bool ifTrue: [ ^ self ].
+	returnStack pop;pop.
+	
+	self skipToAfterRepeat: loopLevel
 ]
