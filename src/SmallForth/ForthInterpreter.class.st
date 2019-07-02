@@ -30,10 +30,10 @@ Class {
 		'returnStack',
 		'maxLoopCount',
 		'variables',
-		'pairingLoopStack',
 		'loopLevel',
 		'positionStack',
-		'loopCountStack'
+		'loopCountStack',
+		'pairingIfElseThenStack'
 	],
 	#classVars : [
 		'WordDictionary'
@@ -408,7 +408,9 @@ ForthInterpreter >> addressOfVariableNamed: variableName [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> again [
-	| loopCount position |
+	| loopCount position index |
+	
+	index := returnStack pop. returnStack push: index + 1. "I"
 	
 	position := positionStack pop.
 	
@@ -435,12 +437,14 @@ ForthInterpreter >> and [
 ForthInterpreter >> begin [
 	| position loopCount |
 	
+	returnStack push: 0. "I'"
+	returnStack push: 1. "I"
+	
 	loopLevel := loopLevel + 1.
 	
 	maxLoopCount > 0 ifTrue: [ loopCount := 0. loopCountStack push: loopCount ].
 	
 	position := stream position.
-	
 	positionStack push: position.
 	
 	
@@ -469,12 +473,12 @@ ForthInterpreter >> checkNestLevel [
 
 { #category : #evaluating }
 ForthInterpreter >> checkPairingLoopStackIsEmpty [
-	pairingLoopStack ifNotEmpty: [ self signalIfElseThenUnpairing ] 
+	pairingIfElseThenStack ifNotEmpty: [ self signalIfElseThenUnpairing ] 
 ]
 
 { #category : #'if-else-then-support' }
 ForthInterpreter >> checkPreviousIf [
-	pairingLoopStack top = #if ifFalse: [ self signalIfElseThenUnpairing ]
+	pairingIfElseThenStack top = #if ifFalse: [ self signalIfElseThenUnpairing ]
 ]
 
 { #category : #'forth-primitives' }
@@ -522,8 +526,6 @@ ForthInterpreter >> discardWhiteSpacesOn: aReadStream [
 ForthInterpreter >> do [
 	| index limit position loopCount |
 	
-	self flag: #testing. self haltIf: [ false ].
-	
 	maxLoopCount > 0 ifTrue: [ 
 		loopCount := 0. 
 		loopCountStack push: loopCount ].
@@ -532,16 +534,10 @@ ForthInterpreter >> do [
 	limit := stack pop.
 	
 	position := stream position.
-	
-	self flag: #implementing. "position em stack separado"
-	"returnStack push: position."
 	positionStack push: position.
 	
 	returnStack push: limit.
-	returnStack push: index.
-	
-	self flag: #testing. self haltIf: [ false ].
-	
+	returnStack push: index
 	
 ]
 
@@ -557,7 +553,7 @@ ForthInterpreter >> dup [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> else [
-	(pairingLoopStack isEmpty or: [pairingLoopStack top ~= #if]) ifTrue: [ self signalIfElseThenUnpairing ].
+	(pairingIfElseThenStack isEmpty or: [pairingIfElseThenStack top ~= #if]) ifTrue: [ self signalIfElseThenUnpairing ].
 	self pushElseToPairingStack.
 	self skipUntilElseOrThenWithFalseLevel: nestLevel 
 ]
@@ -696,12 +692,8 @@ ForthInterpreter >> getValueOnVariableAddress: variableAddress onVariableCollect
 ForthInterpreter >> i [
 	| index |	
 		
-	self flag: #testing. self haltIf: [ false ].
-	
 	index := returnStack top.
-	stack push: index.
-	
-	self flag: #testing. self haltIf: [ false ].
+	stack push: index
 	
 	
 ]
@@ -738,7 +730,7 @@ ForthInterpreter >> initialize [
 	
 	loopLevel := 0.
 	
-	pairingLoopStack := Stack new.
+	pairingIfElseThenStack := Stack new.
 	returnStack := Stack new.
 	positionStack := Stack new.
 	loopCountStack := Stack new.
@@ -847,6 +839,7 @@ ForthInterpreter >> lastVersionAtWord: word [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> leave [
+	returnStack pop; pop.
 	self skipUntilEndOfLoop 
 ]
 
@@ -858,8 +851,6 @@ ForthInterpreter >> loop [
 { #category : #'loop-support' }
 ForthInterpreter >> loopWithIncrement: increment [
 	| limit index position sign loopCount |
-	
-	self flag: #testing. self haltIf: [false]. 
 	
 	index := returnStack first. 
 	limit := returnStack second. 
@@ -880,11 +871,7 @@ ForthInterpreter >> loopWithIncrement: increment [
 		ifFalse: [ 
 			position := positionStack top.
 			stream position: position
-		].
-		
-		self flag: #testing. self haltIf: [false].
-		
-	
+		]
 ]
 
 { #category : #'forth-primitives' }
@@ -974,7 +961,7 @@ ForthInterpreter >> primitiveWords [
 
 { #category : #'if-else-then-support' }
 ForthInterpreter >> pushElseToPairingStack [
-	pairingLoopStack push: #else
+	pairingIfElseThenStack push: #else
 ]
 
 { #category : #'variable-support' }
@@ -985,7 +972,7 @@ ForthInterpreter >> pushFlagOnVariables: aVariableCollection [
 
 { #category : #'if-else-then-support' }
 ForthInterpreter >> pushIfToPairingStack [
-	pairingLoopStack push: #if
+	pairingIfElseThenStack push: #if
 ]
 
 { #category : #evaluating }
@@ -995,9 +982,9 @@ ForthInterpreter >> pushNumberToStack: word [
 
 { #category : #removing }
 ForthInterpreter >> removeElseAndIfFromPairingStack [
-	pairingLoopStack top = #else
-		ifTrue: [ pairingLoopStack pop ].
-	pairingLoopStack pop = #if
+	pairingIfElseThenStack top = #else
+		ifTrue: [ pairingIfElseThenStack pop ].
+	pairingIfElseThenStack pop = #if
 		ifFalse: [ self signalIfElseThenUnpairing ]
 ]
 
@@ -1034,10 +1021,11 @@ ForthInterpreter >> removeWordsAfterMarker: marker [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> repeat [
-	| position |
+	| position index |
+	
+	index := returnStack pop. returnStack push: index + 1. "I"
 	
 	position := positionStack top.
-	
 	stream position: position
 ]
 
@@ -1180,9 +1168,10 @@ ForthInterpreter >> skipUntilElseOrThenWithFalseLevel: aFalseNestLevel [
 { #category : #'loop-support' }
 ForthInterpreter >> skipUntilEndOfLoop [
 	| word |
-
+	
 	word := self getNextWord. 
 	word ifEmpty: [ ^ self ].
+	word asLowercase = 'then' ifTrue: [ self updatePairingIfElseThenStack ].
 	(#(loop again '+loop') includes: word asLowercase) ifTrue: [ ^ self ]. 
 	self skipUntilEndOfLoop
 ]
@@ -1214,13 +1203,13 @@ ForthInterpreter >> spaces [
 ]
 
 { #category : #accessing }
-ForthInterpreter >> stack: aCollection [ 
-	stack := aCollection
+ForthInterpreter >> stack [
+	^ stack copy
 ]
 
 { #category : #accessing }
-ForthInterpreter >> stackCopy [
-	^ stack copy
+ForthInterpreter >> stack: aCollection [ 
+	stack := aCollection
 ]
 
 { #category : #accessing }
@@ -1278,7 +1267,7 @@ ForthInterpreter >> synonyms [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> then [
-	self updatePairingLoopStack.
+	self updatePairingIfElseThenStack.
 	nestLevel = 1 ifTrue: [ self checkPairingLoopStackIsEmpty ].
 	self decrementNestLevel.
 	
@@ -1297,7 +1286,7 @@ ForthInterpreter >> true [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> until [
-	| repeat position loopCount |
+	| repeat position loopCount index |
 	
 	maxLoopCount > 0
 		ifTrue: [ loopCount := loopCountStack pop.
@@ -1309,23 +1298,26 @@ ForthInterpreter >> until [
 	repeat
 		ifTrue: [ 
 			position := positionStack top.
-			stream position: position ]
+			stream position: position. 
+			index := returnStack pop. returnStack push: index + 1. "I"
+	]
 		ifFalse: [ 
-			positionStack pop 
+			positionStack pop.
+			returnStack pop; pop 
 	]
 ]
 
 { #category : #'forth-primitives' }
-ForthInterpreter >> updatePairingLoopStack [
-	pairingLoopStack top = #else
-		ifTrue: [ pairingLoopStack pop ].
-	pairingLoopStack pop = #if
+ForthInterpreter >> updatePairingIfElseThenStack [
+	pairingIfElseThenStack top = #else
+		ifTrue: [ pairingIfElseThenStack pop ].
+	pairingIfElseThenStack pop = #if
 		ifFalse: [ self signalIfElseThenUnpairing ]
 ]
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> updatePairingStackForElse [
-	pairingLoopStack push: #else
+	pairingIfElseThenStack push: #else
 ]
 
 { #category : #'forth-primitives' }
@@ -1355,5 +1347,8 @@ ForthInterpreter >> while [
 			loopCountStack push: loopCount ].
 	
 	bool := stack pop ~= 0.
-	bool ifFalse: [ self skipToAfterRepeat: loopLevel ]
+	bool ifFalse: [ 
+		returnStack pop; pop.
+		self skipToAfterRepeat: loopLevel 
+	]
 ]

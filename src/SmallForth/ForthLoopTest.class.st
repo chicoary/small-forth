@@ -10,7 +10,6 @@ Class {
 { #category : #'as yet unclassified' }
 ForthLoopTest class >> arrayTimes: x fromYArray: yArray andZArray: zArray [ 
 	| array coll |
-	self flag: #implementing.
 	
 	coll := OrderedCollection empty.
 	
@@ -29,32 +28,16 @@ ForthLoopTest class >> arrayTimes: x fromYArray: yArray andZArray: zArray [
 { #category : #'code generation' }
 ForthLoopTest class >> calculateStackFromCounter: aCounter [
 	| x y z xTimes yTimes zTimes stackString yArray zArray xArray |
-	self flag: #implementing.
+	
 	x := (aCounter at: 1) digitValue.
 	y := (aCounter at: 2) digitValue.
 	z := (aCounter at: 3) digitValue.
-	self flag: #todo.	"Usar arrays em vez de strings e depois usar #asString para converter em strinh o array gerado"
+	
 	yArray := self yArrayFrom: y.
 	zArray := self zArrayFrom: z.
 	xArray := self arrayTimes: x fromYArray: yArray andZArray: zArray.
 	stackString := xArray asString.
 
-	"xTimes := ''.
-	yTimes := ''.
-	zTimes := ''.
-	
-	yTimes := yTimes, ' 2 3 '.
-	y timesRepeat: [ yTimes := yTimes, ' 4 3 ' ].
-	yTimes := yTimes, ' 5 '.
-	
-	zTimes := zTimes, ' 6 7 '.
-	z timesRepeat: [ zTimes := zTimes, ' 8 7 ' ].
-	zTimes := zTimes, ' 9 '.
-	
-	xTimes := xTimes, yTimes.
-	x timesRepeat: [ xTimes := xTimes, zTimes, yTimes ].
-	
-	stackString := '#(1 {1} 10)' format: { xTimes }."
 	^ stackString
 ]
 
@@ -77,9 +60,7 @@ ForthLoopTest class >> generateMissingTestsOnly [
 ForthLoopTest class >> generateNestedBeginWhileRepeatLoopTests [
 	<script>
 	| smallForthSource max string size testMethodSource |
-	self flag: #todo.	"Evitar gerar duas vezes um teste. Ver o gerador de testes para os nested ifs"
-
-	"(Trace reset; entries) inspect."
+	
 	[ :job | 
 	job title: 'Generating tests for loops BEGIN WHILE REPEAT' translated.
 	max := 3r222.
@@ -107,8 +88,6 @@ ForthLoopTest class >> initialize [
 ForthLoopTest class >> sourceOfNestedBeginWhileRepeatLoopTestFor: string [ 
 
 	| source a b c |
-
-	self flag: #implmenting.
 	
 	a := (string at: 1) digitValue.	
 	b := (string at: 2) digitValue.
@@ -168,7 +147,7 @@ ForthLoopTest class >> testMethodSourceOfNestedBeginWhileRepeatLoopFor: smallFor
 { #category : #'as yet unclassified' }
 ForthLoopTest class >> yArrayFrom: y [ 
 	| array coll |
-	self flag: #testing. 
+	
 	coll := OrderedCollection empty.
 	coll add: 2; add: 3.
 	y timesRepeat: [ coll add: 4; add: 3 ].
@@ -180,7 +159,7 @@ ForthLoopTest class >> yArrayFrom: y [
 { #category : #'as yet unclassified' }
 ForthLoopTest class >> zArrayFrom: z [ 
 	| array coll |
-	self flag: #testing. 
+	
 	coll := OrderedCollection empty.
 	coll add: 6; add: 7.
 	z timesRepeat: [ coll add: 8; add: 7 ].
@@ -200,13 +179,21 @@ ForthLoopTest >> testBeginAgainLoop [
 { #category : #tests }
 ForthLoopTest >> testBeginAgainLoopWithLeave [
 
-	self assert: (forth eval: '1 begin 2 leave 3 again 4'; stackCopy) equals: #(1 2 4) reversed
+	self assert: (forth eval: '1 begin 2 leave 3 again 4'; stack) equals: #(1 2 4) reversed
+]
+
+{ #category : #tests }
+ForthLoopTest >> testBeginAgainLoopWithVariables [
+
+	self assert: (forth eval: 'begin I I'' leave again'; stack) equals: #(1 0) reversed.
+	self assert: (forth eval: 'begin begin J leave again leave again'; stack) equals: #(1) reversed.
+	self assert: (forth eval: 'begin I I 2 > if leave then again'; stack) equals: #(1 2 3) reversed.
 ]
 
 { #category : #tests }
 ForthLoopTest >> testBeginWhileRepeat [
 
-	self assert: (forth eval: '1 begin 2 false while 3 repeat 4'; stackCopy) equals: #(1 2 4) reversed
+	self assert: (forth eval: '1 begin 2 false while 3 repeat 4'; stack) equals: #(1 2 4) reversed
 ]
 
 { #category : #tests }
@@ -225,49 +212,63 @@ ForthLoopTest >> testBeginWhileRepeatWithVariable [
 	0 x !
 	1 begin 2 x @ 1+ x ! x @ 5 < while 3 repeat 4
 	'
-	; stackCopy) equals: #(1 2 3 2 3 2 3 2 3 2 4) reversed
+	; stack) equals: #(1 2 3 2 3 2 3 2 3 2 4) reversed
+]
+
+{ #category : #tests }
+ForthLoopTest >> testBeginWhileRepeatWithVariables [
+
+	self assert: (forth eval: 'begin I 4 < while I repeat'; stack) equals: #(1 2 3) reversed.
+	self assert: (forth eval: 'begin I 3 < while begin I 4 < while J I repeat repeat'; stack) equals: #(1 1 1 2 1 3 2 1 2 2 2 3) reversed.
 ]
 
 { #category : #tests }
 ForthLoopTest >> testBegintUntilLoop [
 	
-	self assert: (forth eval: '1 2 3 4 5 6 7 8 9 begin 5 < until'; stackCopy) equals: #(1 2 3) reversed.
+	self assert: (forth eval: '1 2 3 4 5 6 7 8 9 begin 5 < until'; stack) equals: #(1 2 3) reversed.
+	 
+]
+
+{ #category : #tests }
+ForthLoopTest >> testBegintUntilLoopWithVariables [
+	
+	self assert: (forth eval: 'begin I I 5 > until'; stack) equals: #(1 2 3 4 5 6) reversed.
 	 
 ]
 
 { #category : #tests }
 ForthLoopTest >> testDoLoop [
-	self assert: (forth eval: '3 0 do 9 loop'; stackCopy) equals: #(9 9 9) reversed.
-	self assert: (forth eval: '5 2 do 9 loop'; stackCopy) equals: #(9 9 9) reversed.
-	self assert: (forth eval: '-2 -5 do 9 loop'; stackCopy) equals: #(9 9 9) reversed
+	self assert: (forth eval: '3 0 do 9 loop'; stack) equals: #(9 9 9) reversed.
+	self assert: (forth eval: '5 2 do 9 loop'; stack) equals: #(9 9 9) reversed.
+	self assert: (forth eval: '-2 -5 do 9 loop'; stack) equals: #(9 9 9) reversed
 	
 	
 ]
 
 { #category : #tests }
 ForthLoopTest >> testDoLoopWithIndex [
-	self assert: (forth eval: '3 0 do i loop'; stackCopy) equals: #(0 1 2) reversed
+	self assert: (forth eval: '3 0 do i loop'; stack) equals: #(0 1 2) reversed
 ]
 
 { #category : #tests }
 ForthLoopTest >> testDoLoopWithLeave [
 
-	self assert: (forth eval: '1 10 0 do 2 leave 3 loop  4'; stackCopy) equals: #(1 2 4) reversed.
-	self assert: (forth eval: '1 10 0 do 2 leave 3 LOOP  4'; stackCopy) equals: #(1 2 4) reversed.
+	self assert: (forth eval: '1 10 0 do 2 leave 3 loop  4'; stack) equals: #(1 2 4) reversed.
+	self assert: (forth eval: '1 10 0 do 2 leave 3 LOOP  4'; stack) equals: #(1 2 4) reversed.
 	
 ]
 
 { #category : #tests }
 ForthLoopTest >> testDoLoopWithLimitVariable [
-	self assert: (forth eval: '3 0 do I'' I loop'; stackCopy) equals: #(3 0 3 1 3 2) reversed.
+	self assert: (forth eval: '3 0 do I'' I loop'; stack) equals: #(3 0 3 1 3 2) reversed.
 	
 ]
 
 { #category : #tests }
 ForthLoopTest >> testDoPlusLoopWithLeave [
 
-	self assert: (forth eval: '1 10 0 do 2 leave 3 +loop  4'; stackCopy) equals: #(1 2 4) reversed.
-	self assert: (forth eval: '1 10 0 do 2 leave 3 +LOOP  4'; stackCopy) equals: #(1 2 4) reversed.
+	self assert: (forth eval: '1 10 0 do 2 leave 3 +loop  4'; stack) equals: #(1 2 4) reversed.
+	self assert: (forth eval: '1 10 0 do 2 leave 3 +LOOP  4'; stack) equals: #(1 2 4) reversed.
 	
 ]
 
@@ -289,7 +290,7 @@ ForthLoopTest >> testMaxLoopCountWithPlusDoLoop [
 
 { #category : #tests }
 ForthLoopTest >> testNegativeIncrementPlusDoLoop [
-	self assert: (forth eval: '-20 0 do i -3 +loop'; stackCopy) equals: #(0 -3 -6 -9 -12 -15 -18) reversed.
+	self assert: (forth eval: '-20 0 do i -3 +loop'; stack) equals: #(0 -3 -6 -9 -12 -15 -18) reversed.
 
 ]
 
@@ -312,7 +313,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 5 10) reversed
+; stack) equals: #(1 2 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -334,7 +335,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 5 10) reversed
+; stack) equals: #(1 2 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -356,7 +357,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 5 10) reversed
+; stack) equals: #(1 2 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -378,7 +379,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -400,7 +401,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -422,7 +423,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -444,7 +445,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -466,7 +467,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -488,7 +489,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -510,7 +511,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 5 6 7 9 2 3 5 10) reversed
+; stack) equals: #(1 2 3 5 6 7 9 2 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -532,7 +533,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 5 6 7 8 7 9 2 3 5 10) reversed
+; stack) equals: #(1 2 3 5 6 7 8 7 9 2 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -554,7 +555,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 5 6 7 8 7 8 7 9 2 3 5 10) reversed
+; stack) equals: #(1 2 3 5 6 7 8 7 8 7 9 2 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -576,7 +577,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 5 6 7 9 2 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 5 6 7 9 2 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -598,7 +599,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 5 6 7 8 7 9 2 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 5 6 7 8 7 9 2 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -620,7 +621,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -642,7 +643,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 4 3 5 6 7 9 2 3 4 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 4 3 5 6 7 9 2 3 4 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -664,7 +665,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 4 3 5 6 7 8 7 9 2 3 4 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 4 3 5 6 7 8 7 9 2 3 4 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -686,7 +687,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -708,7 +709,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 5 6 7 9 2 3 5 6 7 9 2 3 5 10) reversed
+; stack) equals: #(1 2 3 5 6 7 9 2 3 5 6 7 9 2 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -730,7 +731,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 5 6 7 8 7 9 2 3 5 6 7 8 7 9 2 3 5 10) reversed
+; stack) equals: #(1 2 3 5 6 7 8 7 9 2 3 5 6 7 8 7 9 2 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -752,7 +753,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 5 6 7 8 7 8 7 9 2 3 5 6 7 8 7 8 7 9 2 3 5 10) reversed
+; stack) equals: #(1 2 3 5 6 7 8 7 8 7 9 2 3 5 6 7 8 7 8 7 9 2 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -774,7 +775,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 5 6 7 9 2 3 4 3 5 6 7 9 2 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 5 6 7 9 2 3 4 3 5 6 7 9 2 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -796,7 +797,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 5 6 7 8 7 9 2 3 4 3 5 6 7 8 7 9 2 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 5 6 7 8 7 9 2 3 4 3 5 6 7 8 7 9 2 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -818,7 +819,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -840,7 +841,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 4 3 5 6 7 9 2 3 4 3 4 3 5 6 7 9 2 3 4 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 4 3 5 6 7 9 2 3 4 3 4 3 5 6 7 9 2 3 4 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -862,7 +863,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 4 3 5 6 7 8 7 9 2 3 4 3 4 3 5 6 7 8 7 9 2 3 4 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 4 3 5 6 7 8 7 9 2 3 4 3 4 3 5 6 7 8 7 9 2 3 4 3 4 3 5 10) reversed
 ]
 
 { #category : #'generated-test' }
@@ -884,7 +885,7 @@ self assert: (forth eval: '
 	repeat 10
 	
 '
-; stackCopy) equals: #(1 2 3 4 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 4 3 5 10) reversed
+; stack) equals: #(1 2 3 4 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 4 3 5 6 7 8 7 8 7 9 2 3 4 3 4 3 5 10) reversed
 ]
 
 { #category : #tests }
@@ -897,18 +898,18 @@ ForthLoopTest >> testNestedBegintUntilLoop [
 		20 gen begin begin 12 < until 7 < until
 	
 	'
-	; stackCopy) equals: #(0 1 2 3 4 5) reversed
+	; stack) equals: #(0 1 2 3 4 5) reversed
 	 
 ]
 
 { #category : #tests }
 ForthLoopTest >> testNestedDoLoop [
 
-	self assert: (forth eval: '3 1 do 4 1 do i j loop loop'; stackCopy) equals: #(1 1 2 1 3 1 1 2 2 2 3 2) reversed
+	self assert: (forth eval: '3 1 do 4 1 do i j loop loop'; stack) equals: #(1 1 2 1 3 1 1 2 2 2 3 2) reversed
 ]
 
 { #category : #tests }
 ForthLoopTest >> testPlusDoLoop [
-	self assert: (forth eval: '20 0 do i 3 +loop'; stackCopy) equals: #(0 3 6 9 12 15 18) reversed.
+	self assert: (forth eval: '20 0 do i 3 +loop'; stack) equals: #(0 3 6 9 12 15 18) reversed.
 
 ]

@@ -25,7 +25,7 @@ ForthNeedsTranscriptTest >> testAbort [
 	
 	self useTranscriptOn: [
 		forth eval: 'false abort ." Must see me"'.
-		self assert: forth stackCopy isEmpty.
+		self assert: forth stack isEmpty.
 		self assert: (UIManager default confirm: 'Do you see an ''Must see me'' on Transcript?').
 	]
 		
@@ -37,7 +37,7 @@ ForthNeedsTranscriptTest >> testAbortWithMessage [
 	self useTranscriptOn: [
 	
 	forth eval: 'false abort" Message" ." No message"'.
-	self assert: forth stackCopy isEmpty.
+	self assert: forth stack isEmpty.
 	self assert: (UIManager default confirm: 'Do you see an ''No message'' on Transcript?').
 	
 	]	
@@ -48,7 +48,7 @@ ForthNeedsTranscriptTest >> testAbortWithMessage2 [
 	
 	self useTranscriptOn:[
 	self should: [ forth eval: 'true abort" Message" ." Must not see me"' ] raise: ForthAbort.
-	self assert: forth stackCopy isEmpty.
+	self assert: forth stack isEmpty.
 	self assert: (UIManager default confirm: 'Do you see an ''Message'' only on Transcript?').
 
 	]
@@ -66,7 +66,7 @@ ForthNeedsTranscriptTest >> testBackSlash [
 		." Comment"
 		
 		'.
-		self assert: forth stackCopy isEmpty.
+		self assert: forth stack isEmpty.
 		self assert: (UIManager default confirm: 'Do you see an ''*Comment'' on Transcript?').
 		
 	
@@ -78,7 +78,7 @@ ForthNeedsTranscriptTest >> testChar [
 		
 	self useTranscriptOn: [
 		forth eval: 'char * emit'.
-		self assert: forth stackCopy isEmpty.
+		self assert: forth stack isEmpty.
 		self assert: (UIManager default confirm: 'Do you see an * on Transcript?').
 	]
 ]
@@ -88,7 +88,7 @@ ForthNeedsTranscriptTest >> testComment [
 		
 		self useTranscriptOn:[
 		forth eval: '42 emit ( I am a comment) ." Comment"'.
-		self assert: forth stackCopy isEmpty.
+		self assert: forth stack isEmpty.
 		self assert: (UIManager default confirm: 'Do you see an ''*Comment'' on Transcript?').
 		
 	
@@ -100,7 +100,7 @@ ForthNeedsTranscriptTest >> testCr [
 		
 		self useTranscriptOn:[
 		forth eval: '." abcd" cr ." efg"'.
-		self assert: forth stackCopy isEmpty.
+		self assert: forth stack isEmpty.
 		self assert: (UIManager default confirm: 'Do you see an ''abcd'' and ''efg'' in two lines on Transcript?').
 		
 	
@@ -112,7 +112,7 @@ ForthNeedsTranscriptTest >> testDot [
 	
 	self useTranscriptOn:[
 	forth eval: '7 dup * .'.
-	self assert: [ forth stackCopy isEmpty ].
+	self assert: [ forth stack isEmpty ].
 	self assert: (UIManager default confirm: 'Do you see an 49 on Transcript?').
 	 
 	]
@@ -123,7 +123,7 @@ ForthNeedsTranscriptTest >> testDot2 [
 	
 	self useTranscriptOn:[
 	forth eval: '77 42 . .'.
-	self assert: [ forth stackCopy isEmpty ].
+	self assert: [ forth stack isEmpty ].
 	self assert: (UIManager default confirm: 'Do you see an 42 77 on Transcript?').
 
 	]
@@ -134,7 +134,7 @@ ForthNeedsTranscriptTest >> testDotQuote [
 		
 		self useTranscriptOn:[
 		forth eval: '42 emit ." Hello    World!"'.
-		self assert: forth stackCopy isEmpty.
+		self assert: forth stack isEmpty.
 		self assert: (UIManager default confirm: 'Do you see an ''*Hello    World!'' on Transcript?').
 		 
 	
@@ -146,7 +146,7 @@ ForthNeedsTranscriptTest >> testDotQuoteWithEmptyString [
 		
 		self useTranscriptOn:[
 		forth eval: '." "'.
-		self assert: forth stackCopy isEmpty.
+		self assert: forth stack isEmpty.
 		self assert: (UIManager default confirm: 'Do you ''see'' an ''empty string'' on Transcript?').
 		
 	]
@@ -159,8 +159,8 @@ ForthNeedsTranscriptTest >> testDotS [
 	self useTranscriptOn: [
 		
 		forth eval: '1 2 3 .s'.
-		self assert: forth stackCopy size equals: 3.
-		self assert: forth stackCopy equals: #(3 2 1).
+		self assert: forth stack size equals: 3.
+		self assert: forth stack equals: #(3 2 1).
 		self assert: (UIManager default confirm: 'Do you see an ''<3> 1 2 3'' on Transcript?').
 
 	]
@@ -171,7 +171,7 @@ ForthNeedsTranscriptTest >> testEmit [
 		
 		self useTranscriptOn:[
 		forth eval: '42 emit'.
-		self assert: forth stackCopy isEmpty.
+		self assert: forth stack isEmpty.
 		self assert: (UIManager default confirm: 'Do you see an * on Transcript?').
 
 	
@@ -192,7 +192,7 @@ ForthNeedsTranscriptTest >> testForget [
 			greet
 		
 		'.
-		self assert: forth stackCopy isEmpty.
+		self assert: forth stack isEmpty.
 		self assert: (UIManager default confirm: 'Do you see an ''Hello, I speak Forth.'' in on Transcript?').
 
 	
@@ -346,7 +346,7 @@ ForthNeedsTranscriptTest >> testMarker [
 			greet
 		
 		'.
-		self assert: forth stackCopy isEmpty.
+		self assert: forth stack isEmpty.
 		self assert: (UIManager default confirm: 'Do you see an ''Hello, I speak Forth.'' in on Transcript?').
 
 	
@@ -362,7 +362,7 @@ ForthNeedsTranscriptTest >> testPage [
 			page
 			." PAGE works!"
 		'.
-		self assert: forth stackCopy isEmpty.
+		self assert: forth stack isEmpty.
 		self assert: (UIManager default confirm: 'Do you see only an ''PAGE works!'' message on Transcript?').
 	]
 ]
@@ -372,7 +372,7 @@ ForthNeedsTranscriptTest >> testSpace [
 		
 		self useTranscriptOn:[
 		forth eval: '." abcd" space space space ." efg"'.
-		self assert: forth stackCopy isEmpty.
+		self assert: forth stack isEmpty.
 		self assert: (UIManager default confirm: 'Do you see an ''abcd   efg'' on Transcript?').
 
 	]
@@ -384,7 +384,7 @@ ForthNeedsTranscriptTest >> testSpaces [
 		
 		self useTranscriptOn:[
 		forth eval: '." abcd" 3 spaces ." efg"'.
-		self assert: forth stackCopy isEmpty.
+		self assert: forth stack isEmpty.
 		self assert: (UIManager default confirm: 'Do you see an ''abcd   efg'' on Transcript?').
 
 	]
@@ -419,7 +419,7 @@ ForthNeedsTranscriptTest >> testTwoMarker [
 			greet
 		
 		'.
-		self assert: forth stackCopy isEmpty.
+		self assert: forth stack isEmpty.
 		self assert: (UIManager default confirm: 'Do you see an ''Dummy.'' in on Transcript?').
 
 	
@@ -441,7 +441,7 @@ ForthNeedsTranscriptTest >> testTwoMarker2 [
 			greet
 		
 		'.
-		self assert: forth stackCopy isEmpty.
+		self assert: forth stack isEmpty.
 		self assert: (UIManager default confirm: 'Do you see an ''Hello, I speak Forth.'' in on Transcript?').
 
 	

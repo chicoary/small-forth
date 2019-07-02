@@ -287,38 +287,38 @@ ForthIfElseThenTest class >> sourceFromExpr: expr with: n size: size [
 { #category : #tests }
 ForthIfElseThenTest >> testFalseIfElseThen [ 
 	
-	self assert: (forth eval: 'false if 1 else 2 then 3'; stackCopy) equals: #(2 3) reversed.
+	self assert: (forth eval: 'false if 1 else 2 then 3'; stack) equals: #(2 3) reversed.
 	
 ]
 
 { #category : #tests }
 ForthIfElseThenTest >> testFalseIfFalseIfThenThen [ 
 	
-	self assert: (forth eval: 'false if 1 false if 2 then 3 then 4'; stackCopy) equals: #(4) reversed.
+	self assert: (forth eval: 'false if 1 false if 2 then 3 then 4'; stack) equals: #(4) reversed.
 	
 ]
 
 { #category : #tests }
 ForthIfElseThenTest >> testFalseIfThen [ 
 	
-	self assert: (forth eval: 'false if 1 then 2'; stackCopy) equals: #(2) reversed.
+	self assert: (forth eval: 'false if 1 then 2'; stack) equals: #(2) reversed.
 	
 ]
 
 { #category : #tests }
 ForthIfElseThenTest >> testFalseIfTrueIfThenThen [ 
 	
-	self assert: (forth eval: 'false if 1 true if 2 then 3 then 4'; stackCopy) equals: #(4) reversed.
+	self assert: (forth eval: 'false if 1 true if 2 then 3 then 4'; stack) equals: #(4) reversed.
 	
 ]
 
 { #category : #tests }
 ForthIfElseThenTest >> testIfElseThen [ 
 	
-	self assert: (forth eval: 'false if 1 2 3 swap else 4 5 6 dup then'; stackCopy) equals: #(6 6 5 4).
-	self assert: forth stackCopy size equals: 4.
-	self assert: (forth eval: 'true if 1 2 3 swap else 4 5 6 dup then'; stackCopy) equals: #(2 3 1).
-	self assert: forth stackCopy size equals: 3.
+	self assert: (forth eval: 'false if 1 2 3 swap else 4 5 6 dup then'; stack) equals: #(6 6 5 4).
+	self assert: forth stack size equals: 4.
+	self assert: (forth eval: 'true if 1 2 3 swap else 4 5 6 dup then'; stack) equals: #(2 3 1).
+	self assert: forth stack size equals: 3.
 	
 	
 ]
@@ -329,7 +329,7 @@ ForthIfElseThenTest >> testIfElseThen10 [
 		SwiftForth
 		: test drop false if 1  2 then 3 .s ;
 		"
-		self assert: (forth eval: 'false if 1  2 then 3'; stackCopy) 
+		self assert: (forth eval: 'false if 1  2 then 3'; stack) 
 		equals: #(3) reversed
 ]
 
@@ -339,7 +339,7 @@ ForthIfElseThenTest >> testIfElseThen11 [
 		SwiftForth
 		: test drop false if 1 else 2 then 3 .s ;
 		"
-		self assert: (forth eval: 'false if 1 else 2 then 3'; stackCopy) 
+		self assert: (forth eval: 'false if 1 else 2 then 3'; stack) 
 		equals: #(2 3) reversed
 ]
 
@@ -349,7 +349,7 @@ ForthIfElseThenTest >> testIfElseThen12 [
 		SwiftForth
 		: test drop true if 1  2 then 3 .s ;
 		"
-		self assert: (forth eval: 'true if 1  2 then 3'; stackCopy) 
+		self assert: (forth eval: 'true if 1  2 then 3'; stack) 
 		equals: #(1 2 3) reversed
 ]
 
@@ -359,7 +359,7 @@ ForthIfElseThenTest >> testIfElseThen13 [
 		SwiftForth
 		: test drop true if 1 else 2 then 3 .s ;
 		"
-		self assert: (forth eval: 'true if 1 else 2 then 3'; stackCopy) 
+		self assert: (forth eval: 'true if 1 else 2 then 3'; stack) 
 		equals: #(1 3) reversed
 ]
 
@@ -369,7 +369,7 @@ ForthIfElseThenTest >> testIfElseThen20 [
 		SwiftForth
 		: test drop false if 1 false if 2  3 then 4  5 then 6 .s ;
 		"
-		self assert: (forth eval: 'false if 1 false if 2  3 then 4  5 then 6'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4  5 then 6'; stack) 
 		equals: #(6) reversed
 ]
 
@@ -379,7 +379,7 @@ ForthIfElseThenTest >> testIfElseThen21 [
 		SwiftForth
 		: test drop false if 1 false if 2  3 then 4 else 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'false if 1 false if 2  3 then 4 else 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4 else 5 then 6'; stack) 
 		equals: #(5 6) reversed
 ]
 
@@ -389,7 +389,7 @@ ForthIfElseThenTest >> testIfElseThen210 [
 		SwiftForth
 		: test drop true if 1 false if 2 else 3 then 4  5 then 6 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4  5 then 6'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4  5 then 6'; stack) 
 		equals: #(1 3 4 5 6) reversed
 ]
 
@@ -399,7 +399,7 @@ ForthIfElseThenTest >> testIfElseThen211 [
 		SwiftForth
 		: test drop true if 1 false if 2 else 3 then 4 else 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4 else 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4 else 5 then 6'; stack) 
 		equals: #(1 3 4 6) reversed
 ]
 
@@ -409,7 +409,7 @@ ForthIfElseThenTest >> testIfElseThen212 [
 		SwiftForth
 		: test drop true if 1 true if 2  3 then 4  5 then 6 .s ;
 		"
-		self assert: (forth eval: 'true if 1 true if 2  3 then 4  5 then 6'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4  5 then 6'; stack) 
 		equals: #(1 2 3 4 5 6) reversed
 ]
 
@@ -419,7 +419,7 @@ ForthIfElseThenTest >> testIfElseThen213 [
 		SwiftForth
 		: test drop true if 1 true if 2  3 then 4 else 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'true if 1 true if 2  3 then 4 else 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4 else 5 then 6'; stack) 
 		equals: #(1 2 3 4 6) reversed
 ]
 
@@ -429,7 +429,7 @@ ForthIfElseThenTest >> testIfElseThen214 [
 		SwiftForth
 		: test drop true if 1 true if 2 else 3 then 4  5 then 6 .s ;
 		"
-		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4  5 then 6'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4  5 then 6'; stack) 
 		equals: #(1 2 4 5 6) reversed
 ]
 
@@ -439,7 +439,7 @@ ForthIfElseThenTest >> testIfElseThen215 [
 		SwiftForth
 		: test drop true if 1 true if 2 else 3 then 4 else 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4 else 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4 else 5 then 6'; stack) 
 		equals: #(1 2 4 6) reversed
 ]
 
@@ -449,7 +449,7 @@ ForthIfElseThenTest >> testIfElseThen22 [
 		SwiftForth
 		: test drop false if 1 false if 2 else 3 then 4  5 then 6 .s ;
 		"
-		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4  5 then 6'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4  5 then 6'; stack) 
 		equals: #(6) reversed
 ]
 
@@ -459,7 +459,7 @@ ForthIfElseThenTest >> testIfElseThen23 [
 		SwiftForth
 		: test drop false if 1 false if 2 else 3 then 4 else 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4 else 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4 else 5 then 6'; stack) 
 		equals: #(5 6) reversed
 ]
 
@@ -469,7 +469,7 @@ ForthIfElseThenTest >> testIfElseThen24 [
 		SwiftForth
 		: test drop false if 1 true if 2  3 then 4  5 then 6 .s ;
 		"
-		self assert: (forth eval: 'false if 1 true if 2  3 then 4  5 then 6'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4  5 then 6'; stack) 
 		equals: #(6) reversed
 ]
 
@@ -482,7 +482,7 @@ ForthIfElseThenTest >> testIfElseThen25 [
 		
 
 		
-		self assert: (forth eval: 'false if 1 true if 2  3 then 4 else 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4 else 5 then 6'; stack) 
 		equals: #(5 6) reversed
 ]
 
@@ -495,7 +495,7 @@ ForthIfElseThenTest >> testIfElseThen26 [
 		
 	
 		
-		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4  5 then 6'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4  5 then 6'; stack) 
 		equals: #(6) reversed
 ]
 
@@ -507,7 +507,7 @@ ForthIfElseThenTest >> testIfElseThen27 [
 		"
 		
 		
-		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4 else 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4 else 5 then 6'; stack) 
 		equals: #(5 6) reversed
 ]
 
@@ -520,7 +520,7 @@ ForthIfElseThenTest >> testIfElseThen28 [
 		
 		
 		
-		self assert: (forth eval: 'true if 1 false if 2  3 then 4  5 then 6'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4  5 then 6'; stack) 
 		equals: #(1 4 5 6) reversed
 ]
 
@@ -532,7 +532,7 @@ ForthIfElseThenTest >> testIfElseThen29 [
 		"
 		
 		
-		self assert: (forth eval: 'true if 1 false if 2  3 then 4 else 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4 else 5 then 6'; stack) 
 		equals: #(1 4 6) reversed
 ]
 
@@ -544,7 +544,7 @@ ForthIfElseThenTest >> testIfElseThen30 [
 		"
 	
 		
-		self assert: (forth eval: 'false if 1 false if 2  3 then 4  5 false if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4  5 false if 6  7 then 8 then 9'; stack) 
 		equals: #(9) reversed
 ]
 
@@ -557,7 +557,7 @@ ForthIfElseThenTest >> testIfElseThen31 [
 		
 
 		
-		self assert: (forth eval: 'false if 1 false if 2  3 then 4  5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4  5 false if 6 else 7 then 8 then 9'; stack) 
 		equals: #(9) reversed
 ]
 
@@ -568,7 +568,7 @@ ForthIfElseThenTest >> testIfElseThen310 [
 		: test drop false if 1 false if 2  3 then 4 else 5 true if 6  7 then 8 then 9 .s ;
 		"
 
-		self assert: (forth eval: 'false if 1 false if 2  3 then 4 else 5 true if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4 else 5 true if 6  7 then 8 then 9'; stack) 
 		equals: #(5 6 7 8 9) reversed
 ]
 
@@ -581,7 +581,7 @@ ForthIfElseThenTest >> testIfElseThen311 [
 		
 
 		
-		self assert: (forth eval: 'false if 1 false if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9'; stack) 
 		equals: #(5 6 8 9) reversed
 ]
 
@@ -594,7 +594,7 @@ ForthIfElseThenTest >> testIfElseThen312 [
 		
 	
 		
-		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4  5 true if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4  5 true if 6  7 then 8 then 9'; stack) 
 		equals: #(9) reversed
 ]
 
@@ -607,7 +607,7 @@ ForthIfElseThenTest >> testIfElseThen313 [
 		
 	
 		
-		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9'; stack) 
 		equals: #(9) reversed
 ]
 
@@ -618,7 +618,7 @@ ForthIfElseThenTest >> testIfElseThen314 [
 		: test drop false if 1 false if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9 .s ;
 		"
 		
-		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9'; stack) 
 		equals: #(5 6 7 8 9) reversed
 ]
 
@@ -629,7 +629,7 @@ ForthIfElseThenTest >> testIfElseThen315 [
 		: test drop false if 1 false if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9 .s ;
 		"
 		
-		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9'; stack) 
 		equals: #(5 6 8 9) reversed
 ]
 
@@ -640,7 +640,7 @@ ForthIfElseThenTest >> testIfElseThen316 [
 		: test drop false if 1 true if 2  3 then 4  5 false if 6  7 then 8 then 9 .s ;
 		"
 		
-		self assert: (forth eval: 'false if 1 true if 2  3 then 4  5 false if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4  5 false if 6  7 then 8 then 9'; stack) 
 		equals: #(9) reversed
 ]
 
@@ -652,7 +652,7 @@ ForthIfElseThenTest >> testIfElseThen317 [
 		"
 		
 			
-		self assert: (forth eval: 'false if 1 true if 2  3 then 4  5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4  5 false if 6 else 7 then 8 then 9'; stack) 
 		equals: #(9) reversed
 ]
 
@@ -663,7 +663,7 @@ ForthIfElseThenTest >> testIfElseThen318 [
 		: test drop false if 1 true if 2  3 then 4 else 5 false if 6  7 then 8 then 9 .s ;
 		"
 		
-		self assert: (forth eval: 'false if 1 true if 2  3 then 4 else 5 false if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4 else 5 false if 6  7 then 8 then 9'; stack) 
 		equals: #(5 8 9) reversed
 ]
 
@@ -675,7 +675,7 @@ ForthIfElseThenTest >> testIfElseThen319 [
 		"
 
 			
-		self assert: (forth eval: 'false if 1 true if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9'; stack) 
 		equals: #(5 7 8 9) reversed
 ]
 
@@ -686,7 +686,7 @@ ForthIfElseThenTest >> testIfElseThen32 [
 		: test drop false if 1 false if 2  3 then 4 else 5 false if 6  7 then 8 then 9 .s ;
 		"
 
-		self assert: (forth eval: 'false if 1 false if 2  3 then 4 else 5 false if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4 else 5 false if 6  7 then 8 then 9'; stack) 
 		equals: #(5 8 9) reversed
 ]
 
@@ -698,7 +698,7 @@ ForthIfElseThenTest >> testIfElseThen320 [
 		"
 
 		
-		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4  5 false if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4  5 false if 6  7 then 8 then 9'; stack) 
 		equals: #(9) reversed
 ]
 
@@ -709,7 +709,7 @@ ForthIfElseThenTest >> testIfElseThen321 [
 		: test drop false if 1 true if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9 .s ;
 		"
 
-		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9'; stack) 
 		equals: #(9) reversed
 ]
 
@@ -720,7 +720,7 @@ ForthIfElseThenTest >> testIfElseThen322 [
 		: test drop false if 1 true if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9 .s ;
 		"
 
-		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9'; stack) 
 		equals: #(5 8 9) reversed
 ]
 
@@ -731,7 +731,7 @@ ForthIfElseThenTest >> testIfElseThen323 [
 		: test drop false if 1 true if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9 .s ;
 		"
 
-		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9'; stack) 
 		equals: #(5 7 8 9) reversed
 ]
 
@@ -742,7 +742,7 @@ ForthIfElseThenTest >> testIfElseThen324 [
 		: test drop false if 1 true if 2  3 then 4  5 true if 6  7 then 8 then 9 .s ;
 		"
 
-		self assert: (forth eval: 'false if 1 true if 2  3 then 4  5 true if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4  5 true if 6  7 then 8 then 9'; stack) 
 		equals: #(9) reversed
 ]
 
@@ -753,7 +753,7 @@ ForthIfElseThenTest >> testIfElseThen325 [
 		: test drop false if 1 true if 2  3 then 4  5 true if 6 else 7 then 8 then 9 .s ;
 		"
 
-		self assert: (forth eval: 'false if 1 true if 2  3 then 4  5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4  5 true if 6 else 7 then 8 then 9'; stack) 
 		equals: #(9) reversed
 ]
 
@@ -764,7 +764,7 @@ ForthIfElseThenTest >> testIfElseThen326 [
 		: test drop false if 1 true if 2  3 then 4 else 5 true if 6  7 then 8 then 9 .s ;
 		"
 
-		self assert: (forth eval: 'false if 1 true if 2  3 then 4 else 5 true if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4 else 5 true if 6  7 then 8 then 9'; stack) 
 		equals: #(5 6 7 8 9) reversed
 ]
 
@@ -774,7 +774,7 @@ ForthIfElseThenTest >> testIfElseThen327 [
 		SwiftForth
 		: test false if 1 true if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'false if 1 true if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9'; stack) 
 		equals: #(5 6 8 9) reversed
 ]
 
@@ -784,7 +784,7 @@ ForthIfElseThenTest >> testIfElseThen328 [
 		SwiftForth
 		: test false if 1 true if 2 else 3 then 4  5 true if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4  5 true if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4  5 true if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -794,7 +794,7 @@ ForthIfElseThenTest >> testIfElseThen329 [
 		SwiftForth
 		: test drop false if 1 true if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9'; stack) 
 		equals: #(9) reversed
 ]
 
@@ -804,7 +804,7 @@ ForthIfElseThenTest >> testIfElseThen33 [
 		SwiftForth
 		: test false if 1 false if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'false if 1 false if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -814,7 +814,7 @@ ForthIfElseThenTest >> testIfElseThen330 [
 		SwiftForth
 		: test false if 1 true if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -824,7 +824,7 @@ ForthIfElseThenTest >> testIfElseThen331 [
 		SwiftForth
 		: test false if 1 true if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 true if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -834,7 +834,7 @@ ForthIfElseThenTest >> testIfElseThen332 [
 		SwiftForth
 		: test true if 1 false if 2  3 then 4  5 false if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2  3 then 4  5 false if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4  5 false if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -844,7 +844,7 @@ ForthIfElseThenTest >> testIfElseThen333 [
 		SwiftForth
 		: test true if 1 false if 2  3 then 4  5 false if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2  3 then 4  5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4  5 false if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -855,7 +855,7 @@ ForthIfElseThenTest >> testIfElseThen334 [
 		: test drop true if 1 false if 2  3 then 4 else 5 false if 6  7 then 8 then 9 .s ;
 		"
 						
-		self assert: (forth eval: 'true if 1 false if 2  3 then 4 else 5 false if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4 else 5 false if 6  7 then 8 then 9'; stack) 
 		equals: #(1 4 9) reversed
 ]
 
@@ -865,7 +865,7 @@ ForthIfElseThenTest >> testIfElseThen335 [
 		SwiftForth
 		: test true if 1 false if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -875,7 +875,7 @@ ForthIfElseThenTest >> testIfElseThen336 [
 		SwiftForth
 		: test true if 1 false if 2 else 3 then 4  5 false if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4  5 false if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4  5 false if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -885,7 +885,7 @@ ForthIfElseThenTest >> testIfElseThen337 [
 		SwiftForth
 		: test true if 1 false if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -895,7 +895,7 @@ ForthIfElseThenTest >> testIfElseThen338 [
 		SwiftForth
 		: test true if 1 false if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -905,7 +905,7 @@ ForthIfElseThenTest >> testIfElseThen339 [
 		SwiftForth
 		: test true if 1 false if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -915,7 +915,7 @@ ForthIfElseThenTest >> testIfElseThen34 [
 		SwiftForth
 		: test false if 1 false if 2 else 3 then 4  5 false if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4  5 false if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4  5 false if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -925,7 +925,7 @@ ForthIfElseThenTest >> testIfElseThen340 [
 		SwiftForth
 		: test true if 1 false if 2  3 then 4  5 true if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2  3 then 4  5 true if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4  5 true if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -935,7 +935,7 @@ ForthIfElseThenTest >> testIfElseThen341 [
 		SwiftForth
 		: test true if 1 false if 2  3 then 4  5 true if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2  3 then 4  5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4  5 true if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -945,7 +945,7 @@ ForthIfElseThenTest >> testIfElseThen342 [
 		SwiftForth
 		: test true if 1 false if 2  3 then 4 else 5 true if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2  3 then 4 else 5 true if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4 else 5 true if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -955,7 +955,7 @@ ForthIfElseThenTest >> testIfElseThen343 [
 		SwiftForth
 		: test true if 1 false if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -965,7 +965,7 @@ ForthIfElseThenTest >> testIfElseThen344 [
 		SwiftForth
 		: test true if 1 false if 2 else 3 then 4  5 true if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4  5 true if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4  5 true if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -975,7 +975,7 @@ ForthIfElseThenTest >> testIfElseThen345 [
 		SwiftForth
 		: test true if 1 false if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -985,7 +985,7 @@ ForthIfElseThenTest >> testIfElseThen346 [
 		SwiftForth
 		: test true if 1 false if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -995,7 +995,7 @@ ForthIfElseThenTest >> testIfElseThen347 [
 		SwiftForth
 		: test true if 1 false if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 false if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -1005,7 +1005,7 @@ ForthIfElseThenTest >> testIfElseThen348 [
 		SwiftForth
 		: test true if 1 true if 2  3 then 4  5 false if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 true if 2  3 then 4  5 false if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4  5 false if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -1015,7 +1015,7 @@ ForthIfElseThenTest >> testIfElseThen349 [
 		SwiftForth
 		: test true if 1 true if 2  3 then 4  5 false if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 true if 2  3 then 4  5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4  5 false if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -1025,7 +1025,7 @@ ForthIfElseThenTest >> testIfElseThen35 [
 		SwiftForth
 		: test false if 1 false if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -1035,7 +1035,7 @@ ForthIfElseThenTest >> testIfElseThen350 [
 		SwiftForth
 		: test true if 1 true if 2  3 then 4 else 5 false if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 true if 2  3 then 4 else 5 false if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4 else 5 false if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -1045,7 +1045,7 @@ ForthIfElseThenTest >> testIfElseThen351 [
 		SwiftForth
 		: test true if 1 true if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 true if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4 else 5 false if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -1055,7 +1055,7 @@ ForthIfElseThenTest >> testIfElseThen352 [
 		SwiftForth
 		: test true if 1 true if 2 else 3 then 4  5 false if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4  5 false if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4  5 false if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -1065,7 +1065,7 @@ ForthIfElseThenTest >> testIfElseThen353 [
 		SwiftForth
 		: test true if 1 true if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4  5 false if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -1075,7 +1075,7 @@ ForthIfElseThenTest >> testIfElseThen354 [
 		SwiftForth
 		: test true if 1 true if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -1085,7 +1085,7 @@ ForthIfElseThenTest >> testIfElseThen355 [
 		SwiftForth
 		: test true if 1 true if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -1095,7 +1095,7 @@ ForthIfElseThenTest >> testIfElseThen356 [
 		SwiftForth
 		: test true if 1 true if 2  3 then 4  5 true if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 true if 2  3 then 4  5 true if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4  5 true if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -1106,7 +1106,7 @@ ForthIfElseThenTest >> testIfElseThen357 [
 		: test drop true if 1 true if 2  3 then 4  5 true if 6 else 7 then 8 then 9 .s ;
 		"
 
-		self assert: (forth eval: 'true if 1 true if 2  3 then 4  5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4  5 true if 6 else 7 then 8 then 9'; stack) 
 		equals: #(1 2 3 4 5 6 8 9) reversed
 ]
 
@@ -1117,7 +1117,7 @@ ForthIfElseThenTest >> testIfElseThen358 [
 		: test drop true if 1 true if 2  3 then 4 else 5 true if 6  7 then 8 then 9 .s ;
 		"
 
-		self assert: (forth eval: 'true if 1 true if 2  3 then 4 else 5 true if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4 else 5 true if 6  7 then 8 then 9'; stack) 
 		equals: #(1 2 3 4 9) reversed
 ]
 
@@ -1127,7 +1127,7 @@ ForthIfElseThenTest >> testIfElseThen359 [
 		SwiftForth
 		: test drop true if 1 true if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 true if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2  3 then 4 else 5 true if 6 else 7 then 8 then 9'; stack) 
 		equals: #(1 2 3 4 9) reversed
 ]
 
@@ -1137,7 +1137,7 @@ ForthIfElseThenTest >> testIfElseThen36 [
 		SwiftForth
 		: test false if 1 false if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4 else 5 false if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -1148,7 +1148,7 @@ ForthIfElseThenTest >> testIfElseThen360 [
 		: test drop true if 1 true if 2 else 3 then 4  5 true if 6  7 then 8 then 9 .s ;
 		"
 
-		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4  5 true if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4  5 true if 6  7 then 8 then 9'; stack) 
 		equals: #(1 2 4 5 6 7 8 9) reversed
 ]
 
@@ -1158,7 +1158,7 @@ ForthIfElseThenTest >> testIfElseThen361 [
 		SwiftForth
 		: test true if 1 true if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4  5 true if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -1169,7 +1169,7 @@ ForthIfElseThenTest >> testIfElseThen362 [
 		: test drop true if 1 true if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9 .s ;
 		"
 
-		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9'; stack) 
 		equals: #(1 2 4 9) reversed
 ]
 
@@ -1179,7 +1179,7 @@ ForthIfElseThenTest >> testIfElseThen363 [
 		SwiftForth
 		: test drop true if 1 true if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'true if 1 true if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9'; stack) 
 		equals: #(1 2 4 9) reversed
 ]
 
@@ -1189,7 +1189,7 @@ ForthIfElseThenTest >> testIfElseThen37 [
 		SwiftForth
 		: test false if 1 false if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2 else 3 then 4 else 5 false if 6 else 7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -1199,7 +1199,7 @@ ForthIfElseThenTest >> testIfElseThen38 [
 		SwiftForth
 		: test false if 1 false if 2  3 then 4  5 true if 6  7 then 8 then 9 .s ;
 		"
-		self assert: (forth eval: 'false if 1 false if 2  3 then 4  5 true if 6  7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4  5 true if 6  7 then 8 then 9'; stack) 
 		equals: #() reversed
 ]
 
@@ -1210,7 +1210,7 @@ ForthIfElseThenTest >> testIfElseThen39 [
 		: test drop false if 1 false if 2  3 then 4  5 true if 6 else 7 then 8 then 9 .s ;
 		"
 
-		self assert: (forth eval: 'false if 1 false if 2  3 then 4  5 true if 6 else 7 then 8 then 9'; stackCopy) 
+		self assert: (forth eval: 'false if 1 false if 2  3 then 4  5 true if 6 else 7 then 8 then 9'; stack) 
 		equals: #(9) reversed
 ]
 
@@ -1220,7 +1220,7 @@ ForthIfElseThenTest >> testIfElseThenX20 [
 		SwiftForth
 		: test false if 1  2 false if 3  4 then 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'false if 1  2 false if 3  4 then 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'false if 1  2 false if 3  4 then 5 then 6'; stack) 
 		equals: #() reversed
 ]
 
@@ -1230,7 +1230,7 @@ ForthIfElseThenTest >> testIfElseThenX21 [
 		SwiftForth
 		: test false if 1  2 false if 3 else 4 then 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'false if 1  2 false if 3 else 4 then 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'false if 1  2 false if 3 else 4 then 5 then 6'; stack) 
 		equals: #() reversed
 ]
 
@@ -1240,7 +1240,7 @@ ForthIfElseThenTest >> testIfElseThenX210 [
 		SwiftForth
 		: test true if 1 else 2 false if 3  4 then 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'true if 1 else 2 false if 3  4 then 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'true if 1 else 2 false if 3  4 then 5 then 6'; stack) 
 		equals: #() reversed
 ]
 
@@ -1250,7 +1250,7 @@ ForthIfElseThenTest >> testIfElseThenX211 [
 		SwiftForth
 		: test true if 1 else 2 false if 3 else 4 then 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'true if 1 else 2 false if 3 else 4 then 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'true if 1 else 2 false if 3 else 4 then 5 then 6'; stack) 
 		equals: #() reversed
 ]
 
@@ -1260,7 +1260,7 @@ ForthIfElseThenTest >> testIfElseThenX212 [
 		SwiftForth
 		: test true if 1  2 true if 3  4 then 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'true if 1  2 true if 3  4 then 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'true if 1  2 true if 3  4 then 5 then 6'; stack) 
 		equals: #() reversed
 ]
 
@@ -1270,7 +1270,7 @@ ForthIfElseThenTest >> testIfElseThenX213 [
 		SwiftForth
 		: test true if 1  2 true if 3 else 4 then 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'true if 1  2 true if 3 else 4 then 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'true if 1  2 true if 3 else 4 then 5 then 6'; stack) 
 		equals: #() reversed
 ]
 
@@ -1280,7 +1280,7 @@ ForthIfElseThenTest >> testIfElseThenX214 [
 		SwiftForth
 		: test true if 1 else 2 true if 3  4 then 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'true if 1 else 2 true if 3  4 then 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'true if 1 else 2 true if 3  4 then 5 then 6'; stack) 
 		equals: #() reversed
 ]
 
@@ -1290,7 +1290,7 @@ ForthIfElseThenTest >> testIfElseThenX215 [
 		SwiftForth
 		: test true if 1 else 2 true if 3 else 4 then 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'true if 1 else 2 true if 3 else 4 then 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'true if 1 else 2 true if 3 else 4 then 5 then 6'; stack) 
 		equals: #() reversed
 ]
 
@@ -1300,7 +1300,7 @@ ForthIfElseThenTest >> testIfElseThenX22 [
 		SwiftForth
 		: test false if 1 else 2 false if 3  4 then 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'false if 1 else 2 false if 3  4 then 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'false if 1 else 2 false if 3  4 then 5 then 6'; stack) 
 		equals: #() reversed
 ]
 
@@ -1310,7 +1310,7 @@ ForthIfElseThenTest >> testIfElseThenX23 [
 		SwiftForth
 		: test false if 1 else 2 false if 3 else 4 then 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'false if 1 else 2 false if 3 else 4 then 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'false if 1 else 2 false if 3 else 4 then 5 then 6'; stack) 
 		equals: #() reversed
 ]
 
@@ -1320,7 +1320,7 @@ ForthIfElseThenTest >> testIfElseThenX24 [
 		SwiftForth
 		: test false if 1  2 true if 3  4 then 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'false if 1  2 true if 3  4 then 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'false if 1  2 true if 3  4 then 5 then 6'; stack) 
 		equals: #() reversed
 ]
 
@@ -1330,7 +1330,7 @@ ForthIfElseThenTest >> testIfElseThenX25 [
 		SwiftForth
 		: test false if 1  2 true if 3 else 4 then 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'false if 1  2 true if 3 else 4 then 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'false if 1  2 true if 3 else 4 then 5 then 6'; stack) 
 		equals: #() reversed
 ]
 
@@ -1340,7 +1340,7 @@ ForthIfElseThenTest >> testIfElseThenX26 [
 		SwiftForth
 		: test false if 1 else 2 true if 3  4 then 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'false if 1 else 2 true if 3  4 then 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'false if 1 else 2 true if 3  4 then 5 then 6'; stack) 
 		equals: #() reversed
 ]
 
@@ -1350,7 +1350,7 @@ ForthIfElseThenTest >> testIfElseThenX27 [
 		SwiftForth
 		: test drop false if 1 else 2 true if 3 else 4 then 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'false if 1 else 2 true if 3 else 4 then 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'false if 1 else 2 true if 3 else 4 then 5 then 6'; stack) 
 		equals: #(2 3 5 6) reversed
 ]
 
@@ -1360,7 +1360,7 @@ ForthIfElseThenTest >> testIfElseThenX28 [
 		SwiftForth
 		: test drop true if 1  2 false if 3  4 then 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'true if 1  2 false if 3  4 then 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'true if 1  2 false if 3  4 then 5 then 6'; stack) 
 		equals: #(1 2 5 6) reversed
 ]
 
@@ -1370,17 +1370,17 @@ ForthIfElseThenTest >> testIfElseThenX29 [
 		SwiftForth
 		: test drop true if 1  2 false if 3 else 4 then 5 then 6 .s ;
 		"
-		self assert: (forth eval: 'true if 1  2 false if 3 else 4 then 5 then 6'; stackCopy) 
+		self assert: (forth eval: 'true if 1  2 false if 3 else 4 then 5 then 6'; stack) 
 		equals: #(1 2 4 5 6) reversed
 ]
 
 { #category : #tests }
 ForthIfElseThenTest >> testIfThen [ 
 	
-	self assert: (forth eval: 'false if 1 2 3 swap then 4 5 6'; stackCopy) equals: #(6 5 4).
-	self assert: forth stackCopy size equals: 3.
-	self assert: (forth eval: 'true if 1 2 3 swap then 4 5 6'; stackCopy) equals: #(6 5 4 2 3 1).
-	self assert: forth stackCopy size equals: 6.
+	self assert: (forth eval: 'false if 1 2 3 swap then 4 5 6'; stack) equals: #(6 5 4).
+	self assert: forth stack size equals: 3.
+	self assert: (forth eval: 'true if 1 2 3 swap then 4 5 6'; stack) equals: #(6 5 4 2 3 1).
+	self assert: forth stack size equals: 6.
 	
 	
 ]
@@ -1410,7 +1410,7 @@ ForthIfElseThenTest >> testIfWithoutThen [
 ForthIfElseThenTest >> testNestedIfElseThen [ 
 	
 	self assert: (forth eval: 'false if false if 1 2 3 else 4 5 6 then 7 8 9 else 10 11 12 then'; 
-	stackCopy) equals: #(12 11 10).
+	stack) equals: #(12 11 10).
 	
 ]
 
@@ -1425,7 +1425,7 @@ ForthIfElseThenTest >> testNestedIfElseThen0 [
 	expr := 'false if 1 false if 2  3 then 4  5 false if 6  7 then 8 then 9'.
 	stack := #(9).
 	
-	self assert: (forth eval: expr; stackCopy) equals: stack reversed
+	self assert: (forth eval: expr; stack) equals: stack reversed
 ]
 
 { #category : #tests }
@@ -1439,14 +1439,14 @@ ForthIfElseThenTest >> testNestedIfElseThen1 [
 	expr := 'false if 1 false if 2  3 then 4  5 false if 6 else 7  then 8 then 9'.
 	stack := #(9).
 	
-	self assert: (forth eval: expr; stackCopy) equals: stack reversed
+	self assert: (forth eval: expr; stack) equals: stack reversed
 ]
 
 { #category : #tests }
 ForthIfElseThenTest >> testNestedIfElseThen2 [ 
 	
 	self assert: (forth eval: 'false if true if 1 2 3 else 4 5 6 then 7 8 9 else 10 11 12 then'; 
-	stackCopy) equals: #(12 11 10).
+	stack) equals: #(12 11 10).
 	
 	
 ]
@@ -1455,7 +1455,7 @@ ForthIfElseThenTest >> testNestedIfElseThen2 [
 ForthIfElseThenTest >> testNestedIfElseThen3 [
 	
 	self assert: (forth eval: 'true if false if 1 2 3 else 4 5 6 then 7 8 9 else 10 11 12 then'; 
-	stackCopy) equals: #(4 5 6 7 8 9) reverse.
+	stack) equals: #(4 5 6 7 8 9) reverse.
 	
 	
 ]
@@ -1464,7 +1464,7 @@ ForthIfElseThenTest >> testNestedIfElseThen3 [
 ForthIfElseThenTest >> testNestedIfElseThen4 [
 	
 	self assert: (forth eval: 'true if true if 1 2 3 else 4 5 6 then 7 8 9 else 10 11 12 then'; 
-	stackCopy) equals: #(1 2 3 7 8 9) reverse.
+	stack) equals: #(1 2 3 7 8 9) reverse.
 	
 	
 	
@@ -1504,10 +1504,10 @@ ForthIfElseThenTest >> testNestedIfElseThen6 [
 	
 	'.
 	
-	self assert: (forth eval: (expr format: #(false false)); stackCopy) equals: #(2 4 5 6) reversed.
-	self assert: (forth eval: (expr format: #(false true)); stackCopy) equals: #(2 3 5 6) reversed.
-	self assert: (forth eval: (expr format: #(true false)); stackCopy) equals: #(1 6) reversed.
-	self assert: (forth eval: (expr format: #(true true)); stackCopy) equals: #(1 6) reversed.
+	self assert: (forth eval: (expr format: #(false false)); stack) equals: #(2 4 5 6) reversed.
+	self assert: (forth eval: (expr format: #(false true)); stack) equals: #(2 3 5 6) reversed.
+	self assert: (forth eval: (expr format: #(true false)); stack) equals: #(1 6) reversed.
+	self assert: (forth eval: (expr format: #(true true)); stack) equals: #(1 6) reversed.
 	
 	
 ]
@@ -1523,7 +1523,7 @@ ForthIfElseThenTest >> testNestedIfElseThen62 [
 	expr := 'true if 1 true if 2 else 3 then 4 else 5 true if 6  7 then 8 then 9'.
 	stack := #(1 2 4 9).
 	
-	self assert: (forth eval: expr; stackCopy) equals: stack reversed
+	self assert: (forth eval: expr; stack) equals: stack reversed
 ]
 
 { #category : #tests }
@@ -1539,7 +1539,7 @@ ForthIfElseThenTest >> testNestedIfElseThen63 [
 	expr := 'true if 1 true if 2 else 3 then 4 else 5 true if 6 else 7 then 8 then 9'.
 	stack := #(1 2 4 9).
 	
-	self assert: (forth eval: expr; stackCopy) equals: stack reversed
+	self assert: (forth eval: expr; stack) equals: stack reversed
 ]
 
 { #category : #tests }
@@ -1554,7 +1554,7 @@ ForthIfElseThenTest >> testNestedIfElseThen6Bug3 [
 	
 	'.
 	
-	self assert: (forth eval: (expr format: #(true false)); stackCopy) equals: #(1 6) reversed
+	self assert: (forth eval: (expr format: #(true false)); stack) equals: #(1 6) reversed
 	
 	
 ]
@@ -1562,54 +1562,54 @@ ForthIfElseThenTest >> testNestedIfElseThen6Bug3 [
 { #category : #tests }
 ForthIfElseThenTest >> testNestedIfThen [ 
 	
-	self assert: (forth eval: 'false if false if 1 then 2 then 3'; stackCopy) equals: #(3).
+	self assert: (forth eval: 'false if false if 1 then 2 then 3'; stack) equals: #(3).
 	
 ]
 
 { #category : #tests }
 ForthIfElseThenTest >> testNestedIfThen2 [ 
 	
-	self assert: (forth eval: 'false if true if 1 2 3 then 4 5 6 then 7 8 9'; stackCopy) equals: #(9 8 7).
+	self assert: (forth eval: 'false if true if 1 2 3 then 4 5 6 then 7 8 9'; stack) equals: #(9 8 7).
 	
 ]
 
 { #category : #tests }
 ForthIfElseThenTest >> testNestedIfThen3 [
 	
-	self assert: (forth eval: 'true if false if 1 2 3 then 4 5 6 then 7 8 9'; stackCopy) equals: #(9 8 7 6 5 4).
+	self assert: (forth eval: 'true if false if 1 2 3 then 4 5 6 then 7 8 9'; stack) equals: #(9 8 7 6 5 4).
 	
 ]
 
 { #category : #tests }
 ForthIfElseThenTest >> testNestedIfThen4 [
 	
-	self assert: (forth eval: 'true if true if 1 2 3 then 4 5 6 then 7 8 9'; stackCopy) equals: #(9 8 7 6 5 4 3 2 1).
+	self assert: (forth eval: 'true if true if 1 2 3 then 4 5 6 then 7 8 9'; stack) equals: #(9 8 7 6 5 4 3 2 1).
 	
 ]
 
 { #category : #tests }
 ForthIfElseThenTest >> testTrueIfElseThen [ 
 	
-	self assert: (forth eval: 'true if 1 else 2 then 3'; stackCopy) equals: #(1 3) reversed.
+	self assert: (forth eval: 'true if 1 else 2 then 3'; stack) equals: #(1 3) reversed.
 	
 ]
 
 { #category : #tests }
 ForthIfElseThenTest >> testTrueIfFalseIfThenThen [ 
 	
-	self assert: (forth eval: 'true if 1 false if 2 then 3 then 4'; stackCopy) equals: #(1 3 4) reversed.
+	self assert: (forth eval: 'true if 1 false if 2 then 3 then 4'; stack) equals: #(1 3 4) reversed.
 	
 ]
 
 { #category : #tests }
 ForthIfElseThenTest >> testTrueIfThen [ 
 	
-	self assert: (forth eval: 'true if 1 then 2'; stackCopy) equals: #(1 2) reversed.
+	self assert: (forth eval: 'true if 1 then 2'; stack) equals: #(1 2) reversed.
 	
 ]
 
 { #category : #tests }
 ForthIfElseThenTest >> testTrueIfTrueIfThenThen [ 
-	self assert: (forth eval: 'true if 1 true if 2 then 3 then 4'; stackCopy) equals: #(1 2 3 4) reversed.
+	self assert: (forth eval: 'true if 1 true if 2 then 3 then 4'; stack) equals: #(1 2 3 4) reversed.
 	
 ]

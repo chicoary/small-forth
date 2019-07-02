@@ -31,16 +31,16 @@ ForthInterpreterTest >> setUp [
 
 { #category : #tests }
 ForthInterpreterTest >> test2DUPUppercased [
-	self assert: (forth eval: '3 4 2dup'; stackCopy) equals: #(3 4 3 4) reversed.
-	self assert: (forth eval: '3 4 2DUP'; stackCopy) equals: #(3 4 3 4) reversed
+	self assert: (forth eval: '3 4 2dup'; stack) equals: #(3 4 3 4) reversed.
+	self assert: (forth eval: '3 4 2DUP'; stack) equals: #(3 4 3 4) reversed
 ]
 
 { #category : #tests }
 ForthInterpreterTest >> test2drop [
 	
 		self assert: (forth eval: '1 2 3 4 2drop'; top) equals: 2.
-		self assert: forth stackCopy size equals: 2.
-		self assert: forth stackCopy equals: #(2 1)
+		self assert: forth stack size equals: 2.
+		self assert: forth stack equals: #(2 1)
 	
 ]
 
@@ -48,8 +48,8 @@ ForthInterpreterTest >> test2drop [
 ForthInterpreterTest >> test2dup [
 	
 		self assert: (forth eval: '1 2 3 4 2dup'; top) equals: 4.
-		self assert: forth stackCopy size equals: 6.
-		self assert: forth stackCopy equals: #(4 3 4 3 2 1)
+		self assert: forth stack size equals: 6.
+		self assert: forth stack equals: #(4 3 4 3 2 1)
 	
 ]
 
@@ -57,8 +57,8 @@ ForthInterpreterTest >> test2dup [
 ForthInterpreterTest >> test2over [
 	
 		self assert: (forth eval: '1 2 3 4 2over'; top) equals: 2.
-		self assert: forth stackCopy size equals: 6.
-		self assert: forth stackCopy equals: #(2 1 4 3 2 1)
+		self assert: forth stack size equals: 6.
+		self assert: forth stack equals: #(2 1 4 3 2 1)
 	
 ]
 
@@ -66,8 +66,8 @@ ForthInterpreterTest >> test2over [
 ForthInterpreterTest >> test2swap [
 	
 		self assert: (forth eval: '1 2 3 4 2swap'; top) equals: 2.
-		self assert: forth stackCopy size equals: 4.
-		self assert: forth stackCopy equals: #(2 1 4 3)
+		self assert: forth stack size equals: 4.
+		self assert: forth stack equals: #(2 1 4 3)
 	
 ]
 
@@ -75,7 +75,7 @@ ForthInterpreterTest >> test2swap [
 ForthInterpreterTest >> testAbort2 [
 	
 	self should: [forth eval: '1 2 3 true abort'] raise: ForthAbort.
-	self assert: forth stackCopy isEmpty.
+	self assert: forth stack isEmpty.
 	
 		
 ]
@@ -83,21 +83,21 @@ ForthInterpreterTest >> testAbort2 [
 { #category : #tests }
 ForthInterpreterTest >> testAbs [
 	
-	self assert: (forth eval: '7 abs'; stackCopy) equals: #(7).
-	self assert: (forth eval: '-7 abs'; stackCopy) equals: #(7).
+	self assert: (forth eval: '7 abs'; stack) equals: #(7).
+	self assert: (forth eval: '-7 abs'; stack) equals: #(7).
 
 	
 ]
 
 { #category : #tests }
 ForthInterpreterTest >> testAddsOne [
-		self assert: (forth eval: '3 1+'; stackCopy) equals: #(4).
+		self assert: (forth eval: '3 1+'; stack) equals: #(4).
 		
 ]
 
 { #category : #tests }
 ForthInterpreterTest >> testAddsTwo [
-		self assert: (forth eval: '3 2+'; stackCopy) equals: #(5).
+		self assert: (forth eval: '3 2+'; stack) equals: #(5).
 		
 ]
 
@@ -105,16 +105,16 @@ ForthInterpreterTest >> testAddsTwo [
 ForthInterpreterTest >> testAnd [
 	
 	self assert: (forth eval: '0 0 and'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	self assert: (forth eval: '0 99 and'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	self assert: (forth eval: '99 0 and'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	self assert: (forth eval: '99 98 and'; top) equals: -1.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	
 ]
@@ -144,7 +144,7 @@ ForthInterpreterTest >> testClass [
 ForthInterpreterTest >> testClearTheStack [
 	
 	self should: [ forth eval: '1 2 3 XX' ] raise: ForthMissingWord.
-	self assert: [ forth stackCopy isEmpty ]
+	self assert: [ forth stack isEmpty ]
 		
 		
 ]
@@ -153,7 +153,7 @@ ForthInterpreterTest >> testClearTheStack [
 ForthInterpreterTest >> testCopyFromReturnStack [
 	
 	forth eval: '7 >r r@'.
-	self assert: forth stackCopy equals: #(7).
+	self assert: forth stack equals: #(7).
 	self assert: forth returnStackCopy equals: #(7).
 ]
 
@@ -162,7 +162,7 @@ ForthInterpreterTest >> testDictionaryPersitenceBetweenEvals [
 	
 		forth eval: ': test 888 999 ;'.
 		
-		self assert: (forth eval: 'test'; stackCopy) equals: #(888 999) reversed
+		self assert: (forth eval: 'test'; stack) equals: #(888 999) reversed
 	
 ]
 
@@ -171,7 +171,7 @@ ForthInterpreterTest >> testDictionaryUppercaseWord [
 	
 		forth eval: ': /TEST 888 999 DUP ;'.
 		
-		self assert: (forth eval: '/test'; stackCopy) equals: #(888 999 999) reversed
+		self assert: (forth eval: '/test'; stack) equals: #(888 999 999) reversed
 	
 ]
 
@@ -179,14 +179,14 @@ ForthInterpreterTest >> testDictionaryUppercaseWord [
 ForthInterpreterTest >> testDivide [
 	
 	self assert: (forth eval: '20 7 /'; top) equals: 2.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 ]
 
 { #category : #tests }
 ForthInterpreterTest >> testDividesByTwo [
-		self assert: (forth eval: '8 2/'; stackCopy) equals: #(4).
-		self assert: (forth eval: '-8 2/'; stackCopy) equals: #(-4).
+		self assert: (forth eval: '8 2/'; stack) equals: #(4).
+		self assert: (forth eval: '-8 2/'; stack) equals: #(-4).
 		
 ]
 
@@ -194,7 +194,7 @@ ForthInterpreterTest >> testDividesByTwo [
 ForthInterpreterTest >> testDrop [
 	
 	self assert: (forth eval: '20 7 drop'; top) equals: 20.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	
 ]
@@ -202,8 +202,8 @@ ForthInterpreterTest >> testDrop [
 { #category : #tests }
 ForthInterpreterTest >> testDup [ 
 	
-	self assert: (forth eval: '7 dup'; stackCopy) equals: #(7 7).
-	self assert: forth stackCopy size equals: 2.
+	self assert: (forth eval: '7 dup'; stack) equals: #(7 7).
+	self assert: forth stack size equals: 2.
 	
 	
 ]
@@ -211,7 +211,7 @@ ForthInterpreterTest >> testDup [
 { #category : #tests }
 ForthInterpreterTest >> testEmptyExpression [
 	
-	self assert: (forth eval: ''; stackCopy) equals: Array empty
+	self assert: (forth eval: ''; stack) equals: Array empty
 	
 	
 	
@@ -221,9 +221,9 @@ ForthInterpreterTest >> testEmptyExpression [
 ForthInterpreterTest >> testEqual [ 
 	
 	self assert: (forth eval: '7 dup ='; top) equals: -1.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	self assert: (forth eval: '7 9 ='; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	
 ]
@@ -232,7 +232,7 @@ ForthInterpreterTest >> testEqual [
 ForthInterpreterTest >> testFalse [
 	
 	self assert: (forth eval: 'false'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	
 	
@@ -250,13 +250,13 @@ ForthInterpreterTest >> testForceToLowercaseFor2DUP [
 ForthInterpreterTest >> testGreaterThan [
 	
 	self assert: (forth eval: '7 dup >'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	self assert: (forth eval: '7 9 >'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	self assert: (forth eval: '9 7 >'; top) equals: -1.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	
 	
@@ -267,11 +267,11 @@ ForthInterpreterTest >> testGreaterThan [
 ForthInterpreterTest >> testGreaterThanZero [ 
 	
 	self assert: (forth eval: '0 0>'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	self assert: (forth eval: '-7 0>'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	self assert: (forth eval: '9 0>'; top) equals: -1.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 ]
 
@@ -279,16 +279,16 @@ ForthInterpreterTest >> testGreaterThanZero [
 ForthInterpreterTest >> testInvert [
 	
 	self assert: (forth eval: '0 invert'; top) equals: -1.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	self assert: (forth eval: '-1 invert'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	self assert: (forth eval: '99 invert'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	self assert: (forth eval: '-99 invert'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	
 	
@@ -299,13 +299,13 @@ ForthInterpreterTest >> testInvert [
 ForthInterpreterTest >> testLessThan [
 	
 	self assert: (forth eval: '7 dup <'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	self assert: (forth eval: '7 9 <'; top) equals: -1.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	self assert: (forth eval: '9 7 <'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	
 	
@@ -316,11 +316,11 @@ ForthInterpreterTest >> testLessThan [
 ForthInterpreterTest >> testLessThanZero [ 
 	
 	self assert: (forth eval: '0 0<'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	self assert: (forth eval: '-7 0<'; top) equals: -1.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	self assert: (forth eval: '9 0<'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 ]
 
@@ -344,7 +344,7 @@ ForthInterpreterTest >> testMarkerDuplicateWord [
 { #category : #tests }
 ForthInterpreterTest >> testMax [
 	
-	self assert: (forth eval: '7 9 max'; stackCopy) equals: #(9).
+	self assert: (forth eval: '7 9 max'; stack) equals: #(9).
 
 	
 ]
@@ -352,7 +352,7 @@ ForthInterpreterTest >> testMax [
 { #category : #tests }
 ForthInterpreterTest >> testMin [
 	
-	self assert: (forth eval: '7 9 min'; stackCopy) equals: #(7).
+	self assert: (forth eval: '7 9 min'; stack) equals: #(7).
 
 	
 ]
@@ -361,7 +361,7 @@ ForthInterpreterTest >> testMin [
 ForthInterpreterTest >> testMinus [
 	
 	self assert: (forth eval: '7 9 -'; top) equals: -2.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	
 ]
@@ -397,7 +397,7 @@ ForthInterpreterTest >> testMissingWord [
 ForthInterpreterTest >> testMod [
 	
 	self assert: (forth eval: '20 7 mod'; top) equals: 6.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 ]
 
@@ -405,23 +405,23 @@ ForthInterpreterTest >> testMod [
 ForthInterpreterTest >> testMult [
 	
 	self assert: (forth eval: '7 9 *'; top) equals: 63.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	
 ]
 
 { #category : #tests }
 ForthInterpreterTest >> testMultipliesByTwo [
-		self assert: (forth eval: '3 2*'; stackCopy) equals: #(6).
-		self assert: (forth eval: '-3 2*'; stackCopy) equals: #(-6).
+		self assert: (forth eval: '3 2*'; stack) equals: #(6).
+		self assert: (forth eval: '-3 2*'; stack) equals: #(-6).
 		
 ]
 
 { #category : #tests }
 ForthInterpreterTest >> testNegate [
 	
-	self assert: (forth eval: '7 negate'; stackCopy) equals: #(-7).
-	self assert: (forth eval: '-7 negate'; stackCopy) equals: #(7).
+	self assert: (forth eval: '7 negate'; stack) equals: #(-7).
+	self assert: (forth eval: '-7 negate'; stack) equals: #(7).
 
 	
 ]
@@ -430,10 +430,10 @@ ForthInterpreterTest >> testNegate [
 ForthInterpreterTest >> testNotEqual [
 	
 	self assert: (forth eval: '7 dup <>'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	self assert: (forth eval: '7 9 <>'; top) equals: -1.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	
 ]
@@ -442,16 +442,16 @@ ForthInterpreterTest >> testNotEqual [
 ForthInterpreterTest >> testOr [
 	
 	self assert: (forth eval: '0 0 or'; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	self assert: (forth eval: '0 99 or'; top) equals: -1.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	self assert: (forth eval: '99 0 or'; top) equals: -1.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	self assert: (forth eval: '99 98 or'; top) equals: -1.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	
 ]
@@ -460,8 +460,8 @@ ForthInterpreterTest >> testOr [
 ForthInterpreterTest >> testOver [
 	
 		self assert: (forth eval: '42 99 over'; top) equals: 42.
-		self assert: forth stackCopy size equals: 3.
-		self assert: forth stackCopy equals: #(42 99 42)
+		self assert: forth stack size equals: 3.
+		self assert: forth stack equals: #(42 99 42)
 	
 ]
 
@@ -469,7 +469,7 @@ ForthInterpreterTest >> testOver [
 ForthInterpreterTest >> testPlus [
 	
 	self assert: (forth eval: '7 9 +'; top) equals: 16.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	
 ]
@@ -478,10 +478,10 @@ ForthInterpreterTest >> testPlus [
 ForthInterpreterTest >> testPushNumber [
 	
 	self assert: (forth eval: '7'; top) equals: 7.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	self assert: (forth eval: '-7'; top) equals: -7.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	
 ]
@@ -490,7 +490,7 @@ ForthInterpreterTest >> testPushNumber [
 ForthInterpreterTest >> testPushOnReturnStack [
 	
 	forth eval: '7 >r'.
-	self assert: forth stackCopy isEmpty.
+	self assert: forth stack isEmpty.
 	self assert: forth returnStackCopy equals: #(7) 
 ]
 
@@ -498,16 +498,16 @@ ForthInterpreterTest >> testPushOnReturnStack [
 ForthInterpreterTest >> testPushOnStack [
 	
 	forth eval: '7 >r r>'.
-	self assert: forth stackCopy equals: #(7).
+	self assert: forth stack equals: #(7).
 	self assert: forth returnStackCopy isEmpty
 ]
 
 { #category : #tests }
 ForthInterpreterTest >> testQuestionMarkDup [ 
 	
-	self assert: (forth eval: '7 ?dup'; stackCopy) equals: #(7 7).
+	self assert: (forth eval: '7 ?dup'; stack) equals: #(7 7).
 
-	self assert: (forth eval: '0 ?dup'; stackCopy) equals: #(0).
+	self assert: (forth eval: '0 ?dup'; stack) equals: #(0).
 	
 	
 ]
@@ -516,8 +516,8 @@ ForthInterpreterTest >> testQuestionMarkDup [
 ForthInterpreterTest >> testRot [
 	
 		self assert: (forth eval: '42 99 27 rot'; top) equals: 42.
-		self assert: forth stackCopy size equals: 3.
-		self assert: forth stackCopy equals: #(42 27 99)
+		self assert: forth stack size equals: 3.
+		self assert: forth stack equals: #(42 27 99)
 	
 ]
 
@@ -525,8 +525,8 @@ ForthInterpreterTest >> testRot [
 ForthInterpreterTest >> testSlashMod [
 	
 	self assert: (forth eval: '20 7 /mod' ; top)equals: 2.
-	self assert: forth stackCopy size equals: 2.
-	self assert: forth stackCopy equals: #(2 6)
+	self assert: forth stack size equals: 2.
+	self assert: forth stack equals: #(2 6)
 ]
 
 { #category : #tests }
@@ -537,32 +537,32 @@ ForthInterpreterTest >> testSquare [
 		7 square
 		
 		'; top) equals: 49.
-		self assert: forth stackCopy size equals: 1
+		self assert: forth stack size equals: 1
 ]
 
 { #category : #tests }
 ForthInterpreterTest >> testStarSlash [
 	
-		self assert: (forth eval: '225 32 100 */'; stackCopy) equals: #(72).
+		self assert: (forth eval: '225 32 100 */'; stack) equals: #(72).
 		
 ]
 
 { #category : #tests }
 ForthInterpreterTest >> testStarSlashMod [
-	self assert: (forth eval: '225 32 88 */mod'; stackCopy) equals: #(72 81) reversed
+	self assert: (forth eval: '225 32 88 */mod'; stack) equals: #(72 81) reversed
 	
 	
 ]
 
 { #category : #tests }
 ForthInterpreterTest >> testSubtractsOne [
-		self assert: (forth eval: '3 1-'; stackCopy) equals: #(2)
+		self assert: (forth eval: '3 1-'; stack) equals: #(2)
 		
 ]
 
 { #category : #tests }
 ForthInterpreterTest >> testSubtractsTwo [
-		self assert: (forth eval: '3 2-'; stackCopy) equals: #(1).
+		self assert: (forth eval: '3 2-'; stack) equals: #(1).
 		
 ]
 
@@ -570,8 +570,8 @@ ForthInterpreterTest >> testSubtractsTwo [
 ForthInterpreterTest >> testSwap [
 	
 		self assert: (forth eval: '22 42 99 swap'; top) equals: 42.
-		self assert: forth stackCopy size equals: 3.
-		self assert: forth stackCopy equals: #(42 99 22)
+		self assert: forth stack size equals: 3.
+		self assert: forth stack equals: #(42 99 22)
 	
 ]
 
@@ -583,14 +583,14 @@ ForthInterpreterTest >> testSynonymous [
 				eval: ': test dup ; 7 test *';
 				top)
 		equals: 49.
-	self assert: forth stackCopy size equals: 1
+	self assert: forth stack size equals: 1
 ]
 
 { #category : #tests }
 ForthInterpreterTest >> testTrue [
 	
 	self assert: (forth eval: 'true'; top) equals: -1.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	
 	
@@ -611,7 +611,7 @@ ForthInterpreterTest >> testUnderflow [
 ForthInterpreterTest >> testUppercase [
 	
 	forth acceptUppercase.
-	self assert: (forth eval: '7 ?DUP'; stackCopy) equals: #(7 7)
+	self assert: (forth eval: '7 ?DUP'; stack) equals: #(7 7)
 ]
 
 { #category : #tests }
@@ -631,7 +631,7 @@ ForthInterpreterTest >> testVariable [
 			month @
 			year @
 		
-		'; stackCopy) equals: #(18 6 2019) reversed
+		'; stack) equals: #(18 6 2019) reversed
 		
 	
 ]
@@ -652,7 +652,7 @@ ForthInterpreterTest >> testVariableInsideWord [
 			test
 			date @
 		
-		'; stackCopy) equals: #(19 6 18) reversed
+		'; stack) equals: #(19 6 18) reversed
 		
 	
 ]
@@ -675,7 +675,7 @@ ForthInterpreterTest >> testVariableShadowInsideWord [
 			test
 			date @ month @	year @
 		
-		'; stackCopy) equals: #(18 6 2020 18 6 2019) reversed
+		'; stack) equals: #(18 6 2020 18 6 2019) reversed
 		
 	
 ]
@@ -684,9 +684,9 @@ ForthInterpreterTest >> testVariableShadowInsideWord [
 ForthInterpreterTest >> testZeroEqual [ 
 	
 	self assert: (forth eval: '7 dup - 0='; top) equals: -1.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	self assert: (forth eval: '7 9 - 0='; top) equals: 0.
-	self assert: forth stackCopy size equals: 1.
+	self assert: forth stack size equals: 1.
 	
 	
 ]
