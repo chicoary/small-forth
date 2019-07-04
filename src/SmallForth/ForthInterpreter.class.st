@@ -412,17 +412,14 @@ ForthInterpreter >> again [
 	
 	index := returnStack pop. returnStack push: index + 1. "I"
 	
-	position := positionStack pop.
-	
 	maxLoopCount > 0
 		ifTrue: [ loopCount := loopCountStack pop.
 			loopCount := loopCount + 1.
 			loopCount >= maxLoopCount ifTrue: [ self signalMaxLoopCountHasBeenReached ].
 			loopCountStack  push: loopCount ].
 		
+	position := positionStack top.
 	stream position: position.	"again"
-		
-	positionStack push: position
 ]
 
 { #category : #'forth-primitives' }
@@ -445,10 +442,7 @@ ForthInterpreter >> begin [
 	maxLoopCount > 0 ifTrue: [ loopCount := 0. loopCountStack push: loopCount ].
 	
 	position := stream position.
-	positionStack push: position.
-	
-	
-	
+	positionStack push: position
 ]
 
 { #category : #'forth-primitives' }
@@ -839,8 +833,12 @@ ForthInterpreter >> lastVersionAtWord: word [
 
 { #category : #'forth-primitives' }
 ForthInterpreter >> leave [
+	
 	returnStack pop; pop.
-	self skipUntilEndOfLoop 
+	
+	self skipUntilEndOfLoop.
+	
+	positionStack pop
 ]
 
 { #category : #'forth-primitives' }
@@ -1339,6 +1337,7 @@ ForthInterpreter >> variables: aVariableCollection [
 { #category : #'forth-primitives' }
 ForthInterpreter >> while [
 	| bool loopCount |
+	
 	maxLoopCount > 0
 		ifTrue: [ loopCount := loopCountStack pop.
 			loopCount := loopCount + 1.

@@ -233,6 +233,7 @@ ForthLoopTest >> testBegintUntilLoop [
 ForthLoopTest >> testBegintUntilLoopWithVariables [
 	
 	self assert: (forth eval: 'begin I I 5 > until'; stack) equals: #(1 2 3 4 5 6) reversed.
+	self assert: (forth eval: 'begin begin J I I 2 > until I 1 > until'; stack) equals: #(1 1 1 2 1 3 2 1 2 2 2 3) reversed.
 	 
 ]
 
@@ -292,6 +293,144 @@ ForthLoopTest >> testMaxLoopCountWithPlusDoLoop [
 ForthLoopTest >> testNegativeIncrementPlusDoLoop [
 	self assert: (forth eval: '-20 0 do i -3 +loop'; stack) equals: #(0 -3 -6 -9 -12 -15 -18) reversed.
 
+]
+
+{ #category : #tests }
+ForthLoopTest >> testNestedBeginAgainUntilLoops [
+
+	forth maxLoopCount: 50.
+
+	self assert: (forth eval: '
+	begin i
+		begin i
+			i 2 > if leave then
+		again
+		i 1 >
+	until
+	'; stack) equals: #(1 1 2 3 2 1 2 3) reversed
+]
+
+{ #category : #tests }
+ForthLoopTest >> testNestedBeginBeginAgainWhileRepeatLoops [
+
+	forth maxLoopCount: 20.
+
+	self assert: (forth eval: '
+	begin 
+		i 3 <  
+	while i 
+		begin i 
+			i 2 > if leave then 
+		again
+	repeat
+	'; stack) equals: #(1 1 2 3 2 1 2 3) reversed
+]
+
+{ #category : #tests }
+ForthLoopTest >> testNestedBeginBeginUntilWhileRepeatLoops [
+
+	forth maxLoopCount: 20.
+
+	self assert: (forth eval: '
+	begin 
+		i 3 <  
+	while i 
+		begin i 
+			i 2 >  
+		until
+	repeat
+	'; stack) equals: #(1 1 2 3 2 1 2 3) reversed
+]
+
+{ #category : #tests }
+ForthLoopTest >> testNestedBeginBeginWhileRepeatAgainLoops [
+
+	forth maxLoopCount: 20.
+
+	self assert: (forth eval: '
+	begin i 
+		begin 
+			i 4 <  
+		while 
+			i 
+		repeat
+		i 1 > if leave then
+	again
+	'; stack) equals: #(1 1 2 3 2 1 2 3) reversed
+]
+
+{ #category : #tests }
+ForthLoopTest >> testNestedBeginBeginWhileRepeatUntilLoops [
+
+	forth maxLoopCount: 20.
+
+	self assert: (forth eval: '
+	begin i 
+		begin 
+			i 4 <  
+		while 
+			i 
+		repeat
+		i 1 > 
+	until
+	'; stack) equals: #(1 1 2 3 2 1 2 3) reversed
+]
+
+{ #category : #tests }
+ForthLoopTest >> testNestedBeginDoLoopAgainLoops [
+
+	forth maxLoopCount: 50.
+
+	self assert: (forth eval: '
+	begin i
+		4 1
+		do i
+		loop
+		i 1 > if leave then
+	again
+	'; stack) equals: #(1 1 2 3 2 1 2 3) reversed
+]
+
+{ #category : #tests }
+ForthLoopTest >> testNestedBeginDoLoopUntilLoops [
+
+	forth maxLoopCount: 50.
+
+	self assert: (forth eval: '
+	begin i 
+		4 1 do i loop
+		i 1 > 
+	until
+	'; stack) equals: #(1 1 2 3 2 1 2 3) reversed
+]
+
+{ #category : #tests }
+ForthLoopTest >> testNestedBeginUntilAgainLoops [
+
+	forth maxLoopCount: 50.
+
+	self assert: (forth eval: '
+	begin i
+		begin i
+			i 2 >
+		until
+		i 1 > if leave then
+	again
+	'; stack) equals: #(1 1 2 3 2 1 2 3 ) reversed
+]
+
+{ #category : #tests }
+ForthLoopTest >> testNestedBeginWhileDoLoopRepeatLoops [
+
+	forth maxLoopCount: 20.
+
+	self assert: (forth eval: '
+	begin 
+		i 3 <  
+	while i 
+		4 1 do i loop
+	repeat
+	'; stack) equals: #(1 1 2 3 2 1 2 3) reversed
 ]
 
 { #category : #'generated-test' }
@@ -900,6 +1039,53 @@ ForthLoopTest >> testNestedBegintUntilLoop [
 	'
 	; stack) equals: #(0 1 2 3 4 5) reversed
 	 
+]
+
+{ #category : #tests }
+ForthLoopTest >> testNestedDoBeginAgainLoopLoops [
+
+	forth maxLoopCount: 50.
+
+	self assert: (forth eval: '
+	3 1
+	do i
+		begin i
+			i 2 > if leave then
+		again
+	loop
+	'; stack) equals: #(1 1 2 3 2 1 2 3) reversed
+]
+
+{ #category : #tests }
+ForthLoopTest >> testNestedDoBeginUntilLoopLoops [
+
+	forth maxLoopCount: 50.
+
+	self assert: (forth eval: '
+	3 1
+	do i
+		begin i 
+			i 2 > 
+		until
+	loop	
+	'; stack) equals: #(1 1 2 3 2 1 2 3) reversed
+]
+
+{ #category : #tests }
+ForthLoopTest >> testNestedDoBeginWhileRepeatLoopLoops [
+
+	forth maxLoopCount: 20.
+
+	self assert: (forth eval: '
+	3 1
+	do i 
+		begin 
+			i 4 <  
+		while 
+			i 
+		repeat
+	loop
+	'; stack) equals: #(1 1 2 3 2 1 2 3) reversed
 ]
 
 { #category : #tests }
