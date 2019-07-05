@@ -76,14 +76,18 @@ ForthInterpreter >> _2drop [
 
 { #category : #'forth-synonyms' }
 ForthInterpreter >> _2dup [
-	stack push: stack second.
-	stack push: stack second
+
+		stack push: stack second.
+		stack push: stack second
+	
 ]
 
 { #category : #'forth-synonyms' }
 ForthInterpreter >> _2over [
+	
 	stack push: stack fourth.
 	stack push: stack fourth
+	
 ]
 
 { #category : #'forth-synonyms' }
@@ -123,14 +127,10 @@ ForthInterpreter >> _addsTwo [
 
 { #category : #'variable-support' }
 ForthInterpreter >> _at [
-	
 	| variableAddress variableValue |
-	
 	variableAddress := stack pop.
-	
-	variableValue := (variables detect: [ :assoc | assoc key == variableAddress ]) value.
-	
-	stack push: variableValue 
+	variableValue := self valueOfVariableAtAddress: variableAddress.
+	stack push: variableValue
 ]
 
 { #category : #'forth-synonyms' }
@@ -293,13 +293,9 @@ ForthInterpreter >> _plusLoop [
 
 { #category : #'variable-support' }
 ForthInterpreter >> _pushAddressOfVariable [
-	
-	| variableName variableAddress |
-	
+	| variableName |
 	variableName := self getNextWord.
-	variableAddress := self addressOfVariableNamed: variableName.
-	
-	stack push: variableAddress
+	self pushAddressOfVariableNamed: variableName
 ]
 
 { #category : #'forth-synonyms' }
@@ -569,7 +565,7 @@ ForthInterpreter >> eval [
 	[ word isEmpty ]
 		whileFalse: [ 
 			(self isNumber: word)
-				ifTrue: [ self pushNumberToStack: word ]
+				ifTrue: [ self pushNumber: word ]
 				ifFalse: [ self forthPerform: word ].
 			word := self getNextWord ].
 	self checkPairingLoopStackIsEmpty
@@ -577,11 +573,12 @@ ForthInterpreter >> eval [
 
 { #category : #evaluating }
 ForthInterpreter >> eval: aForthExpression [
-	self 
-		stream: (ReadStream on: aForthExpression); "New stream"
-		stack: ForthStack new;	"New stack"
-		variables: OrderedCollection new; "New collection"
-		eval
+	self
+		stream: (ReadStream on: aForthExpression);
+		"New stream"
+			stack: self newStack; "New stack"
+			variables: OrderedCollection new; "New collection"
+			eval
 ]
 
 { #category : #evaluating }
@@ -913,6 +910,11 @@ ForthInterpreter >> negate [
 	stack push: stack pop negated
 ]
 
+{ #category : #evaluating }
+ForthInterpreter >> newStack [
+	^ ForthStack new
+]
+
 { #category : #'variable-support' }
 ForthInterpreter >> newVariableCollection [
 	^ OrderedCollection new
@@ -957,6 +959,13 @@ ForthInterpreter >> primitiveWords [
 	
 ]
 
+{ #category : #'variable-support' }
+ForthInterpreter >> pushAddressOfVariableNamed: variableName [
+	| variableAddress |
+	variableAddress := self addressOfVariableNamed: variableName.
+	stack push: variableAddress
+]
+
 { #category : #'if-else-then-support' }
 ForthInterpreter >> pushElseToPairingStack [
 	pairingIfElseThenStack push: #else
@@ -974,7 +983,7 @@ ForthInterpreter >> pushIfToPairingStack [
 ]
 
 { #category : #evaluating }
-ForthInterpreter >> pushNumberToStack: word [
+ForthInterpreter >> pushNumber: word [
 	stack push: word asNumber
 ]
 
@@ -1084,6 +1093,11 @@ ForthInterpreter >> signalMaxLoopCountHasBeenReached [
 { #category : #'error signalling' }
 ForthInterpreter >> signalMissingWord: word [ 
 	(ForthMissingWord messageText: word) signal
+]
+
+{ #category : #'error signalling' }
+ForthInterpreter >> signalStackUnderflow [
+	ForthStackUnderflow new signal
 ]
 
 { #category : #'forth-primitive-support' }
@@ -1316,6 +1330,21 @@ ForthInterpreter >> updatePairingIfElseThenStack [
 { #category : #'forth-primitives' }
 ForthInterpreter >> updatePairingStackForElse [
 	pairingIfElseThenStack push: #else
+]
+
+{ #category : #'variable-support' }
+ForthInterpreter >> valueOfVariableAtAddress: variableAddress [
+	| variableValue |
+	[
+		variableValue := (variables detect: [ :assoc | assoc key == variableAddress ]) value.
+		^ variableValue
+	]
+	on: NotFound do: [ self signalMissingWord: variableAddress ]
+]
+
+{ #category : #'as yet unclassified' }
+ForthInterpreter >> valueOfVariableNamed: aVariableName [ 
+	^ self valueOfVariableAtAddress: (self addressOfVariableNamed: aVariableName )
 ]
 
 { #category : #'forth-primitives' }
