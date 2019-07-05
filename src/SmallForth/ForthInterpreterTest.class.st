@@ -188,6 +188,8 @@ ForthInterpreterTest >> testDividesByTwo [
 		self assert: (forth eval: '8 2/'; stack) equals: #(4).
 		self assert: (forth eval: '-8 2/'; stack) equals: #(-4).
 		
+		self assert: (forth eval: '-7 2/'; stack) equals: #(-4).
+		
 ]
 
 { #category : #tests }
@@ -697,11 +699,11 @@ ForthInterpreterTest >> test_2drop [
 	forth stack: forth newStack.
 	self should: [ forth _2drop ] raise: ForthStackUnderflow.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 1.
 	self should: [ forth _2drop ] raise: ForthStackUnderflow.
 
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 1.
 	forth pushNumber: 2.
 	forth _2drop.
@@ -714,11 +716,11 @@ ForthInterpreterTest >> test_2dup [
 	forth stack: forth newStack.
 	self should: [ forth _2dup ] raise: ForthStackUnderflow.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 1.
 	self should: [ forth _2dup ] raise: ForthStackUnderflow.
 
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 1.
 	forth pushNumber: 2.
 	forth _2dup.
@@ -731,22 +733,22 @@ ForthInterpreterTest >> test_2over [
 	forth stack: forth newStack.
 	self should: [ forth _2over ] raise: ForthStackUnderflow.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 1.
 	self should: [ forth _2over ] raise: ForthStackUnderflow.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 1.
 	forth pushNumber: 2.
 	self should: [ forth _2over ] raise: ForthStackUnderflow.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 1.
 	forth pushNumber: 2.
 	forth pushNumber: 3.
 	self should: [ forth _2over ] raise: ForthStackUnderflow.
 
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 1.
 	forth pushNumber: 2.
 	forth pushNumber: 3.
@@ -761,22 +763,22 @@ ForthInterpreterTest >> test_2swap [
 	forth stack: forth newStack.
 	self should: [ forth _2swap ] raise: ForthStackUnderflow.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 1.
 	self should: [ forth _2swap ] raise: ForthStackUnderflow.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 1.
 	forth pushNumber: 2.
 	self should: [ forth _2swap ] raise: ForthStackUnderflow.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 1.
 	forth pushNumber: 2.
 	forth pushNumber: 3.
 	self should: [ forth _2swap ] raise: ForthStackUnderflow.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 1.
 	forth pushNumber: 2.
 	forth pushNumber: 3.
@@ -791,7 +793,7 @@ ForthInterpreterTest >> test_addsOne [
 	forth stack: forth newStack.
 	self should: [ forth _addsOne ] raise: ForthStackUnderflow.
 
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 1.
 	forth _addsOne.
 	self assert: forth stack equals: #(2) reversed
@@ -803,7 +805,7 @@ ForthInterpreterTest >> test_addsTwo [
 	forth stack: forth newStack.
 	self should: [ forth _addsTwo ] raise: ForthStackUnderflow.
 
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 1.
 	forth _addsTwo.
 	self assert: forth stack equals: #(3) reversed
@@ -832,11 +834,11 @@ ForthInterpreterTest >> test_divides [
 	forth stack: forth newStack.
 	self should: [ forth _divides ] raise: ForthStackUnderflow.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 7.
 	self should: [ forth _divides ] raise: ForthStackUnderflow.
 
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 7.
 	forth pushNumber: 3.
 	forth _divides.
@@ -849,10 +851,15 @@ ForthInterpreterTest >> test_dividesByTwo [
 	forth stack: forth newStack.
 	self should: [ forth _dividesByTwo ] raise: ForthStackUnderflow.
 
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 7.
 	forth _dividesByTwo.
-	self assert: forth stack equals: #(3) reversed
+	self assert: forth stack equals: #(3) reversed.
+	
+	forth emptyStack.
+	forth pushNumber: -7.
+	forth _dividesByTwo.
+	self assert: forth stack equals: #(-4) reversed
 ]
 
 { #category : #test }
@@ -861,17 +868,17 @@ ForthInterpreterTest >> test_equal [
 	forth stack: forth newStack.
 	self should: [ forth _equal ] raise: ForthStackUnderflow.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 7.
 	self should: [ forth _equal ] raise: ForthStackUnderflow.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 7.
 	forth pushNumber: 7.
 	forth _equal.
 	self assert: forth stack equals: #(-1) reversed.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 7.
 	forth pushNumber: 8.
 	forth _equal.
@@ -899,23 +906,23 @@ ForthInterpreterTest >> test_greaterThan [
 	forth stack: forth newStack.
 	self should: [ forth _greaterThan ] raise: ForthStackUnderflow.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 7.
 	self should: [ forth _greaterThan ] raise: ForthStackUnderflow.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 7.
 	forth pushNumber: 7.
 	forth _greaterThan.
 	self assert: forth stack equals: #(0) reversed.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 7.
 	forth pushNumber: 8.
 	forth _greaterThan.
 	self assert: forth stack equals: #(0) reversed.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 8.
 	forth pushNumber: 7.
 	forth _greaterThan.
@@ -928,7 +935,7 @@ ForthInterpreterTest >> test_greaterThanR [
 	forth stack: forth newStack.
 	self should: [ forth _greaterThanR ] raise: ForthStackUnderflow.
 	
-	forth stack: forth newStack.
+	forth emptyStack.
 	forth pushNumber: 7.
 	forth _greaterThanR.
 	forth _rGreaterThan.
@@ -940,6 +947,137 @@ ForthInterpreterTest >> test_greaterThanR [
 { #category : #test }
 ForthInterpreterTest >> test_greaterThanZero [
 
-	self flag: #toImplement.
-	self assert: false
+	forth stack: forth newStack.
+	self should: [ forth _greaterThanZero ] raise: ForthStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 8.
+	forth _greaterThanZero.
+	self assert: forth stack equals: #(-1) reversed.
+	
+	forth emptyStack.
+	forth pushNumber: -8.
+	forth _greaterThanZero.
+	self assert: forth stack equals: #(0) reversed.
+	
+	forth emptyStack.
+	forth pushNumber: 0.
+	forth _greaterThanZero.
+	self assert: forth stack equals: #(0) reversed
+]
+
+{ #category : #test }
+ForthInterpreterTest >> test_lessThan [
+
+	forth stack: forth newStack.
+	self should: [ forth _lessThan ] raise: ForthStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	self should: [ forth _lessThan ] raise: ForthStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	forth pushNumber: 7.
+	forth _lessThan.
+	self assert: forth stack equals: #(0) reversed.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	forth pushNumber: 8.
+	forth _lessThan.
+	self assert: forth stack equals: #(-1) reversed.
+	
+	forth emptyStack.
+	forth pushNumber: 8.
+	forth pushNumber: 7.
+	forth _lessThan.
+	self assert: forth stack equals: #(0) reversed
+]
+
+{ #category : #test }
+ForthInterpreterTest >> test_lessThanZero [
+
+	forth stack: forth newStack.
+	self should: [ forth _lessThanZero ] raise: ForthStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 8.
+	forth _lessThanZero.
+	self assert: forth stack equals: #(0) reversed.
+	
+	forth emptyStack.
+	forth pushNumber: -8.
+	forth _lessThanZero.
+	self assert: forth stack equals: #(-1) reversed.
+	
+	forth emptyStack.
+	forth pushNumber: 0.
+	forth _lessThanZero.
+	self assert: forth stack equals: #(0) reversed
+]
+
+{ #category : #test }
+ForthInterpreterTest >> test_minus [
+
+	forth stack: forth newStack.
+	self should: [ forth _minus ] raise: ForthStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	self should: [ forth _minus ] raise: ForthStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	forth pushNumber: 7.
+	forth _minus.
+	self assert: forth stack equals: #(0) reversed.
+	
+	forth emptyStack.
+	forth pushNumber: 6.
+	forth pushNumber: 9.
+	forth _minus.
+	self assert: forth stack equals: #(-3) reversed.
+	
+	forth emptyStack.
+	forth pushNumber: 8.
+	forth pushNumber: 2.
+	forth _minus.
+	self assert: forth stack equals: #(6) reversed
+]
+
+{ #category : #test }
+ForthInterpreterTest >> test_mult [
+
+	forth stack: forth newStack.
+	self should: [ forth _mult ] raise: ForthStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	self should: [ forth _mult ] raise: ForthStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	forth pushNumber: 9.
+	forth _mult.
+	self assert: forth stack equals: #(63) reversed.
+	
+	
+]
+
+{ #category : #test }
+ForthInterpreterTest >> test_multipliesByTwo [
+
+	forth stack: forth newStack.
+	self should: [ forth _multipliesByTwo ] raise: ForthStackUnderflow.
+
+	forth emptyStack.
+	forth pushNumber: 7.
+	forth _multipliesByTwo.
+	self assert: forth stack equals: #(14) reversed.
+	
+	forth emptyStack.
+	forth pushNumber: -7.
+	forth _multipliesByTwo.
+	self assert: forth stack equals: #(-14) reversed
 ]
