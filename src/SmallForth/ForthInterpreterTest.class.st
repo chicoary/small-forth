@@ -603,7 +603,7 @@ ForthInterpreterTest >> testTrue [
 { #category : #tests }
 ForthInterpreterTest >> testUnderflow [
 	
-	self should: [ forth eval: '.' ] raise: ForthStackUnderflow
+	self should: [ forth eval: '.' ] raise: ForthParameterStackUnderflow
 	
 	
 	
@@ -697,11 +697,11 @@ ForthInterpreterTest >> testZeroEqual [
 ForthInterpreterTest >> test_2drop [
 
 	forth stack: forth newStack.
-	self should: [ forth _2drop ] raise: ForthStackUnderflow.
+	self should: [ forth _2drop ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 1.
-	self should: [ forth _2drop ] raise: ForthStackUnderflow.
+	self should: [ forth _2drop ] raise: ForthParameterStackUnderflow.
 
 	forth emptyStack.
 	forth pushNumber: 1.
@@ -714,11 +714,11 @@ ForthInterpreterTest >> test_2drop [
 ForthInterpreterTest >> test_2dup [
 
 	forth stack: forth newStack.
-	self should: [ forth _2dup ] raise: ForthStackUnderflow.
+	self should: [ forth _2dup ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 1.
-	self should: [ forth _2dup ] raise: ForthStackUnderflow.
+	self should: [ forth _2dup ] raise: ForthParameterStackUnderflow.
 
 	forth emptyStack.
 	forth pushNumber: 1.
@@ -731,22 +731,22 @@ ForthInterpreterTest >> test_2dup [
 ForthInterpreterTest >> test_2over [
 
 	forth stack: forth newStack.
-	self should: [ forth _2over ] raise: ForthStackUnderflow.
+	self should: [ forth _2over ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 1.
-	self should: [ forth _2over ] raise: ForthStackUnderflow.
+	self should: [ forth _2over ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 1.
 	forth pushNumber: 2.
-	self should: [ forth _2over ] raise: ForthStackUnderflow.
+	self should: [ forth _2over ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 1.
 	forth pushNumber: 2.
 	forth pushNumber: 3.
-	self should: [ forth _2over ] raise: ForthStackUnderflow.
+	self should: [ forth _2over ] raise: ForthParameterStackUnderflow.
 
 	forth emptyStack.
 	forth pushNumber: 1.
@@ -761,22 +761,22 @@ ForthInterpreterTest >> test_2over [
 ForthInterpreterTest >> test_2swap [
 
 	forth stack: forth newStack.
-	self should: [ forth _2swap ] raise: ForthStackUnderflow.
+	self should: [ forth _2swap ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 1.
-	self should: [ forth _2swap ] raise: ForthStackUnderflow.
+	self should: [ forth _2swap ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 1.
 	forth pushNumber: 2.
-	self should: [ forth _2swap ] raise: ForthStackUnderflow.
+	self should: [ forth _2swap ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 1.
 	forth pushNumber: 2.
 	forth pushNumber: 3.
-	self should: [ forth _2swap ] raise: ForthStackUnderflow.
+	self should: [ forth _2swap ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 1.
@@ -791,7 +791,7 @@ ForthInterpreterTest >> test_2swap [
 ForthInterpreterTest >> test_addsOne [
 
 	forth stack: forth newStack.
-	self should: [ forth _addsOne ] raise: ForthStackUnderflow.
+	self should: [ forth _addsOne ] raise: ForthParameterStackUnderflow.
 
 	forth emptyStack.
 	forth pushNumber: 1.
@@ -803,7 +803,7 @@ ForthInterpreterTest >> test_addsOne [
 ForthInterpreterTest >> test_addsTwo [
 	
 	forth stack: forth newStack.
-	self should: [ forth _addsTwo ] raise: ForthStackUnderflow.
+	self should: [ forth _addsTwo ] raise: ForthParameterStackUnderflow.
 
 	forth emptyStack.
 	forth pushNumber: 1.
@@ -832,11 +832,11 @@ ForthInterpreterTest >> test_at [
 ForthInterpreterTest >> test_divides [
 	
 	forth stack: forth newStack.
-	self should: [ forth _divides ] raise: ForthStackUnderflow.
+	self should: [ forth _divides ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 7.
-	self should: [ forth _divides ] raise: ForthStackUnderflow.
+	self should: [ forth _divides ] raise: ForthParameterStackUnderflow.
 
 	forth emptyStack.
 	forth pushNumber: 7.
@@ -849,7 +849,7 @@ ForthInterpreterTest >> test_divides [
 ForthInterpreterTest >> test_dividesByTwo [
 
 	forth stack: forth newStack.
-	self should: [ forth _dividesByTwo ] raise: ForthStackUnderflow.
+	self should: [ forth _dividesByTwo ] raise: ForthParameterStackUnderflow.
 
 	forth emptyStack.
 	forth pushNumber: 7.
@@ -866,11 +866,11 @@ ForthInterpreterTest >> test_dividesByTwo [
 ForthInterpreterTest >> test_equal [
 
 	forth stack: forth newStack.
-	self should: [ forth _equal ] raise: ForthStackUnderflow.
+	self should: [ forth _equal ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 7.
-	self should: [ forth _equal ] raise: ForthStackUnderflow.
+	self should: [ forth _equal ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 7.
@@ -904,11 +904,11 @@ ForthInterpreterTest >> test_exclamationMark [
 ForthInterpreterTest >> test_greaterThan [
 
 	forth stack: forth newStack.
-	self should: [ forth _greaterThan ] raise: ForthStackUnderflow.
+	self should: [ forth _greaterThan ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 7.
-	self should: [ forth _greaterThan ] raise: ForthStackUnderflow.
+	self should: [ forth _greaterThan ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 7.
@@ -933,7 +933,7 @@ ForthInterpreterTest >> test_greaterThan [
 ForthInterpreterTest >> test_greaterThanR [
 	
 	forth stack: forth newStack.
-	self should: [ forth _greaterThanR ] raise: ForthStackUnderflow.
+	self should: [ forth _greaterThanR ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 7.
@@ -948,7 +948,7 @@ ForthInterpreterTest >> test_greaterThanR [
 ForthInterpreterTest >> test_greaterThanZero [
 
 	forth stack: forth newStack.
-	self should: [ forth _greaterThanZero ] raise: ForthStackUnderflow.
+	self should: [ forth _greaterThanZero ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 8.
@@ -970,11 +970,11 @@ ForthInterpreterTest >> test_greaterThanZero [
 ForthInterpreterTest >> test_lessThan [
 
 	forth stack: forth newStack.
-	self should: [ forth _lessThan ] raise: ForthStackUnderflow.
+	self should: [ forth _lessThan ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 7.
-	self should: [ forth _lessThan ] raise: ForthStackUnderflow.
+	self should: [ forth _lessThan ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 7.
@@ -999,7 +999,7 @@ ForthInterpreterTest >> test_lessThan [
 ForthInterpreterTest >> test_lessThanZero [
 
 	forth stack: forth newStack.
-	self should: [ forth _lessThanZero ] raise: ForthStackUnderflow.
+	self should: [ forth _lessThanZero ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 8.
@@ -1021,11 +1021,11 @@ ForthInterpreterTest >> test_lessThanZero [
 ForthInterpreterTest >> test_minus [
 
 	forth stack: forth newStack.
-	self should: [ forth _minus ] raise: ForthStackUnderflow.
+	self should: [ forth _minus ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 7.
-	self should: [ forth _minus ] raise: ForthStackUnderflow.
+	self should: [ forth _minus ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 7.
@@ -1050,11 +1050,11 @@ ForthInterpreterTest >> test_minus [
 ForthInterpreterTest >> test_mult [
 
 	forth stack: forth newStack.
-	self should: [ forth _mult ] raise: ForthStackUnderflow.
+	self should: [ forth _mult ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 7.
-	self should: [ forth _mult ] raise: ForthStackUnderflow.
+	self should: [ forth _mult ] raise: ForthParameterStackUnderflow.
 	
 	forth emptyStack.
 	forth pushNumber: 7.
@@ -1069,7 +1069,7 @@ ForthInterpreterTest >> test_mult [
 ForthInterpreterTest >> test_multipliesByTwo [
 
 	forth stack: forth newStack.
-	self should: [ forth _multipliesByTwo ] raise: ForthStackUnderflow.
+	self should: [ forth _multipliesByTwo ] raise: ForthParameterStackUnderflow.
 
 	forth emptyStack.
 	forth pushNumber: 7.
@@ -1080,4 +1080,113 @@ ForthInterpreterTest >> test_multipliesByTwo [
 	forth pushNumber: -7.
 	forth _multipliesByTwo.
 	self assert: forth stack equals: #(-14) reversed
+]
+
+{ #category : #test }
+ForthInterpreterTest >> test_notEqual [
+
+	forth stack: forth newStack.
+	self should: [ forth _notEqual ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	self should: [ forth _notEqual ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	forth pushNumber: 7.
+	forth _notEqual.
+	self assert: forth stack equals: #(0) reversed.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	forth pushNumber: 8.
+	forth _notEqual.
+	self assert: forth stack equals: #(-1) reversed
+]
+
+{ #category : #test }
+ForthInterpreterTest >> test_plus [
+
+	forth stack: forth newStack.
+	self should: [ forth _plus ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	self should: [ forth _plus ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 6.
+	forth pushNumber: 9.
+	forth _plus.
+	self assert: forth stack equals: #(15) reversed
+]
+
+{ #category : #test }
+ForthInterpreterTest >> test_questionMarkDup [
+
+	self flag: #toImplement.
+
+	forth stack: forth newStack.
+	self should: [ forth _questionMarkDup ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 6.
+	forth _questionMarkDup.
+	self assert: forth stack equals: #(6 6) reversed.
+	
+	forth emptyStack.
+	forth pushNumber: 0.
+	forth _questionMarkDup.
+	self assert: forth stack equals: #(0) reversed
+]
+
+{ #category : #test }
+ForthInterpreterTest >> test_rAt [
+	
+	forth stack: forth newStack.
+	self should: [ forth _rAt ] raise: ForthReturnStackUnderflow.
+	
+	forth stack: forth newStack.
+	forth pushNumber: 99.
+	forth _greaterThanR. ">R"
+	forth _rAt. "R@"
+	self assert: forth stack equals: #(99) reversed
+]
+
+{ #category : #test }
+ForthInterpreterTest >> test_rGreaterThan [
+
+	self flag: #toImplement.
+	
+	forth stack: forth newStack.
+	self should: [ forth _rGreaterThan ] raise: ForthReturnStackUnderflow.
+	
+	forth stack: forth newStack.
+	forth pushNumber: 99.
+	forth pushNumber: 98.
+	forth _greaterThanR. ">R"
+	forth _greaterThanR. ">R"
+	forth _rGreaterThan. "R>"
+	forth _rGreaterThan. "R>"
+	self assert: forth stack equals: #(99 98) reversed
+]
+
+{ #category : #test }
+ForthInterpreterTest >> test_slashMod [
+
+	self flag: #toImplement.
+
+	forth stack: forth newStack.
+	self should: [ forth _slashMod ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	self should: [ forth _slashMod ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 19.
+	forth pushNumber: 5.
+	forth _slashMod.
+	self assert: forth stack equals: #(4 3) reversed
 ]

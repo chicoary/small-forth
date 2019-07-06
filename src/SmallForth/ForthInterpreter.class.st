@@ -722,7 +722,7 @@ ForthInterpreter >> initialize [
 	loopLevel := 0.
 	
 	pairingIfElseThenStack := Stack new.
-	returnStack := Stack new.
+	returnStack := ForthReturnStack new.
 	positionStack := Stack new.
 	loopCountStack := Stack new.
 ]
@@ -912,7 +912,7 @@ ForthInterpreter >> negate [
 
 { #category : #evaluating }
 ForthInterpreter >> newStack [
-	^ ForthStack new
+	^ ForthParameterStack new
 ]
 
 { #category : #'variable-support' }
@@ -1097,7 +1097,7 @@ ForthInterpreter >> signalMissingWord: word [
 
 { #category : #'error signalling' }
 ForthInterpreter >> signalStackUnderflow [
-	ForthStackUnderflow new signal
+	ForthParameterStackUnderflow new signal
 ]
 
 { #category : #'forth-primitive-support' }
@@ -1342,7 +1342,7 @@ ForthInterpreter >> valueOfVariableAtAddress: variableAddress [
 	on: NotFound do: [ self signalMissingWord: variableAddress ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'variable-support' }
 ForthInterpreter >> valueOfVariableNamed: aVariableName [ 
 	^ self valueOfVariableAtAddress: (self addressOfVariableNamed: aVariableName )
 ]

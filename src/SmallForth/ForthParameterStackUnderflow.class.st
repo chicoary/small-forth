@@ -1,5 +1,5 @@
 Class {
-	#name : #ForthStackUnderflow,
+	#name : #ForthParameterStackUnderflow,
 	#superclass : #Error,
 	#category : #'SmallForth-Exceptions'
 }

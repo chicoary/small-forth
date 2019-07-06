@@ -1,5 +1,5 @@
 "
-I am a subclass of Stack that overrides pop and top for reraise a substitute exception class.
+I am a subclass of Stack that overrides some methods for reraise a substitute exception class.
 "
 Class {
 	#name : #ForthStack,
@@ -9,20 +9,27 @@ Class {
 
 { #category : #accessing }
 ForthStack >> at: index [
-	^ [ super at: index ] on: SubscriptOutOfBounds do: [ ForthStackUnderflow new signal ]
+	^ [ super at: index ]
+		on: SubscriptOutOfBounds
+		do: [ self signalStackUnderflow ]
 ]
 
 { #category : #removing }
 ForthStack >> pop [
-	^ [ super pop ] on: CollectionIsEmpty do: [ ForthStackUnderflow new signal ]
+	^ [ super pop ] on: CollectionIsEmpty do: [ self signalStackUnderflow ]
+]
+
+{ #category : #signalling }
+ForthStack >> signalStackUnderflow [
+	self subclassResponsibility 
 ]
 
 { #category : #accessing }
 ForthStack >> swap: i with: j [
-	^ [ super swap: i with: j ] on: SubscriptOutOfBounds do: [ ForthStackUnderflow new signal ]
+	^ [ super swap: i with: j ] on: SubscriptOutOfBounds do: [ self signalStackUnderflow ]
 ]
 
 { #category : #accessing }
 ForthStack >> top [
-	^ [ super top ] on: CollectionIsEmpty do: [ ForthStackUnderflow new signal ]
+	^ [ super top ] on: CollectionIsEmpty do: [ self signalStackUnderflow ]
 ]
