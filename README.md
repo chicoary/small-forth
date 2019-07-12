@@ -32,16 +32,16 @@ The following example shows how to run a program written in Forth in the Pharo e
 ForthInterpreter new eval: '1 2 dup'
 ```
 
-To get the top of the stack use `top`:
+To get the top of the parameter stack use `top`:
 
 ```Smalltalk
 (ForthInterpreter new eval: '1 2 dup';top) >>> 2
 ```
 
-To obtain the contents of the stack use `stackCopy`:
+To obtain the contents of the parameter stack use `stack`:
 
 ```Smalltalk
-(ForthInterpreter new eval: '1 2 dup';stackCopy) asArray >>> #(2 2 1)
+(ForthInterpreter new eval: '1 2 dup';stack) asArray >>> #(2 2 1)
 ```
 
 Here is a more complex example (See [4. Decisions, Decisions…](https://www.forth.com/starting-forth/4-conditional-if-then-statements/) in Starting Forth):
