@@ -125,7 +125,7 @@ ForthInterpreter >> _addsTwo [
 	stack push: stack pop + 2
 ]
 
-{ #category : #'variable-support' }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _at [
 	| variableAddress variableValue |
 	variableAddress := stack pop.
@@ -189,7 +189,7 @@ ForthInterpreter >> _equal [
 	second = top ifTrue: [ stack push: -1 ] ifFalse: [ stack push: 0 ]
 ]
 
-{ #category : #'variable-support' }
+{ #category : #'forth-synonyms' }
 ForthInterpreter >> _exclamationMark [
 
 	| variableAddress variableValue |

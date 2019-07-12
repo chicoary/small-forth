@@ -71,6 +71,27 @@ ForthInterpreterTest >> test2swap [
 	
 ]
 
+{ #category : #test }
+ForthInterpreterTest >> testAbort [
+
+	self assert: (forth primitiveWords includes: #abort).
+	
+	forth stack: forth newStack.
+	self should: [ forth abort ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 99.
+	forth pushNumber: 0.
+	forth abort.
+	self assert: forth stack equals: #(99).
+	
+	forth emptyStack.
+	forth pushNumber: 99.
+	forth pushNumber: -1.
+	self should: [ forth abort ] raise: ForthAbort.
+	self assert: forth stack isEmpty 
+]
+
 { #category : #tests }
 ForthInterpreterTest >> testAbort2 [
 	
@@ -696,6 +717,9 @@ ForthInterpreterTest >> testZeroEqual [
 { #category : #test }
 ForthInterpreterTest >> test_2drop [
 
+	self assert: (forth synonymousOf: '2drop') equals: '_2drop'.
+	self assertCollection: forth primitiveWords includesAll: #(_2drop).
+	
 	forth stack: forth newStack.
 	self should: [ forth _2drop ] raise: ForthParameterStackUnderflow.
 	
@@ -713,6 +737,9 @@ ForthInterpreterTest >> test_2drop [
 { #category : #test }
 ForthInterpreterTest >> test_2dup [
 
+	self assert: (forth synonymousOf: '2dup') equals: '_2dup'.
+	self assertCollection: forth primitiveWords includesAll: #(_2dup).
+	
 	forth stack: forth newStack.
 	self should: [ forth _2dup ] raise: ForthParameterStackUnderflow.
 	
@@ -730,6 +757,9 @@ ForthInterpreterTest >> test_2dup [
 { #category : #test }
 ForthInterpreterTest >> test_2over [
 
+	self assert: (forth synonymousOf: '2over') equals: '_2over'.
+	self assertCollection: forth primitiveWords includesAll: #(_2over).
+	
 	forth stack: forth newStack.
 	self should: [ forth _2over ] raise: ForthParameterStackUnderflow.
 	
@@ -760,6 +790,9 @@ ForthInterpreterTest >> test_2over [
 { #category : #test }
 ForthInterpreterTest >> test_2swap [
 
+	self assert: (forth synonymousOf: '2swap') equals: '_2swap'.
+	self assertCollection: forth primitiveWords includesAll: #(_2swap).
+	
 	forth stack: forth newStack.
 	self should: [ forth _2swap ] raise: ForthParameterStackUnderflow.
 	
@@ -790,6 +823,9 @@ ForthInterpreterTest >> test_2swap [
 { #category : #test }
 ForthInterpreterTest >> test_addsOne [
 
+	self assert: (forth synonymousOf: '1+') equals: '_addsOne'.
+	self assert: (forth primitiveWords includes: '_addsOne').
+	
 	forth stack: forth newStack.
 	self should: [ forth _addsOne ] raise: ForthParameterStackUnderflow.
 
@@ -801,10 +837,15 @@ ForthInterpreterTest >> test_addsOne [
 
 { #category : #test }
 ForthInterpreterTest >> test_addsTwo [
+	| word synonym |
+	
+	word := '2+'.
+	synonym := '_addsTwo'.
+	self assert: (forth synonymousOf: word) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
 	
 	forth stack: forth newStack.
 	self should: [ forth _addsTwo ] raise: ForthParameterStackUnderflow.
-
 	forth emptyStack.
 	forth pushNumber: 1.
 	forth _addsTwo.
@@ -813,6 +854,12 @@ ForthInterpreterTest >> test_addsTwo [
 
 { #category : #test }
 ForthInterpreterTest >> test_at [
+	
+	| word synonym |
+	word := '@'.
+	synonym := '_at'.
+	self assert: (forth synonymousOf: word) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
 	
 	forth stack: forth newStack.
 	forth variables: forth newVariableCollection.
@@ -831,6 +878,12 @@ ForthInterpreterTest >> test_at [
 { #category : #test }
 ForthInterpreterTest >> test_divides [
 	
+	| word synonym |
+	word := '/'.
+	synonym := '_divides'.
+	self assert: (forth synonymousOf: word) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
 	forth stack: forth newStack.
 	self should: [ forth _divides ] raise: ForthParameterStackUnderflow.
 	
@@ -848,6 +901,12 @@ ForthInterpreterTest >> test_divides [
 { #category : #test }
 ForthInterpreterTest >> test_dividesByTwo [
 
+	| word synonym |
+	word := '2/'.
+	synonym := '_dividesByTwo'.
+	self assert: (forth synonymousOf: word) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
 	forth stack: forth newStack.
 	self should: [ forth _dividesByTwo ] raise: ForthParameterStackUnderflow.
 
@@ -865,6 +924,12 @@ ForthInterpreterTest >> test_dividesByTwo [
 { #category : #test }
 ForthInterpreterTest >> test_equal [
 
+	| word synonym |
+	word := '='.
+	synonym := '_equal'.
+	self assert: (forth synonymousOf: word) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
 	forth stack: forth newStack.
 	self should: [ forth _equal ] raise: ForthParameterStackUnderflow.
 	
@@ -888,6 +953,12 @@ ForthInterpreterTest >> test_equal [
 { #category : #test }
 ForthInterpreterTest >> test_exclamationMark [
 	
+	| word synonym |
+	word := '!'.
+	synonym := '_exclamationMark'.
+	self assert: (forth synonymousOf: word) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
 	forth stack: forth newStack.
 	forth variables: forth newVariableCollection.
 	forth createVariableNamed: #x.
@@ -903,6 +974,12 @@ ForthInterpreterTest >> test_exclamationMark [
 { #category : #test }
 ForthInterpreterTest >> test_greaterThan [
 
+	| word synonym |
+	word := '>'.
+	synonym := '_greaterThan'.
+	self assert: (forth synonymousOf: word) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
 	forth stack: forth newStack.
 	self should: [ forth _greaterThan ] raise: ForthParameterStackUnderflow.
 	
@@ -932,6 +1009,12 @@ ForthInterpreterTest >> test_greaterThan [
 { #category : #test }
 ForthInterpreterTest >> test_greaterThanR [
 	
+	| word synonym |
+	word := '>R'.
+	synonym := '_greaterThanR'.
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
 	forth stack: forth newStack.
 	self should: [ forth _greaterThanR ] raise: ForthParameterStackUnderflow.
 	
@@ -947,6 +1030,13 @@ ForthInterpreterTest >> test_greaterThanR [
 { #category : #test }
 ForthInterpreterTest >> test_greaterThanZero [
 
+	| word synonym |
+	word := '0>'.
+	synonym := '_greaterThanZero'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
 	forth stack: forth newStack.
 	self should: [ forth _greaterThanZero ] raise: ForthParameterStackUnderflow.
 	
@@ -969,6 +1059,13 @@ ForthInterpreterTest >> test_greaterThanZero [
 { #category : #test }
 ForthInterpreterTest >> test_lessThan [
 
+	| word synonym |
+	word := '<'.
+	synonym := '_lessThan'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
 	forth stack: forth newStack.
 	self should: [ forth _lessThan ] raise: ForthParameterStackUnderflow.
 	
@@ -998,6 +1095,13 @@ ForthInterpreterTest >> test_lessThan [
 { #category : #test }
 ForthInterpreterTest >> test_lessThanZero [
 
+	| word synonym |
+	word := '0<'.
+	synonym := '_lessThanZero'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
 	forth stack: forth newStack.
 	self should: [ forth _lessThanZero ] raise: ForthParameterStackUnderflow.
 	
@@ -1020,6 +1124,13 @@ ForthInterpreterTest >> test_lessThanZero [
 { #category : #test }
 ForthInterpreterTest >> test_minus [
 
+	| word synonym |
+	word := '-'.
+	synonym := '_minus'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
 	forth stack: forth newStack.
 	self should: [ forth _minus ] raise: ForthParameterStackUnderflow.
 	
@@ -1049,6 +1160,13 @@ ForthInterpreterTest >> test_minus [
 { #category : #test }
 ForthInterpreterTest >> test_mult [
 
+	| word synonym |
+	word := '*'.
+	synonym := '_mult'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
 	forth stack: forth newStack.
 	self should: [ forth _mult ] raise: ForthParameterStackUnderflow.
 	
@@ -1068,6 +1186,13 @@ ForthInterpreterTest >> test_mult [
 { #category : #test }
 ForthInterpreterTest >> test_multipliesByTwo [
 
+	| word synonym |
+	word := '2*'.
+	synonym := '_multipliesByTwo'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
 	forth stack: forth newStack.
 	self should: [ forth _multipliesByTwo ] raise: ForthParameterStackUnderflow.
 
@@ -1085,6 +1210,13 @@ ForthInterpreterTest >> test_multipliesByTwo [
 { #category : #test }
 ForthInterpreterTest >> test_notEqual [
 
+	| word synonym |
+	word := '<>'.
+	synonym := '_notEqual'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
 	forth stack: forth newStack.
 	self should: [ forth _notEqual ] raise: ForthParameterStackUnderflow.
 	
@@ -1108,6 +1240,13 @@ ForthInterpreterTest >> test_notEqual [
 { #category : #test }
 ForthInterpreterTest >> test_plus [
 
+	| word synonym |
+	word := '+'.
+	synonym := '_plus'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
 	forth stack: forth newStack.
 	self should: [ forth _plus ] raise: ForthParameterStackUnderflow.
 	
@@ -1125,7 +1264,12 @@ ForthInterpreterTest >> test_plus [
 { #category : #test }
 ForthInterpreterTest >> test_questionMarkDup [
 
-	self flag: #toImplement.
+	| word synonym |
+	word := '?DUP'.
+	synonym := '_questionMarkDup'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
 
 	forth stack: forth newStack.
 	self should: [ forth _questionMarkDup ] raise: ForthParameterStackUnderflow.
@@ -1144,6 +1288,13 @@ ForthInterpreterTest >> test_questionMarkDup [
 { #category : #test }
 ForthInterpreterTest >> test_rAt [
 	
+	| word synonym |
+	word := 'R@'.
+	synonym := '_rAt'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
 	forth stack: forth newStack.
 	self should: [ forth _rAt ] raise: ForthReturnStackUnderflow.
 	
@@ -1157,7 +1308,12 @@ ForthInterpreterTest >> test_rAt [
 { #category : #test }
 ForthInterpreterTest >> test_rGreaterThan [
 
-	self flag: #toImplement.
+	| word synonym |
+	word := 'R>'.
+	synonym := '_rGreaterThan'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
 	
 	forth stack: forth newStack.
 	self should: [ forth _rGreaterThan ] raise: ForthReturnStackUnderflow.
@@ -1175,7 +1331,12 @@ ForthInterpreterTest >> test_rGreaterThan [
 { #category : #test }
 ForthInterpreterTest >> test_slashMod [
 
-	self flag: #toImplement.
+	| word synonym |
+	word := '/MOD'.
+	synonym := '_slashMod'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
 
 	forth stack: forth newStack.
 	self should: [ forth _slashMod ] raise: ForthParameterStackUnderflow.
@@ -1189,4 +1350,126 @@ ForthInterpreterTest >> test_slashMod [
 	forth pushNumber: 5.
 	forth _slashMod.
 	self assert: forth stack equals: #(4 3) reversed
+]
+
+{ #category : #test }
+ForthInterpreterTest >> test_starSlash [
+
+	| word synonym |
+	word := '*/'.
+	synonym := '_starSlash'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+
+	forth stack: forth newStack.
+	self should: [ forth _starSlash ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	self should: [ forth _starSlash ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 19.
+	forth pushNumber: 5.
+	self should: [ forth _starSlash ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 19.
+	forth pushNumber: 51.
+	forth pushNumber: 5.
+	forth _starSlash.
+	self assert: forth stack equals: #(193) reversed.
+]
+
+{ #category : #test }
+ForthInterpreterTest >> test_starSlashMod [
+
+	| word synonym |
+	word := '*/MOD'.
+	synonym := '_starSlashMod'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+
+	forth stack: forth newStack.
+	self should: [ forth _starSlashMod ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	self should: [ forth _starSlashMod ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 19.
+	forth pushNumber: 5.
+	self should: [ forth _starSlashMod ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 19.
+	forth pushNumber: 51.
+	forth pushNumber: 5.
+	forth _starSlashMod.
+	self assert: forth stack equals: #(4 193) reversed. 
+]
+
+{ #category : #test }
+ForthInterpreterTest >> test_subtractsOne [
+
+	| word synonym |
+	word := '1-'.
+	synonym := '_subtractsOne'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
+	forth stack: forth newStack.
+	self should: [ forth _subtractsOne ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	forth _subtractsOne.
+	self assert: forth stack equals: #(6) reversed
+]
+
+{ #category : #test }
+ForthInterpreterTest >> test_subtractsTwo [
+
+	| word synonym |
+	word := '2-'.
+	synonym := '_subtractsTwo'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
+	forth stack: forth newStack.
+	self should: [ forth _subtractsTwo ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	forth _subtractsTwo.
+	self assert: forth stack equals: #(5) reversed
+]
+
+{ #category : #test }
+ForthInterpreterTest >> test_zeroEqual [
+
+	| word synonym |
+	word := '0='.
+	synonym := '_zeroEqual'.
+	
+	self assert: (forth synonymousOf: word asLowercase) equals: synonym.
+	self assert: (forth primitiveWords includes: synonym).
+	
+	forth stack: forth newStack.
+	self should: [ forth _zeroEqual ] raise: ForthParameterStackUnderflow.
+	
+	forth emptyStack.
+	forth pushNumber: 7.
+	forth _zeroEqual.
+	self assert: forth stack equals: #(0) reversed.
+	
+	forth emptyStack.
+	forth pushNumber: 0.
+	forth _zeroEqual.
+	self assert: forth stack equals: #(-1) reversed.
 ]
